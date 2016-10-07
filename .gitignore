@@ -49,3 +49,6 @@ captures/
 
 # Keystore files
 *.jks
+
+# Ingore Constants Class
+app/src/main/java/com/example/djung/locally/Model/Constants.java

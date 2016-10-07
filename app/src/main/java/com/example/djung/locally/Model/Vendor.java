@@ -10,10 +10,18 @@ import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.*;
 
 /**
  * Example Use:
+ // Remember to add the Constants.java file inside the Model package
  // Remember to add the following import statements
  import com.amazonaws.auth.CognitoCachingCredentialsProvider;
  import com.amazonaws.regions.Regions;
  import com.amazonaws.services.dynamodbv2.*;
+
+ // Initialize the Amazon Cognito credentials provider
+ CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+ getApplicationContext(),
+ Constants.IDENTITY_POOL_ID, // Identity Pool ID
+ Regions.US_WEST_2 // Region
+ );
 
  // Create a Dynamo Database Client
  AmazonDynamoDBClient ddbClient = new AmazonDynamoDBClient(credentialsProvider);
@@ -30,7 +38,7 @@ import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.*;
  mapper.save(vendor);
 
  // To retrieve the created Vendor use
- Vendor selectedVendor = mapper.load(Vendor.class, 123);
+ Vendor selectedVendor = mapper.load(Vendor.id, 123);
 
  // To edit just set the desired attribute(s)
  selectedVendor.setName("Kitsilano Tomatoes");
