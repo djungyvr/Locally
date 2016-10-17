@@ -2,7 +2,6 @@ package com.example.djung.locally.Model;
 
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.*;
 
-
 /**
  * Describes a Vendor
  * Created by David Jung on 07/10/16.
@@ -49,9 +48,15 @@ import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.*;
 
 @DynamoDBTable(tableName = "Vendor")
 public class Vendor {
+    // Primary Key
     private int id;
+    // Name of the vendor
     private String name;
-
+    // Id of the market it belongs to
+    //TODO: Complete fields
+    private int marketId;
+    // Name of the market it belongs to
+    private String marketName;
 
     @DynamoDBHashKey(attributeName="Vendor.Id")
     public long getId() {
