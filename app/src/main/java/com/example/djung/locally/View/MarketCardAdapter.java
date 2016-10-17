@@ -36,6 +36,7 @@ public class MarketCardAdapter extends RecyclerView.Adapter<MarketCardAdapter.Si
     public void onBindViewHolder(SingleItemRowHolder holder, int position) {
         MarketCard marketCard = marketsList.get(position);
         holder.mTitle.setText(marketCard.getMarketName());
+        holder.mImage.setImageResource(marketCard.getImageResource());
     }
 
     @Override

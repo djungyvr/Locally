@@ -93,20 +93,28 @@ public class MainActivity extends AppCompatActivity
     }
 
     void populateSampleData() {
-        for (int i = 1; i < 3; i++) {
-            MarketCardSection section = new MarketCardSection();
+        // Add sample data for markets open now
+        MarketCardSection openNowSection = new MarketCardSection();
+        openNowSection.setSectionTitle("Markets Open Now");
 
-            section.setSectionTitle("Section " + i);
+        ArrayList<MarketCard> marketsOpenNow = new ArrayList<>();
+         marketsOpenNow.add(new MarketCard("UBC",R.drawable.ubc));
+         marketsOpenNow.add(new MarketCard("Kitsilano",R.drawable.kitsilano));
 
-            ArrayList<MarketCard> marketCards = new ArrayList<>();
-            for(int j = 0; j < 5; j++) {
-                marketCards.add(new MarketCard("Item " + j));
-            }
+        openNowSection.setMarketCardArrayList(marketsOpenNow);
 
-            section.setMarketCardArrayList(marketCards);
+        sampleData.add(openNowSection);
 
-            sampleData.add(section);
+        // Add sample data for recently viewed markets
+        MarketCardSection recentlyViewedSection = new MarketCardSection();
+        recentlyViewedSection.setSectionTitle("Recently Viewed");
 
-        }
+        ArrayList<MarketCard> marketsRecentlyViewed = new ArrayList<>();
+        marketsRecentlyViewed.add(new MarketCard("UBC",R.drawable.ubc));
+        marketsRecentlyViewed.add(new MarketCard("Kitsilano",R.drawable.kitsilano));
+
+        recentlyViewedSection.setMarketCardArrayList(marketsRecentlyViewed);
+
+        sampleData.add(recentlyViewedSection);
     }
 }
