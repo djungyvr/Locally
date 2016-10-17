@@ -3,13 +3,11 @@ package com.example.djung.locally.View;
 /**
  * Created by David Jung on 16/10/16.
  */
-public class MarketCardViewModel {
+public class MarketCard {
 
     private String marketName;
 
-
-
-    public MarketCardViewModel(String marketName) {
+    public MarketCard(String marketName) {
         this.marketName = marketName;
     }
 

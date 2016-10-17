@@ -16,26 +16,26 @@ import java.util.ArrayList;
 /**
  * Created by David Jung on 16/10/16.
  */
-public class SectionListAdapter extends RecyclerView.Adapter<SectionListAdapter.SingleItemRowHolder> {
-    private ArrayList<MarketCardViewModel> marketsList;
+public class MarketCardAdapter extends RecyclerView.Adapter<MarketCardAdapter.SingleItemRowHolder> {
+    private ArrayList<MarketCard> marketsList;
     private Context mContext;
 
-    SectionListAdapter(Context context, ArrayList<MarketCardViewModel> marketsList) {
+    MarketCardAdapter(Context context, ArrayList<MarketCard> marketsList) {
         this.marketsList = marketsList;
         this.mContext = context;
     }
 
     @Override
     public SingleItemRowHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_single_market_card_item,null);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.market_card,null);
         SingleItemRowHolder rowHolder = new SingleItemRowHolder(view);
         return rowHolder;
     }
 
     @Override
     public void onBindViewHolder(SingleItemRowHolder holder, int position) {
-        MarketCardViewModel marketCardViewModel = marketsList.get(position);
-        holder.mTitle.setText(marketCardViewModel.getMarketName());
+        MarketCard marketCard = marketsList.get(position);
+        holder.mTitle.setText(marketCard.getMarketName());
     }
 
     @Override

@@ -21,7 +21,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private ArrayList<MarketCardViewModelSection> sampleData;
+    private ArrayList<MarketCardSection> sampleData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity
 
         recyclerView.setHasFixedSize(true);
 
-        RecyclerViewDataAdapter adapter = new RecyclerViewDataAdapter(this,sampleData);
+        MarketCardSectionAdapter adapter = new MarketCardSectionAdapter(this,sampleData);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
@@ -94,16 +94,16 @@ public class MainActivity extends AppCompatActivity
 
     void populateSampleData() {
         for (int i = 1; i < 3; i++) {
-            MarketCardViewModelSection section = new MarketCardViewModelSection();
+            MarketCardSection section = new MarketCardSection();
 
             section.setSectionTitle("Section " + i);
 
-            ArrayList<MarketCardViewModel> marketCards = new ArrayList<>();
+            ArrayList<MarketCard> marketCards = new ArrayList<>();
             for(int j = 0; j < 5; j++) {
-                marketCards.add(new MarketCardViewModel("Item " + j));
+                marketCards.add(new MarketCard("Item " + j));
             }
 
-            section.setMarketCardViewModelArrayList(marketCards);
+            section.setMarketCardArrayList(marketCards);
 
             sampleData.add(section);
 

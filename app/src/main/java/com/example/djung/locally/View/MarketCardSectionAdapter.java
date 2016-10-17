@@ -15,35 +15,35 @@ import java.util.ArrayList;
 /**
  * Created by David Jung on 16/10/16.
  */
-public class RecyclerViewDataAdapter extends RecyclerView.Adapter<RecyclerViewDataAdapter.ItemRowHolder> {
+public class MarketCardSectionAdapter extends RecyclerView.Adapter<MarketCardSectionAdapter.ItemRowHolder> {
 
-    private ArrayList<MarketCardViewModelSection> dataList;
+    private ArrayList<MarketCardSection> dataList;
     private Context mContext;
 
-    public RecyclerViewDataAdapter() {
+    public MarketCardSectionAdapter() {
     }
 
-    public RecyclerViewDataAdapter(Context context, ArrayList<MarketCardViewModelSection> dataList) {
+    public MarketCardSectionAdapter(Context context, ArrayList<MarketCardSection> dataList) {
         this.mContext = context;
         this.dataList = dataList;
     }
 
     @Override
-    public RecyclerViewDataAdapter.ItemRowHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, null);
+    public MarketCardSectionAdapter.ItemRowHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_market_cards, null);
         ItemRowHolder rowHolder = new ItemRowHolder(view);
         return rowHolder;
     }
 
     @Override
-    public void onBindViewHolder(RecyclerViewDataAdapter.ItemRowHolder holder, int position) {
+    public void onBindViewHolder(MarketCardSectionAdapter.ItemRowHolder holder, int position) {
         final String sectionName = dataList.get(position).getSectionTitle();
 
-        ArrayList singleSectionItems = dataList.get(position).getMarketCardViewModelArrayList();
+        ArrayList singleSectionItems = dataList.get(position).getMarketCardArrayList();
 
         holder.mItemTitle.setText(sectionName);
 
-        SectionListAdapter itemListDataAdapter = new SectionListAdapter(mContext,singleSectionItems);
+        MarketCardAdapter itemListDataAdapter = new MarketCardAdapter(mContext,singleSectionItems);
 
         holder.mRecyclerView.setHasFixedSize(true);
         holder.mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
