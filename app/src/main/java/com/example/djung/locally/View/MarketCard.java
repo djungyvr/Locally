@@ -7,13 +7,15 @@ public class MarketCard {
 
     private String marketName;
 
+    private String distance;
+
     private int imageResource;
 
-    public MarketCard(String marketName) {
+    public MarketCard(String marketName, String distance, int imageResource) {
         this.marketName = marketName;
+        this.imageResource = imageResource;
+        this.distance = distance;
     }
-
-    public MarketCard(String marketName, int imageResource) {this.marketName = marketName; this.imageResource = imageResource;}
 
     public String getMarketName() {
         return marketName;
@@ -22,7 +24,6 @@ public class MarketCard {
     public void setMarketName(String marketName) {
         this.marketName = marketName;
     }
-
 
     public int getImageResource() {
         return imageResource;

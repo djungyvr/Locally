@@ -79,12 +79,15 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_map) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_use_as_vendor) {
-
+        switch(id) {
+            case R.id.nav_home:
+                break;
+            case R.id.nav_map:
+                break;
+            case R.id.nav_manage:
+                break;
+            case R.id.nav_use_as_vendor:
+                break;
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -92,14 +95,17 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     * Used to populate layout_main's recycler view
+     */
     void populateSampleData() {
         // Add sample data for markets open now
         MarketCardSection openNowSection = new MarketCardSection();
         openNowSection.setSectionTitle("Markets Open Now");
 
         ArrayList<MarketCard> marketsOpenNow = new ArrayList<>();
-         marketsOpenNow.add(new MarketCard("UBC",R.drawable.ubc));
-         marketsOpenNow.add(new MarketCard("Kitsilano",R.drawable.kitsilano));
+         marketsOpenNow.add(new MarketCard("UBC","100 m",R.drawable.ubc));
+         marketsOpenNow.add(new MarketCard("Kitsilano","1.1 km",R.drawable.kitsilano));
 
         openNowSection.setMarketCardArrayList(marketsOpenNow);
 
@@ -110,8 +116,8 @@ public class MainActivity extends AppCompatActivity
         recentlyViewedSection.setSectionTitle("Recently Viewed");
 
         ArrayList<MarketCard> marketsRecentlyViewed = new ArrayList<>();
-        marketsRecentlyViewed.add(new MarketCard("UBC",R.drawable.ubc));
-        marketsRecentlyViewed.add(new MarketCard("Kitsilano",R.drawable.kitsilano));
+        marketsRecentlyViewed.add(new MarketCard("UBC","100 m",R.drawable.ubc));
+        marketsRecentlyViewed.add(new MarketCard("Kitsilano","1.1 km",R.drawable.kitsilano));
 
         recentlyViewedSection.setMarketCardArrayList(marketsRecentlyViewed);
 
