@@ -18,7 +18,7 @@
 
 # Java class files
 *.class
-
+*api_keys.xml
 # Generated files
 bin/
 gen/
