@@ -13,20 +13,19 @@ public class MarketCard {
 
     public MarketCard(String marketName, String distance, int imageResource) {
         this.marketName = marketName;
-        this.imageResource = imageResource;
         this.distance = distance;
+        this.imageResource = imageResource;
     }
 
     public String getMarketName() {
         return marketName;
     }
 
-    public void setMarketName(String marketName) {
-        this.marketName = marketName;
-    }
-
     public int getImageResource() {
         return imageResource;
     }
 
+    public String getMarketDistance() {
+        return distance;
+    }
 }

@@ -37,6 +37,7 @@ public class MarketCardAdapter extends RecyclerView.Adapter<MarketCardAdapter.Si
         MarketCard marketCard = marketsList.get(position);
         holder.mTitle.setText(marketCard.getMarketName());
         holder.mImage.setImageResource(marketCard.getImageResource());
+        holder.mDistance.setText(marketCard.getMarketDistance());
     }
 
     @Override
@@ -46,14 +47,15 @@ public class MarketCardAdapter extends RecyclerView.Adapter<MarketCardAdapter.Si
 
     public class SingleItemRowHolder extends RecyclerView.ViewHolder {
         protected TextView mTitle;
+        protected TextView mDistance;
         protected ImageView mImage;
 
         public SingleItemRowHolder(View view) {
             super(view);
 
             this.mTitle = (TextView) view.findViewById(R.id.text_view_market_name);
+            this.mDistance = (TextView) view.findViewById(R.id.text_view_market_distance);
             this.mImage = (ImageView) view.findViewById(R.id.image_view_market_image);
-
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
