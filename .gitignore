@@ -15,7 +15,7 @@
 
 # Files for the ART/Dalvik VM
 *.dex
-
+*api_keys.xml
 # Java class files
 *.class
 
