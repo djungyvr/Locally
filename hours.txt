@@ -1,0 +1,4 @@
+07.10.16 - 2 hours - Create empty android project, initailize AWS SDK
+16.10.16 - 5 hours - Create base activity for others to work with, update models
+20.10.16 - 2 hours - Begin adding Google Maps API for Alena to work with later
+
