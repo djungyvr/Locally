@@ -2,21 +2,17 @@ package com.example.djung.locally.View;
 
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.djung.locally.R;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -25,16 +21,17 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     MapView mMapView;
-    private GoogleMap googleMap;
 
+    // Returns the view of the fragment
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.activity_maps, container,
+        View v = inflater.inflate(R.layout.map_layout, container,
                 false);
         mMapView = (MapView) v.findViewById(R.id.map_view);
         mMapView.onCreate(savedInstanceState);
 
-        mMapView.onResume();// needed to get the map to display immediately
+        // Needed to get the map to display immediately
+        mMapView.onResume();
 
         try {
             MapsInitializer.initialize(getActivity().getApplicationContext());
@@ -44,7 +41,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         mMapView.getMapAsync(this);
 
-        // Perform any camera updates here
         return v;
     }
 
@@ -60,24 +56,22 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        this.googleMap = googleMap;
+        // Latitude and longitude of Vancouver
+        double latitude = 49.2827;
+        double longitude = -123.1207;
 
-        // latitude and longitude
-        double latitude = 17.385044;
-        double longitude = 78.486671;
-
-        // create marker
+        // Create marker
         MarkerOptions marker = new MarkerOptions().position(
                 new LatLng(latitude, longitude)).title("Hello Maps");
 
         // Changing marker icon
         marker.icon(BitmapDescriptorFactory
-                .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+                .defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
 
-        // adding marker
+        // Adding marker
         googleMap.addMarker(marker);
         CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(17.385044, 78.486671)).zoom(12).build();
+                .target(new LatLng(latitude, longitude)).zoom(12).build();
         googleMap.animateCamera(CameraUpdateFactory
                 .newCameraPosition(cameraPosition));
     }
