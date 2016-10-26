@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -65,14 +66,7 @@ public class MainActivity extends AppCompatActivity
                     mFragmentManager.beginTransaction().remove(mGoogleMapsFragment).commit();
                 break;
             case R.id.nav_map:
-                //TODO: GOOGLE MAPS SHOWS GRAY, FIX
-                if(mGoogleMapsFragment == null)
-                    mGoogleMapsFragment = new MapFragment();
-                if(mFragmentManager == null)
-                    mFragmentManager = getSupportFragmentManager();
-
-                // Replace the fragment
-                mFragmentManager.beginTransaction().replace(R.id.main_activity_container, mGoogleMapsFragment).commit();
+                launchMapFragment();
                 break;
             case R.id.nav_manage:
                 if(mSettingsFragment == null)
@@ -126,6 +120,19 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    /**
+     * Launches the Google maps fragment
+     */
+    void launchMapFragment() {
+        if(mGoogleMapsFragment == null)
+            mGoogleMapsFragment = new MapFragment();
+        if(mFragmentManager == null)
+            mFragmentManager = getSupportFragmentManager();
+
+        // Replace the container with the fragment
+        mFragmentManager.beginTransaction().replace(R.id.main_activity_container, mGoogleMapsFragment).commit();
     }
 
     /**

@@ -66,7 +66,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         // Changing marker icon
         marker.icon(BitmapDescriptorFactory
-                .defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
 
         // Adding marker
         googleMap.addMarker(marker);
