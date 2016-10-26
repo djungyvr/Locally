@@ -1,6 +1,7 @@
 package com.example.djung.locally.Model;
 
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.*;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class Market {
     private List<Vendor> vendorList;
     // Location of market
     //TODO:Import LatLng
-    //private LatLng location;
+    private LatLng location;
 
     @DynamoDBHashKey(attributeName="Market.Id")
     public long getId() {
