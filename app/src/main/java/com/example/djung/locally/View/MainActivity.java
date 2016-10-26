@@ -1,45 +1,36 @@
 package com.example.djung.locally.View;
 
-import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.widget.ViewFlipper;
+import android.view.View;
 
-import com.example.djung.locally.Manifest;
 import com.example.djung.locally.R;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.OnMapReadyCallback;
-
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
-
-    private int MY_PERMISSIONS_REQUEST_COURSE_LOCATION = 0;
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     private ArrayList<MarketCardSection> sampleData;
-    private ViewFlipper mViewFlipper;
+    // Fragment for displaying maps
+    private Fragment mGoogleMapsFragment;
+    // Fragment for displaying settings
+    private Fragment mSettingsFragment;
+
+    private FragmentManager mFragmentManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,10 +41,6 @@ public class MainActivity extends AppCompatActivity
         populateSampleData();
 
         initializeContentMain();
-
-        initializeMapMain();
-
-        mViewFlipper = (ViewFlipper)findViewById(R.id.view_flipper);
     }
 
     @Override
@@ -74,12 +61,22 @@ public class MainActivity extends AppCompatActivity
 
         switch(id) {
             case R.id.nav_home:
-                mViewFlipper.setDisplayedChild(0);
+                if(mFragmentManager != null && mGoogleMapsFragment != null)
+                    mFragmentManager.beginTransaction().remove(mGoogleMapsFragment).commit();
                 break;
             case R.id.nav_map:
-                mViewFlipper.setDisplayedChild(1);
+                //TODO: GOOGLE MAPS SHOWS GRAY, FIX
+                if(mGoogleMapsFragment == null)
+                    mGoogleMapsFragment = new MapFragment();
+                if(mFragmentManager == null)
+                    mFragmentManager = getSupportFragmentManager();
+
+                // Replace the fragment
+                mFragmentManager.beginTransaction().replace(R.id.main_activity_container, mGoogleMapsFragment).commit();
                 break;
             case R.id.nav_manage:
+                if(mSettingsFragment == null)
+
                 break;
             case R.id.nav_use_as_vendor:
                 break;
@@ -112,7 +109,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.search_floating_action);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -129,17 +126,6 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-    }
-
-    /**
-     * Initialize the map
-     */
-    private void initializeMapMain() {
-        // Gets the MapView from the XML layout and creates it
-        MapView mapView = (MapView) findViewById(R.id.map_view);
-
-        // Gets to GoogleMap from the MapView and does initialization stuff
-        mapView.getMapAsync(this);
     }
 
     /**
@@ -171,21 +157,5 @@ public class MainActivity extends AppCompatActivity
         recentlyViewedSection.setMarketCardArrayList(marketsRecentlyViewed);
 
         sampleData.add(recentlyViewedSection);
-    }
-
-    @Override
-    public void onMapReady(GoogleMap map) {
-        // Request for in app permission
-        if ( ContextCompat.checkSelfPermission( this, android.Manifest.permission.ACCESS_COARSE_LOCATION )
-                != PackageManager.PERMISSION_GRANTED ) {
-            ActivityCompat.requestPermissions( this, new String[] {  android.Manifest.permission.ACCESS_COARSE_LOCATION  }, MY_PERMISSIONS_REQUEST_COURSE_LOCATION);
-        }
-
-        map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-        map.setMyLocationEnabled(true);
-        map.setTrafficEnabled(true);
-        map.setIndoorEnabled(true);
-        map.setBuildingsEnabled(true);
-        map.getUiSettings().setZoomControlsEnabled(true);
     }
 }
