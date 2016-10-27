@@ -13,7 +13,9 @@ import com.amazonaws.services.dynamodbv2.*;
 import com.example.djung.locally.Model.Constants;
 import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.Model.Vendor;
+import com.google.android.gms.vision.barcode.Barcode;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -47,8 +49,6 @@ public class MarketPresenter {
      */
     class FetchMarketsTask implements Callable<List<Market>> {
         public List<Market> call() throws Exception {
-            List<Market> marketList = new ArrayList<>();
-
             // Initialize the Amazon Cognito credentials provider
             CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
                     context,
