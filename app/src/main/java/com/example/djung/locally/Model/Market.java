@@ -19,20 +19,48 @@ import java.util.List;
 public class Market {
     // Primary Key
     private int id;
+
     // Name of the market
     private String name;
-    // List of vendors
-    private List<Vendor> vendorList;
+
     // Location of market
-    //TODO:Import LatLng
-    private LatLng location;
+    private double latitude;
+
+    private double longitude;
 
     @DynamoDBHashKey(attributeName="Market.Id")
-    public long getId() {
+    public int getId() {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @DynamoDBAttribute(attributeName="Market.Name")
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @DynamoDBAttribute(attributeName="Market.Latitude")
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    @DynamoDBAttribute(attributeName="Market.Longitude")
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }

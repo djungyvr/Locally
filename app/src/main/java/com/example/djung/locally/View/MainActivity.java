@@ -17,6 +17,8 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.example.djung.locally.Model.AWSMobileClient;
+import com.example.djung.locally.Model.IdentityManager;
 import com.example.djung.locally.R;
 
 import java.util.ArrayList;
@@ -32,16 +34,27 @@ public class MainActivity extends AppCompatActivity
 
     private FragmentManager mFragmentManager;
 
+    private IdentityManager identityManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        initializeAWS();
 
         initializeBaseViews();
 
         populateSampleData();
 
         initializeContentMain();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        final AWSMobileClient awsMobileClient = AWSMobileClient.defaultMobileClient();
     }
 
     @Override
@@ -94,6 +107,18 @@ public class MainActivity extends AppCompatActivity
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
         recyclerView.setAdapter(adapter);
+    }
+
+    public void initializeAWS() {
+        // Obtain a reference to the mobile client. It is created in the Application class,
+        // but in case a custom Application class is not used, we initialize it here if necessary.
+        AWSMobileClient.initializeMobileClientIfNecessary(this);
+
+        // Obtain a reference to the mobile client. It is created in the Application class.
+        final AWSMobileClient awsMobileClient = AWSMobileClient.defaultMobileClient();
+
+        // Obtain a reference to the identity manager.
+        identityManager = awsMobileClient.getIdentityManager();
     }
 
     /**
