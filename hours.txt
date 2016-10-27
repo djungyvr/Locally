@@ -1,4 +1,9 @@
+David
 07.10.16 - 2 hours - Create empty android project, initailize AWS SDK
 16.10.16 - 5 hours - Create base activity for others to work with, update models
 20.10.16 - 2 hours - Begin adding Google Maps API for Alena to work with later
 
+Anna
+Week of October 3, 2016 - 4 hours - product vision, project planning and use case analysis documentation
+Week of October 10, 2016 - 7 hours - UI prototypes for Calendar, project design planning, Android Studio Lessons
+Week of October 17, 2016 - 6 hours - Android Studio Lessons + started designing Calendar UI
