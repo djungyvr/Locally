@@ -1,4 +1,4 @@
-package com.example.djung.locally.Model;
+package com.example.djung.locally.Presenter;
 
 import android.os.Handler;
 import android.os.Looper;

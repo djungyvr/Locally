@@ -2,6 +2,8 @@ package com.example.djung.locally.Model;
 
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.*;
 
+import java.util.Set;
+
 /**
  * Describes a Vendor
  * Created by David Jung on 07/10/16.
@@ -9,7 +11,7 @@ import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.*;
 
 /**
  * Example Use:
- // Remember to add the Constants.java file inside the Model package
+ // Remember to add the AwsConfiguration.java file inside the Model package
  // Remember to add the following import statements
  import com.amazonaws.auth.CognitoCachingCredentialsProvider;
  import com.amazonaws.regions.Regions;
@@ -18,7 +20,7 @@ import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.*;
  // Initialize the Amazon Cognito credentials provider
  CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
  getApplicationContext(),
- Constants.IDENTITY_POOL_ID, // Identity Pool ID
+ AwsConfiguration.IDENTITY_POOL_ID, // Identity Pool ID
  Regions.US_WEST_2 // Region
  );
 
@@ -52,11 +54,16 @@ public class Vendor {
     private int id;
     // Name of the vendor
     private String name;
+    // Description of the vendor
+    private String description;
+    // Link to vendor image
+    private String imageResource;
     // Id of the market it belongs to
-    //TODO: Complete fields
     private int marketId;
     // Name of the market it belongs to
     private String marketName;
+    // Set of items this vendor carries
+    private Set<Integer> itemIdSet;
 
     @DynamoDBHashKey(attributeName="Vendor.Id")
     public long getId() {
@@ -67,11 +74,39 @@ public class Vendor {
         this.id = id;
     }
 
+    @DynamoDBAttribute(attributeName="Vendor.Name")
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @DynamoDBAttribute(attributeName = "Vendor.MarketId")
+    public int getMarketId() {
+        return marketId;
+    }
+
+    public void setMarketId(int marketId) {
+        this.marketId = marketId;
+    }
+
+    @DynamoDBAttribute(attributeName = "Vendor.MarketName")
+    public String getMarketName() {
+        return marketName;
+    }
+
+    public void setMarketName(String marketName) {
+        this.marketName = marketName;
+    }
+
+    @DynamoDBAttribute(attributeName = "Vendor.ItemList")
+    public Set<Integer> getItemIdSet() {
+        return itemIdSet;
+    }
+
+    public void setItemIdSet(Set<Integer> itemIdSet) {
+        this.itemIdSet = itemIdSet;
     }
 }

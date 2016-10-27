@@ -3,7 +3,7 @@ package com.example.djung.locally.Model;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.*;
 
 /**
- * Describes a Produce item
+ * Describes a Vendor item
  *
  * This class should only be able to GET from the database and not be able to make changes.
  * The produce is fixed and the vendors will have a choice of selecting from out database.
@@ -12,15 +12,16 @@ import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.*;
  * Created by David Jung on 15/10/16.
  */
 
-@DynamoDBTable(tableName = "Produce")
-public class Produce {
+@DynamoDBTable(tableName = "Product")
+public class Product {
     // Primary Key
     private int id;
-    // Name of the produce
+
+    // Name of the item
     private String name;
 
-    @DynamoDBHashKey(attributeName="Produce.Id")
-    public long getId() {
+    @DynamoDBHashKey(attributeName="Product.Id")
+    public int getId() {
         return id;
     }
 

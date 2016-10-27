@@ -13,12 +13,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.example.djung.locally.Model.AWSMobileClient;
-import com.example.djung.locally.Model.IdentityManager;
+import com.example.djung.locally.AWS.AWSMobileClient;
+import com.example.djung.locally.AWS.IdentityManager;
 import com.example.djung.locally.R;
 
 import java.util.ArrayList;
