@@ -1,19 +1,20 @@
 # Locally
 
-# Setup
+## Setup
 
-## AWS
+### AWS Configuration
 Obtain AwsConfiguration.java from the developers and place it inside the AWS Package, this contains the necessary information for using AWS. More specifically Cognito and DynamoDB
 
-## API Keys
+### API Keys
 Obtain api_keys.xml from the developers and place it inside the res/values/ directory
 
 
-## Gradle 
-### Ensure your "/Locally/app/build.gradle" file is the same as below. 
-### ** NOTE THIS IS NOT THE SAME AS "/Locally/build.gradle" DO NOT CHANGE THAT FILE**
-### Last Updated 27/10/16
+### Gradle Build
+#####Ensure your "/Locally/app/build.gradle" file is the same as below. 
+#####** NOTE THIS IS NOT THE SAME AS "/Locally/build.gradle" DO NOT CHANGE THAT FILE**
 
+/Locally/app/build.gradle (Last Updated 27/10/16)
+```
 apply plugin: 'com.android.application'
 
 android {
@@ -48,3 +49,4 @@ dependencies {
     compile 'com.android.support:cardview-v7:23.4.0'
     compile 'com.google.android.gms:play-services:9.6.1'
 }
+```
