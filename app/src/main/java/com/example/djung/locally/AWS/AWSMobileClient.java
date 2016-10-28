@@ -13,6 +13,8 @@ import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
  * The AWS Mobile Client bootstraps the application to make calls to AWS 
  * services. It creates clients which can be used to call services backing the
  * features you selected in your project.
+ *
+ * Taken from AWS mobile sample
  */
 public class AWSMobileClient {
 

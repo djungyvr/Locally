@@ -20,7 +20,10 @@ import java.util.concurrent.Future;
 
 
 /**
- * Created by djung on 26/10/16.
+ * Initial implementation for fetching and writing from the market database to hand over to the
+ * views. All tasks run asynchronously.
+ *
+ * Created by David Jung on 26/10/16.
  */
 public class MarketPresenter {
     private Context context;

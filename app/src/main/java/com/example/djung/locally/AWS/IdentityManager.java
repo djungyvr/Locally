@@ -15,6 +15,8 @@ import java.util.concurrent.Executors;
 /**
  * The identity manager keeps track of the current sign-in provider and is responsible
  * for caching credentials.
+ *
+ * Taken from AWS mobile sample
  */
 public class IdentityManager {
 
