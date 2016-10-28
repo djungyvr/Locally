@@ -1,6 +1,5 @@
 package com.example.djung.locally.View;
 
-import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -8,10 +7,9 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.example.djung.locally.Model.Market;
-import com.example.djung.locally.Model.ThreadUtils;
+import com.example.djung.locally.Presenter.ThreadUtils;
 import com.example.djung.locally.Presenter.MarketPresenter;
 import com.example.djung.locally.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -22,7 +20,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;

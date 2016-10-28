@@ -1,14 +1,12 @@
-package com.example.djung.locally.Model;
+package com.example.djung.locally.AWS;
 
 import android.content.Context;
 import android.util.Log;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.SDKGlobalConfiguration;
-import com.amazonaws.auth.AWSBasicCognitoIdentityProvider;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
-import com.amazonaws.regions.Region;
-import com.amazonaws.regions.Regions;
+import com.example.djung.locally.Presenter.ThreadUtils;
 
 import java.util.Date;
 import java.util.concurrent.ExecutorService;
@@ -17,6 +15,8 @@ import java.util.concurrent.Executors;
 /**
  * The identity manager keeps track of the current sign-in provider and is responsible
  * for caching credentials.
+ *
+ * Taken from AWS mobile sample
  */
 public class IdentityManager {
 
@@ -64,8 +64,8 @@ public class IdentityManager {
     private void initializeCognito(final Context context, final ClientConfiguration clientConfiguration) {
         credentialsProvider =
                 new CognitoCachingCredentialsProvider(context,
-                        Constants.AMAZON_COGNITO_IDENTITY_POOL_ID,
-                        Constants.AMAZON_COGNITO_REGION,
+                        AwsConfiguration.AMAZON_COGNITO_IDENTITY_POOL_ID,
+                        AwsConfiguration.AMAZON_COGNITO_REGION,
                         clientConfiguration
                 );
 

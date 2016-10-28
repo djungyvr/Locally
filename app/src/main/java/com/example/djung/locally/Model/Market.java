@@ -4,6 +4,7 @@ import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.*;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Describes a Market
@@ -19,14 +20,22 @@ import java.util.List;
 public class Market {
     // Primary Key
     private int id;
-
     // Name of the market
     private String name;
-
-    // Location of market
+    // Latitude of market
     private double latitude;
-
+    // Longitude of market
     private double longitude;
+    // Address of market
+    private String address;
+    // Description
+    private String description;
+    // Set of days and hours this market is open
+    // Encoding is in json example below
+    // {"hours":[{"day":"Saturday","time":"8:00-12:00"},{"day":"Sunday","time":"8:00-12:00"}]}
+    private String marketHours;
+    // Set of vendors in this market
+    private Set<Integer> vendorIdSet;
 
     @DynamoDBHashKey(attributeName="Market.Id")
     public int getId() {

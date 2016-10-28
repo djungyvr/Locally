@@ -1,4 +1,4 @@
-package com.example.djung.locally.Model;
+package com.example.djung.locally.AWS;
 
 import android.content.Context;
 import android.util.Log;
@@ -8,10 +8,13 @@ import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
+
 /**
  * The AWS Mobile Client bootstraps the application to make calls to AWS 
  * services. It creates clients which can be used to call services backing the
  * features you selected in your project.
+ *
+ * Taken from AWS mobile sample
  */
 public class AWSMobileClient {
 
@@ -110,7 +113,7 @@ public class AWSMobileClient {
         this.clientConfiguration = clientConfiguration;
 
         this.dynamoDBClient = new AmazonDynamoDBClient(identityManager.getCredentialsProvider(), clientConfiguration);
-        this.dynamoDBClient.setRegion(Region.getRegion(Constants.AMAZON_DYNAMODB_REGION));
+        this.dynamoDBClient.setRegion(Region.getRegion(AwsConfiguration.AMAZON_DYNAMODB_REGION));
         this.dynamoDBMapper = new DynamoDBMapper(dynamoDBClient);
     }
 
@@ -148,12 +151,12 @@ public class AWSMobileClient {
         if (AWSMobileClient.defaultMobileClient() == null) {
             Log.d(LOG_TAG, "Initializing AWS Mobile Client...");
             final ClientConfiguration clientConfiguration = new ClientConfiguration();
-            clientConfiguration.setUserAgent(Constants.AWS_MOBILEHUB_USER_AGENT);
+            clientConfiguration.setUserAgent(AwsConfiguration.AWS_MOBILEHUB_USER_AGENT);
             final IdentityManager identityManager = new IdentityManager(context, clientConfiguration);
             final AWSMobileClient awsClient =
                     new AWSMobileClient.Builder(context)
-                            .withCognitoRegion(Constants.AMAZON_COGNITO_REGION)
-                            .withCognitoIdentityPoolID(Constants.AMAZON_COGNITO_IDENTITY_POOL_ID)
+                            .withCognitoRegion(AwsConfiguration.AMAZON_COGNITO_REGION)
+                            .withCognitoIdentityPoolID(AwsConfiguration.AMAZON_COGNITO_IDENTITY_POOL_ID)
                             .withIdentityManager(identityManager)
                             .withClientConfiguration(clientConfiguration)
                             .build();
