@@ -52,3 +52,4 @@ captures/
 
 # Ingore Constants Class
 app/src/main/java/com/example/djung/locally/AWS/AwsConfiguration.java
+
