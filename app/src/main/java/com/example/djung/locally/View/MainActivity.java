@@ -189,4 +189,5 @@ public class MainActivity extends AppCompatActivity
 
         sampleData.add(recentlyViewedSection);
     }
+
 }
