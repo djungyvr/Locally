@@ -1,8 +1,13 @@
 package com.example.djung.locally.View;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -20,7 +25,15 @@ import com.example.djung.locally.Presenter.MarketPresenter;
 import com.example.djung.locally.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStates;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -33,6 +46,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+
+import static com.google.android.gms.location.LocationSettingsStatusCodes.*;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private MapView mMapView;
@@ -51,8 +66,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
         // Needed to get the map to display immediately
         mMapView.onResume();
 
-        initializeApiClient();
-
         try {
             MapsInitializer.initialize(getActivity().getApplicationContext());
         } catch (Exception e) {
@@ -61,12 +74,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
 
         mMapView.getMapAsync(this);
 
+        // Create instance of google services api
+        initializeApiClient();
+
         return v;
     }
 
     @Override
     public void onStart() {
-        mGoogleApiClient.connect();
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.connect();
+        }
         super.onStart();
     }
 
@@ -115,13 +133,87 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
     }
 
     /**
+     * Displays the location settings request dialog and allows users to choose yes or no to improve location
+     */
+    public void requestLocation() {
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(30 * 1000);
+        locationRequest.setFastestInterval(5 * 1000);
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
+
+        // Removes the never option
+        builder.setAlwaysShow(true);
+
+        PendingResult<LocationSettingsResult> result =
+                LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient, builder.build());
+
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(LocationSettingsResult result) {
+                final Status status = result.getStatus();
+                final LocationSettingsStates state = result.getLocationSettingsStates();
+                switch (status.getStatusCode()) {
+                    case SUCCESS:
+                        // All location settings are satisfied. The client can initialize location
+                        // requests here.
+                        setLastLocation();
+                        setLastPosition();
+                        break;
+                    case RESOLUTION_REQUIRED:
+                        // Location settings are not satisfied. But could be fixed by showing the user
+                        // a dialog.
+                        try {
+                            // Show the dialog by calling startResolutionForResult(),
+                            // and check the result in onActivityResult().
+                            status.startResolutionForResult(
+                                    getActivity(), Permissions.REQUEST_LOCATION_SETTINGS);
+                        } catch (IntentSender.SendIntentException e) {
+                            // Ignore the error.
+                        }
+                        break;
+                    case SETTINGS_CHANGE_UNAVAILABLE:
+                        // Location settings are not satisfied. However, we have no way to fix the
+                        // settings so we won't show the dialog.
+                        break;
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            // Check for the integer request code originally supplied to startResolutionForResult().
+            case Permissions.REQUEST_LOCATION_SETTINGS:
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        setLastLocation();
+                        setLastPosition();
+                        this.onStart();
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        requestLocation();
+                        break;
+                }
+                break;
+        }
+    }
+
+    /**
      * Called once the Google Play Service is connected
      *
      * @param bundle
      */
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        requestLocation();
+    }
+
+    private void setLastLocation() {
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Should we show an explanation
             if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                     Manifest.permission.ACCESS_COARSE_LOCATION)) {
@@ -133,8 +225,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
                         Permissions.REQUEST_COURSE_PERMISSION);
             }
         }
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
+
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+    }
+
+    /**
+     * Set the last known position to the map
+     */
+    public void setLastPosition() {
         if (mLastLocation != null) {
             MarkerOptions marker = new MarkerOptions().position(
                     new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())).title("Your Location");
@@ -144,6 +242,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
                     .defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
 
             mGoogleMap.addMarker(marker);
+
+            Log.d("MapFragment", "Added marker");
         }
     }
 
@@ -164,6 +264,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
                         .show();
             }
         });
+    }
+
+
+    /**
+     * @return if gps is enabeled
+     */
+    private boolean isGpsEnabled() {
+        LocationManager locateManager=(LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
+        return locateManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
     /**
