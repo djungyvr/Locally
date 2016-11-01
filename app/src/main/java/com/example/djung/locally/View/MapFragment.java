@@ -28,6 +28,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
@@ -49,11 +50,14 @@ import java.util.concurrent.ExecutionException;
 
 import static com.google.android.gms.location.LocationSettingsStatusCodes.*;
 
-public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+//TODO: FIX SO THAT LOCATION IS ADDED UPON PRESSING YES
+
+public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     private MapView mMapView;
     private GoogleMap mGoogleMap;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
+    private LocationRequest mLocationRequest;
 
     // Returns the view of the fragment
     @Override
@@ -82,6 +86,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
 
     @Override
     public void onStart() {
+        if(mLocationRequest == null) {
+            mLocationRequest = new LocationRequest();
+        }
         if (mGoogleApiClient != null) {
             mGoogleApiClient.connect();
         }
@@ -136,12 +143,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
      * Displays the location settings request dialog and allows users to choose yes or no to improve location
      */
     public void requestLocation() {
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(30 * 1000);
-        locationRequest.setFastestInterval(5 * 1000);
+        mLocationRequest = LocationRequest.create();
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setInterval(30 * 1000);
+        mLocationRequest.setFastestInterval(5 * 1000);
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(locationRequest);
+                .addLocationRequest(mLocationRequest);
 
         // Removes the never option
         builder.setAlwaysShow(true);
@@ -189,9 +196,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
             case Permissions.REQUEST_LOCATION_SETTINGS:
                 switch (resultCode) {
                     case Activity.RESULT_OK:
+                        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, (LocationListener) this);
                         setLastLocation();
-                        setLastPosition();
-                        this.onStart();
                         break;
                     case Activity.RESULT_CANCELED:
                         requestLocation();
@@ -266,17 +272,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
         });
     }
 
-
     /**
-     * @return if gps is enabeled
-     */
-    private boolean isGpsEnabled() {
-        LocationManager locateManager=(LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
-        return locateManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-    }
-
-    /**
-     * Drops pins on the map
+     * Drops market pins onto the map
      *
      * @param googleMap the map to drop the pins onto
      */
@@ -321,6 +318,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
         }
     }
 
+    /**
+     * Hangles in app permission of location results
+     *
+     * @param requestCode request code of in app permission
+     * @param permissions permissions requested
+     * @param grantResults permissions that have been granted
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
@@ -357,6 +361,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
             // other 'case' lines to check for other
             // permissions this app might request
         }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        mLastLocation = location;
     }
 }
 
