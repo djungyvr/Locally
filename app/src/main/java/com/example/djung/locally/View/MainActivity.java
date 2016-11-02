@@ -1,5 +1,6 @@
 package com.example.djung.locally.View;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -85,6 +86,8 @@ public class MainActivity extends AppCompatActivity
 
                 break;
             case R.id.nav_use_as_vendor:
+                Intent loginActivity = new Intent(this, LoginActivity.class);
+                startActivity(loginActivity);
                 break;
         }
 

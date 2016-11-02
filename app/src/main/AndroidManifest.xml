@@ -40,6 +40,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".View.LoginActivity"
+            android:label="@string/title_activity_login"
+            android:parentActivityName=".View.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.djung.locally.View.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
