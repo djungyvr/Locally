@@ -1,10 +1,6 @@
 package com.example.djung.locally.Model;
 
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.*;
-import com.google.android.gms.maps.model.LatLng;
-
-import java.util.List;
-import java.util.Set;
 
 /**
  * Describes a Market
@@ -31,18 +27,17 @@ public class Market {
     // Description
     private String description;
     // Set of days and hours this market is open
-    // Encoding is in json example below
-    // {"hours":[{"day":"Saturday","time":"8:00-12:00"},{"day":"Sunday","time":"8:00-12:00"}]}
-    private String marketHours;
-    // Set of vendors in this market
-    private Set<Integer> vendorIdSet;
+    private String dailyHours;
+
+    // Time of year open
+    private String yearOpen;
 
     @DynamoDBHashKey(attributeName="Market.Id")
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
+    private void setId(int id) {
         this.id = id;
     }
 
@@ -51,7 +46,7 @@ public class Market {
         return name;
     }
 
-    public void setName(String name) {
+    private void setName(String name) {
         this.name = name;
     }
 
@@ -60,7 +55,7 @@ public class Market {
         return latitude;
     }
 
-    public void setLatitude(double latitude) {
+    private void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
@@ -69,7 +64,27 @@ public class Market {
         return longitude;
     }
 
-    public void setLongitude(double longitude) {
+    private void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    @DynamoDBAttribute(attributeName="Market.Address")
+    public String getAddress() {
+        return address;
+    }
+
+    @DynamoDBAttribute(attributeName="Market.Description")
+    public String getDescription() {
+        return description;
+    }
+
+    @DynamoDBAttribute(attributeName="Market.Longitude")
+    public String getDailyHours() {
+        return dailyHours;
+    }
+
+    @DynamoDBAttribute(attributeName="Market.YearOpen")
+    public String getYearOpen() {
+        return yearOpen;
     }
 }
