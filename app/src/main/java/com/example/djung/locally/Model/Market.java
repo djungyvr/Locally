@@ -1,10 +1,6 @@
 package com.example.djung.locally.Model;
 
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.*;
-import com.google.android.gms.maps.model.LatLng;
-
-import java.util.List;
-import java.util.Set;
 
 /**
  * Describes a Market
@@ -31,11 +27,10 @@ public class Market {
     // Description
     private String description;
     // Set of days and hours this market is open
-    // Encoding is in json example below
-    // {"hours":[{"day":"Saturday","time":"8:00-12:00"},{"day":"Sunday","time":"8:00-12:00"}]}
-    private String marketHours;
-    // Set of vendors in this market
-    private Set<Integer> vendorIdSet;
+    private String dailyHours;
+
+    // Time of year open
+    private String yearOpen;
 
     @DynamoDBHashKey(attributeName="Market.Id")
     public int getId() {
@@ -71,5 +66,41 @@ public class Market {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    @DynamoDBAttribute(attributeName="Market.Address")
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    @DynamoDBAttribute(attributeName="Market.Description")
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @DynamoDBAttribute(attributeName="Market.DailyHours")
+    public String getDailyHours() {
+        return dailyHours;
+    }
+
+    public void setDailyHours(String dailyHours) {
+        this.dailyHours = dailyHours;
+    }
+
+    @DynamoDBAttribute(attributeName="Market.YearOpen")
+    public String getYearOpen() {
+        return yearOpen;
+    }
+
+    public void setYearOpen(String yearOpen) {
+        this.yearOpen = yearOpen;
     }
 }

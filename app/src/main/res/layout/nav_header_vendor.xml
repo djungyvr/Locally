@@ -12,12 +12,22 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <TextView
-        android:id="@+id/text_view_Location"
+        android:id="@+id/text_view_nav_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:text="Vancouver, BC"
+        android:text="Hello"
         android:textSize="@dimen/nav_text_header_size"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+    <TextView
+        android:id="@+id/text_view_nav_vendor_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/nav_header_vertical_spacing"
+        android:text="Vendor Name"
+        android:textSize="@dimen/nav_text_vendor_name_size"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
 
 </LinearLayout>

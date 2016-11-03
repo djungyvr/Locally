@@ -1,5 +1,6 @@
 package com.example.djung.locally.View;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -16,7 +17,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
 import com.example.djung.locally.AWS.AWSMobileClient;
+import com.example.djung.locally.AWS.AppHelper;
 import com.example.djung.locally.AWS.IdentityManager;
 import com.example.djung.locally.R;
 
@@ -47,6 +50,9 @@ public class MainActivity extends AppCompatActivity
         populateSampleData();
 
         initializeContentMain();
+
+        // Initialize application
+        AppHelper.initialize(getApplicationContext());
     }
 
     @Override
@@ -85,6 +91,8 @@ public class MainActivity extends AppCompatActivity
 
                 break;
             case R.id.nav_use_as_vendor:
+                Intent loginActivity = new Intent(this, LoginActivity.class);
+                startActivity(loginActivity);
                 break;
         }
 
