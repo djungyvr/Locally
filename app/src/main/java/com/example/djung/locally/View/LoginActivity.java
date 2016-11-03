@@ -180,10 +180,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             AppHelper.setCurrSession(cognitoUserSession);
             AppHelper.setNewDevice(cognitoDevice);
             closeWaitDialog();
-
-            showDialogMessage("Succesful Login","Login");
             // Launch the vendor activity
-            // launchVendor();
+            launchVendor();
         }
 
         @Override
@@ -228,7 +226,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     };
 
 
-
     // Dialog stuff below here
     private void showWaitDialog(String message) {
         closeWaitDialog();
@@ -265,6 +262,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     // Launch other activities from here
+
+    /**
+     * Launch vendor activity
+     */
+    private void launchVendor() {
+        Intent vendorActivity = new Intent(this, VendorActivity.class);
+        startActivityForResult(vendorActivity, 1);
+        finish();
+    }
+
     /**
      * Launch vendor sign up activity
      */
