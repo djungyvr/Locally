@@ -37,7 +37,7 @@ public class Market {
         return id;
     }
 
-    private void setId(int id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -46,7 +46,7 @@ public class Market {
         return name;
     }
 
-    private void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -55,7 +55,7 @@ public class Market {
         return latitude;
     }
 
-    private void setLatitude(double latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
@@ -64,7 +64,7 @@ public class Market {
         return longitude;
     }
 
-    private void setLongitude(double longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
@@ -73,18 +73,34 @@ public class Market {
         return address;
     }
 
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     @DynamoDBAttribute(attributeName="Market.Description")
     public String getDescription() {
         return description;
     }
 
-    @DynamoDBAttribute(attributeName="Market.Longitude")
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @DynamoDBAttribute(attributeName="Market.DailyHours")
     public String getDailyHours() {
         return dailyHours;
+    }
+
+    public void setDailyHours(String dailyHours) {
+        this.dailyHours = dailyHours;
     }
 
     @DynamoDBAttribute(attributeName="Market.YearOpen")
     public String getYearOpen() {
         return yearOpen;
+    }
+
+    public void setYearOpen(String yearOpen) {
+        this.yearOpen = yearOpen;
     }
 }

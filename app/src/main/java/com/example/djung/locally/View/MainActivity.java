@@ -17,7 +17,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
 import com.example.djung.locally.AWS.AWSMobileClient;
+import com.example.djung.locally.AWS.AppHelper;
 import com.example.djung.locally.AWS.IdentityManager;
 import com.example.djung.locally.R;
 
@@ -48,6 +50,9 @@ public class MainActivity extends AppCompatActivity
         populateSampleData();
 
         initializeContentMain();
+
+        // Initialize application
+        AppHelper.initialize(getApplicationContext());
     }
 
     @Override

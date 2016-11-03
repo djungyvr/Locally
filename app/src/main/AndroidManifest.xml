@@ -49,6 +49,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.djung.locally.View.MainActivity" />
         </activity>
+        <activity
+            android:name=".View.RegisterActivity"
+            android:label="@string/title_activity_register"
+            android:parentActivityName=".View.LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.djung.locally.View.LoginActivity" />
+        </activity>
     </application>
 
 </manifest>
