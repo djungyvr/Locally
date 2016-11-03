@@ -52,7 +52,7 @@ captures/
 
 # Ignore Constants Class
 app/src/main/java/com/example/djung/locally/AWS/AwsConfiguration.java
-
+*AwsConfiguration.java
 # Ignore windows intellij files
 web-browsers.xml
 windows/
