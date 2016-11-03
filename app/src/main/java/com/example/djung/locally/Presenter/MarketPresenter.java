@@ -80,4 +80,54 @@ public class MarketPresenter {
             throw new UnsupportedOperationException("Fetch all open markets task not implemented");
         }
     }
+
+    /**
+     * Fetch all markets in a radius
+     */
+    class FetchAllNearbyMarketsTask implements Callable<List<Market>> {
+        private final double distance;
+        private final double userLat;
+        private final double userLong;
+
+        public FetchAllNearbyMarketsTask(double distance, double userLat, double userLong) {
+            this.distance = distance;
+            this.userLat = userLat;
+            this.userLong = userLong;
+        }
+
+        @Override
+        public List<Market> call() throws Exception {
+            // Initialize the Amazon Cognito credentials provider
+            CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+                    context,
+                    AwsConfiguration.AMAZON_COGNITO_IDENTITY_POOL_ID, // Identity Pool ID
+                    AwsConfiguration.AMAZON_DYNAMODB_REGION // Region
+            );
+
+            // Create a Dynamo Database Client
+            AmazonDynamoDBClient ddbClient = Region.getRegion(AwsConfiguration.AMAZON_DYNAMODB_REGION) // CRUCIAL
+                    .createClient(
+                            AmazonDynamoDBClient.class,
+                            credentialsProvider,
+                            new ClientConfiguration()
+                    );
+
+            // Create a mapper from the client
+            DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
+
+            DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
+
+            // Get the list of markets
+            List<Market> marketList = mapper.scan(Market.class, scanExpression);
+
+            for(Market m : marketList) {
+                // If the market exceeds the set euclidian distance remove it
+                if(LocationUtils.calculateEuclidianDistance(m.getLongitude(),m.getLatitude(),userLong,userLat) > distance) {
+                    marketList.remove(m);
+                }
+            }
+
+            return marketList;
+        }
+    }
 }
