@@ -37,6 +37,8 @@ public class VendorPresenter {
 
     /**
      * Fetch all the markets asynchronously from the database that is associated with a market name
+     *
+     * Returns an empty list if not found
      */
     public List<Vendor> fetchVendors(String marketName) throws ExecutionException, InterruptedException {
         ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -49,6 +51,8 @@ public class VendorPresenter {
 
     /**
      * Fetch vendor asynchronously from the database with primary key marketName and range key vendor name
+     *
+     * Returns an empty list if not found
      */
     public List<Vendor> fetchVendor(String marketName, String vendorName) throws ExecutionException, InterruptedException {
         ExecutorService executor = Executors.newSingleThreadExecutor();

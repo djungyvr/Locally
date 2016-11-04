@@ -33,6 +33,8 @@ import java.util.concurrent.ExecutionException;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private final String TAG = "MainActivity";
+
     private ArrayList<MarketCardSection> sampleData;
     // Fragment for displaying maps
     private Fragment mGoogleMapsFragment;
@@ -58,9 +60,6 @@ public class MainActivity extends AppCompatActivity
 
         // Initialize application
         AppHelper.initialize(getApplicationContext());
-
-        // Test Fetching Vendors, check log for results
-        fetchVendorData();
     }
 
     @Override
@@ -198,7 +197,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * Used to populate layout_main's recycler view with dummy data
+     * Used for testing, tries to fetch from Vendor table using Vendor presenter
      */
     void fetchVendorData() {
         VendorPresenter vendorPresenter = new VendorPresenter(this);
@@ -207,24 +206,35 @@ public class MainActivity extends AppCompatActivity
             List<Vendor> vendorList = vendorPresenter.fetchVendors("TestMarket");
 
             for(Vendor v : vendorList) {
-                Log.e("MainActivity", "Fetch Vendors Result: " + v.getName());
+                Log.e(TAG, "Fetch Vendors Result: " + v.getName());
             }
         } catch (ExecutionException e) {
-            Log.e("MainActivity",e.getMessage());
+            Log.e(TAG,e.getMessage());
         } catch (InterruptedException e) {
-            Log.e("MainActivity",e.getMessage());
+            Log.e(TAG,e.getMessage());
         }
 
         try {
             List<Vendor> vendorList = vendorPresenter.fetchVendor("TestMarket","Vendor1");
 
             for(Vendor v : vendorList) {
-                Log.e("MainActivity", "Fetch Single Vendor Result: " + v.getName());
+                Log.e(TAG, "Fetch Single Vendor Result: " + v.getName());
             }
         } catch (ExecutionException e) {
-            Log.e("MainActivity",e.getMessage());
+            Log.e(TAG,e.getMessage());
         } catch (InterruptedException e) {
-            Log.e("MainActivity",e.getMessage());
+            Log.e(TAG,e.getMessage());
+        }
+
+        try {
+            List<Vendor> vendorList = vendorPresenter.fetchVendor("TestMarket","Vendor3");
+            for(Vendor v : vendorList) {
+                Log.e(TAG, "Fetch Single Vendor Result: " + v.getName());
+            }
+        } catch (ExecutionException e) {
+            Log.e(TAG,e.getMessage());
+        } catch (InterruptedException e) {
+            Log.e(TAG,e.getMessage());
         }
     }
 
