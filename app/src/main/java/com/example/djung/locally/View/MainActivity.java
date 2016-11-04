@@ -207,7 +207,19 @@ public class MainActivity extends AppCompatActivity
             List<Vendor> vendorList = vendorPresenter.fetchVendors("TestMarket");
 
             for(Vendor v : vendorList) {
-                Log.e("MainActivity",v.getName());
+                Log.e("MainActivity", "Fetch Vendors Result: " + v.getName());
+            }
+        } catch (ExecutionException e) {
+            Log.e("MainActivity",e.getMessage());
+        } catch (InterruptedException e) {
+            Log.e("MainActivity",e.getMessage());
+        }
+
+        try {
+            List<Vendor> vendorList = vendorPresenter.fetchVendor("TestMarket","Vendor1");
+
+            for(Vendor v : vendorList) {
+                Log.e("MainActivity", "Fetch Single Vendor Result: " + v.getName());
             }
         } catch (ExecutionException e) {
             Log.e("MainActivity",e.getMessage());

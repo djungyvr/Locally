@@ -40,7 +40,7 @@ public class VendorPresenter {
      */
     public List<Vendor> fetchVendors(String marketName) throws ExecutionException, InterruptedException {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<List<Vendor>> future = executor.submit(new FetchVendorTask(marketName));
+        Future<List<Vendor>> future = executor.submit(new FetchVendorsTask(marketName));
 
         executor.shutdown(); // Important!
 
@@ -48,13 +48,75 @@ public class VendorPresenter {
     }
 
     /**
-     * Fetch all the markets asynchronously from the database
+     * Fetch vendor asynchronously from the database with primary key marketName and range key vendor name
      */
+    public List<Vendor> fetchVendor(String marketName, String vendorName) throws ExecutionException, InterruptedException {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<List<Vendor>> future = executor.submit(new FetchVendorTask(marketName,vendorName));
+
+        executor.shutdown(); // Important!
+
+        return future.get();
+    }
+
     class FetchVendorTask implements Callable<List<Vendor>> {
 
         private String marketName;
+        private String vendorName;
 
-        FetchVendorTask(String marketName) {
+        FetchVendorTask(String marketName, String vendorName) {
+            this.marketName = marketName;
+            this.vendorName = vendorName;
+        }
+
+        @Override
+        public List<Vendor> call() throws Exception {
+            // Initialize the Amazon Cognito credentials provider
+            CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+                    context,
+                    AwsConfiguration.AMAZON_COGNITO_IDENTITY_POOL_ID, // Identity Pool ID
+                    AwsConfiguration.AMAZON_DYNAMODB_REGION // Region
+            );
+
+            // Create a Dynamo Database Client
+            AmazonDynamoDBClient ddbClient = Region.getRegion(AwsConfiguration.AMAZON_DYNAMODB_REGION) // CRUCIAL
+                    .createClient(
+                            AmazonDynamoDBClient.class,
+                            credentialsProvider,
+                            new ClientConfiguration()
+                    );
+
+            // Create a mapper from the client
+            DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
+
+            Vendor vendorToFind = new Vendor();
+            // Set primary hash key
+            vendorToFind.setMarketName(marketName);
+
+
+            // Note ComparisonOperator.CONTAINS is not supported by query only by scan
+            // Set range key condition
+            Condition rangeKeyCondition = new Condition()
+                    .withComparisonOperator(ComparisonOperator.BEGINS_WITH.toString())
+                    .withAttributeValueList(new AttributeValue().withS(vendorName.toString()));
+
+            DynamoDBQueryExpression query = new DynamoDBQueryExpression()
+                    .withHashKeyValues(vendorToFind)
+                    .withRangeKeyCondition("Vendor.Name",rangeKeyCondition)
+                    .withConsistentRead(false);
+
+            return mapper.query(Vendor.class,query);
+        }
+    }
+
+    /**
+     * Fetch all the vendors that are associated with that market name
+     */
+    class FetchVendorsTask implements Callable<List<Vendor>> {
+
+        private String marketName;
+
+        FetchVendorsTask(String marketName) {
             this.marketName = marketName;
         }
 
