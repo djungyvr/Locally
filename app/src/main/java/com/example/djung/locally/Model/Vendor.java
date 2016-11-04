@@ -61,7 +61,7 @@ public class Vendor {
     // Set of items this vendor carries
     private Set<Integer> itemIdSet;
 
-    @DynamoDBIndexHashKey(attributeName = "Vendor.MarketName")
+    @DynamoDBHashKey(attributeName = "Vendor.MarketName")
     public String getMarketName() {
         return marketName;
     }
@@ -70,7 +70,7 @@ public class Vendor {
         this.marketName = marketName;
     }
 
-    @DynamoDBIndexRangeKey(attributeName="Vendor.Name")
+    @DynamoDBRangeKey(attributeName="Vendor.Name")
     public String getName() {
         return name;
     }

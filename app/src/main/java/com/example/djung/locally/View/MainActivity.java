@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -21,9 +22,13 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
 import com.example.djung.locally.AWS.AWSMobileClient;
 import com.example.djung.locally.AWS.AppHelper;
 import com.example.djung.locally.AWS.IdentityManager;
+import com.example.djung.locally.Model.Vendor;
+import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -53,6 +58,9 @@ public class MainActivity extends AppCompatActivity
 
         // Initialize application
         AppHelper.initialize(getApplicationContext());
+
+        // Test Fetching Vendors, check log for results
+        fetchVendorData();
     }
 
     @Override
@@ -187,6 +195,25 @@ public class MainActivity extends AppCompatActivity
         recentlyViewedSection.setMarketCardArrayList(marketsRecentlyViewed);
 
         sampleData.add(recentlyViewedSection);
+    }
+
+    /**
+     * Used to populate layout_main's recycler view with dummy data
+     */
+    void fetchVendorData() {
+        VendorPresenter vendorPresenter = new VendorPresenter(this);
+
+        try {
+            List<Vendor> vendorList = vendorPresenter.fetchVendors("TestMarket");
+
+            for(Vendor v : vendorList) {
+                Log.e("MainActivity",v.getName());
+            }
+        } catch (ExecutionException e) {
+            Log.e("MainActivity",e.getMessage());
+        } catch (InterruptedException e) {
+            Log.e("MainActivity",e.getMessage());
+        }
     }
 
 }

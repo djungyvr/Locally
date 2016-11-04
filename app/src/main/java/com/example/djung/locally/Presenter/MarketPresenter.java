@@ -83,6 +83,8 @@ public class MarketPresenter {
 
     /**
      * Fetch all markets in a radius
+     *
+     * NOTICE DO NOT USE THIS
      */
     class FetchAllNearbyMarketsTask implements Callable<List<Market>> {
         private final double distance;

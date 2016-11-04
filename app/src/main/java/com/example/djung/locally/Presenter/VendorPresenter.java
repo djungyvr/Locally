@@ -24,6 +24,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
+ * Handles vendor database stuff
+ *
  * Created by David Jung on 03/11/16.
  */
 public class VendorPresenter {
@@ -33,9 +35,12 @@ public class VendorPresenter {
         this.context = context;
     }
 
-    public List<Vendor> fetchVendors(int marketId) throws ExecutionException, InterruptedException {
+    /**
+     * Fetch all the markets asynchronously from the database that is associated with a market name
+     */
+    public List<Vendor> fetchVendors(String marketName) throws ExecutionException, InterruptedException {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<List<Vendor>> future = executor.submit(new FetchVendorTask(marketId));
+        Future<List<Vendor>> future = executor.submit(new FetchVendorTask(marketName));
 
         executor.shutdown(); // Important!
 
@@ -47,10 +52,10 @@ public class VendorPresenter {
      */
     class FetchVendorTask implements Callable<List<Vendor>> {
 
-        private int marketId;
+        private String marketName;
 
-        FetchVendorTask(int marketId) {
-            this.marketId = marketId;
+        FetchVendorTask(String marketName) {
+            this.marketName = marketName;
         }
 
         @Override
@@ -73,18 +78,13 @@ public class VendorPresenter {
             // Create a mapper from the client
             DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
 
-            Vendor vendorToFind = new Vendor();
+            DynamoDBQueryExpression<Vendor> query =
+                    new DynamoDBQueryExpression<>();
+            Vendor hashKeyValues = new Vendor();
+            hashKeyValues.setMarketName(marketName);
+            query.setHashKeyValues(hashKeyValues);
 
-            //vendorToFind.setMarketId(marketId);
-
-            Condition idCondition = new Condition()
-                    .withComparisonOperator(ComparisonOperator.EQ)
-                    .withAttributeValueList(new AttributeValue().withN(Integer.toString(marketId)));
-
-            DynamoDBQueryExpression queryExpression = new DynamoDBQueryExpression()
-                    .withHashKeyValues(vendorToFind);
-
-            return null;
+            return mapper.query(Vendor.class,query);
         }
     }
 }
