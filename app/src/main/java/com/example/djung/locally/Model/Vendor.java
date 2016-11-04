@@ -50,55 +50,33 @@ import java.util.Set;
 
 @DynamoDBTable(tableName = "Vendor")
 public class Vendor {
-    // Primary Key
-    private int id;
+    // Name of the market it belongs to
+    private String marketName;
     // Name of the vendor
     private String name;
     // Description of the vendor
     private String description;
     // Link to vendor image
     private String imageResource;
-    // Id of the market it belongs to
-    private int marketId;
-    // Name of the market it belongs to
-    private String marketName;
     // Set of items this vendor carries
     private Set<Integer> itemIdSet;
 
-    @DynamoDBHashKey(attributeName="Vendor.Id")
-    public long getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    @DynamoDBAttribute(attributeName="Vendor.Name")
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @DynamoDBAttribute(attributeName = "Vendor.MarketId")
-    public int getMarketId() {
-        return marketId;
-    }
-
-    public void setMarketId(int marketId) {
-        this.marketId = marketId;
-    }
-
-    @DynamoDBAttribute(attributeName = "Vendor.MarketName")
+    @DynamoDBIndexHashKey(attributeName = "Vendor.MarketName")
     public String getMarketName() {
         return marketName;
     }
 
     public void setMarketName(String marketName) {
         this.marketName = marketName;
+    }
+
+    @DynamoDBIndexRangeKey(attributeName="Vendor.Name")
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @DynamoDBAttribute(attributeName = "Vendor.ItemList")
