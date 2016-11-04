@@ -75,7 +75,7 @@ public class VendorPresenter {
 
             Vendor vendorToFind = new Vendor();
 
-            vendorToFind.setMarketId(marketId);
+            //vendorToFind.setMarketId(marketId);
 
             Condition idCondition = new Condition()
                     .withComparisonOperator(ComparisonOperator.EQ)
