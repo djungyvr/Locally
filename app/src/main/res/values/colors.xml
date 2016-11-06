@@ -21,4 +21,5 @@
     <color name="grey_500">#404142</color>
     <color name="grey_600">#303232</color>
     <color name="grey_700">#1D1E1E</color>
+    <color name="app_logo_green">#00b0d4</color>
 </resources>
