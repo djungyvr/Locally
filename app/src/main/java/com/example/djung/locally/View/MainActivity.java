@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -21,12 +22,18 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
 import com.example.djung.locally.AWS.AWSMobileClient;
 import com.example.djung.locally.AWS.AppHelper;
 import com.example.djung.locally.AWS.IdentityManager;
+import com.example.djung.locally.Model.Vendor;
+import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private final String TAG = "MainActivity";
 
     private ArrayList<MarketCardSection> sampleData;
     // Fragment for displaying maps
@@ -136,15 +143,6 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.search_floating_action);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -197,6 +195,48 @@ public class MainActivity extends AppCompatActivity
         recentlyViewedSection.setMarketCardArrayList(marketsRecentlyViewed);
 
         sampleData.add(recentlyViewedSection);
+    }
+
+    /**
+     * Used for testing, tries to fetch from Vendor table using Vendor presenter
+     */
+    void fetchVendorData() {
+        VendorPresenter vendorPresenter = new VendorPresenter(this);
+
+        try {
+            List<Vendor> vendorList = vendorPresenter.fetchVendors("TestMarket");
+
+            for(Vendor v : vendorList) {
+                Log.e(TAG, "Fetch Vendors Result: " + v.getName());
+            }
+        } catch (ExecutionException e) {
+            Log.e(TAG,e.getMessage());
+        } catch (InterruptedException e) {
+            Log.e(TAG,e.getMessage());
+        }
+
+        try {
+            List<Vendor> vendorList = vendorPresenter.fetchVendor("TestMarket","Vendor1");
+
+            for(Vendor v : vendorList) {
+                Log.e(TAG, "Fetch Single Vendor Result: " + v.getName());
+            }
+        } catch (ExecutionException e) {
+            Log.e(TAG,e.getMessage());
+        } catch (InterruptedException e) {
+            Log.e(TAG,e.getMessage());
+        }
+
+        try {
+            List<Vendor> vendorList = vendorPresenter.fetchVendor("TestMarket","Vendor3");
+            for(Vendor v : vendorList) {
+                Log.e(TAG, "Fetch Single Vendor Result: " + v.getName());
+            }
+        } catch (ExecutionException e) {
+            Log.e(TAG,e.getMessage());
+        } catch (InterruptedException e) {
+            Log.e(TAG,e.getMessage());
+        }
     }
 
 }

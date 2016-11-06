@@ -32,6 +32,11 @@ public class MarketPresenter {
         this.context = context;
     }
 
+    /**
+     * Fetch all the markets asynchronously from the database
+     *
+     * Returns an empty list if table empty
+     */
     public List<Market> fetchMarkets() throws ExecutionException, InterruptedException {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<List<Market>> future = executor.submit(new FetchAllMarketsTask());
@@ -41,9 +46,6 @@ public class MarketPresenter {
         return future.get();
     }
 
-    /**
-     * Fetch all the markets asynchronously from the database
-     */
     class FetchAllMarketsTask implements Callable<List<Market>> {
         @Override
         public List<Market> call() throws Exception {
@@ -83,6 +85,8 @@ public class MarketPresenter {
 
     /**
      * Fetch all markets in a radius
+     *
+     * NOTICE DO NOT USE THIS
      */
     class FetchAllNearbyMarketsTask implements Callable<List<Market>> {
         private final double distance;
