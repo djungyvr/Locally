@@ -82,15 +82,20 @@ public class VendorPresenter {
     /**
      * Fetch vendor asynchronously from the database with primary key marketName and range key vendor name
      *
-     * Returns an empty list if not found
+     * Returns a vendor or null
      */
-    public List<Vendor> fetchVendor(String marketName, String vendorName) throws ExecutionException, InterruptedException {
+    public Vendor fetchVendor(String marketName, String vendorName) throws ExecutionException, InterruptedException {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<List<Vendor>> future = executor.submit(new FetchVendorTask(marketName,vendorName));
 
         executor.shutdown(); // Important!
 
-        return future.get();
+        List<Vendor> vendors = future.get();
+
+        if(vendors.isEmpty())
+            return null;
+        else
+            return vendors.get(0);
     }
 
     class FetchVendorTask implements Callable<List<Vendor>> {

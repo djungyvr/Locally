@@ -215,11 +215,8 @@ public class MainActivity extends AppCompatActivity
         }
 
         try {
-            List<Vendor> vendorList = vendorPresenter.fetchVendor("TestMarket","Vendor1");
-
-            for(Vendor v : vendorList) {
-                Log.e(TAG, "Fetch Single Vendor Result: " + v.getName());
-            }
+            Vendor vendor = vendorPresenter.fetchVendor("TestMarket","Vendor1");
+            Log.e(TAG, "Fetch Single Vendor Result: " + vendor.getName());
         } catch (ExecutionException e) {
             Log.e(TAG,e.getMessage());
         } catch (InterruptedException e) {
@@ -227,10 +224,8 @@ public class MainActivity extends AppCompatActivity
         }
 
         try {
-            List<Vendor> vendorList = vendorPresenter.fetchVendor("TestMarket","Vendor3");
-            for(Vendor v : vendorList) {
-                Log.e(TAG, "Fetch Single Vendor Result: " + v.getName());
-            }
+            Vendor vendor = vendorPresenter.fetchVendor("TestMarket","Vendor3");
+            Log.e(TAG, "Fetch Single Vendor Result: " + v.getName());
         } catch (ExecutionException e) {
             Log.e(TAG,e.getMessage());
         } catch (InterruptedException e) {
