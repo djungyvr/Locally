@@ -159,4 +159,8 @@ public class AppHelper {
     public static String getUser() {
         return user;
     }
+
+    public static CognitoUserDetails getUserDetails() {
+        return userDetails;
+    }
 }

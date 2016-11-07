@@ -180,6 +180,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             AppHelper.setCurrSession(cognitoUserSession);
             AppHelper.setNewDevice(cognitoDevice);
             closeWaitDialog();
+            //TODO: CHECK TO SEE IF FIRST LOGIN AND VENDOR IS IN DATABASE, OTHERWISE CREATE A NEW ENTRY
             // Launch the vendor activity
             launchVendor();
         }

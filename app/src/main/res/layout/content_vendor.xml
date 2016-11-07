@@ -12,4 +12,13 @@
     tools:context="com.example.djung.locally.View.VendorActivity"
     tools:showIn="@layout/app_bar_vendor">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/activity_text_height"
+        android:text="Items You're Selling"
+        android:textSize="@dimen/nav_text_header_size"
+        android:gravity="center_vertical"/>
+
+
+
 </RelativeLayout>

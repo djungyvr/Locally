@@ -17,13 +17,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserDetails;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserSession;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.GetDetailsHandler;
 import com.example.djung.locally.AWS.AppHelper;
+import com.example.djung.locally.Model.Vendor;
+import com.example.djung.locally.Presenter.ThreadUtils;
+import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
+
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 public class VendorActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -31,6 +39,9 @@ public class VendorActivity extends AppCompatActivity
     private final String TAG = "VendorActivity";
 
     private AlertDialog userDialog;
+
+    // View objects
+    private TextView mTextViewVendorName;
 
     // Cognito user objects
     private CognitoUser user;
@@ -40,6 +51,10 @@ public class VendorActivity extends AppCompatActivity
     // User details
     private String username;
     private ProgressDialog waitDialog;
+    private String marketName;
+    private String vendorName;
+    private Set<Integer> vendorItems;
+    private Vendor currentVendor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,21 +63,23 @@ public class VendorActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.vendor_drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.vendor_nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        View headerView =  navigationView.getHeaderView(0);
+        mTextViewVendorName = (TextView)headerView.findViewById(R.id.text_view_nav_vendor_name);
         initialize();
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.vendor_drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -85,12 +102,14 @@ public class VendorActivity extends AppCompatActivity
             exit();
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.vendor_drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    // Initialize this activity
+    /**
+     *  Initialize this activity
+      */
     private void initialize() {
         // Get the user name
         Bundle extras = getIntent().getExtras();
@@ -99,9 +118,29 @@ public class VendorActivity extends AppCompatActivity
         getDetails();
     }
 
-    // Get user details from CIP service
+    /**
+     * Get vendor details from CIP service
+     */
     private void getDetails() {
         AppHelper.getCognitoUserPool().getUser(username).getDetailsInBackground(detailsHandler);
+    }
+
+    /**
+     * Populate content_main with products the vendor carries
+     */
+    private void populateContentMain() {
+        VendorPresenter vendorPresenter = new VendorPresenter(this);
+        try {
+            List<Vendor> vendor = vendorPresenter.fetchVendor(marketName,vendorName);
+            if(!vendor.isEmpty()) {
+                currentVendor = vendor.get(0);
+                //TODO: Display Vendor Products
+            }
+        } catch (final ExecutionException e) {
+            showDialogMessage("Error Fetching Items",e.getMessage(),false);
+        } catch (final InterruptedException e) {
+            showDialogMessage("Error Fetching Items",e.getMessage(),false);
+        }
     }
 
     // Handler callbacks
@@ -111,6 +150,14 @@ public class VendorActivity extends AppCompatActivity
             closeWaitDialog();
             // Store details in the AppHandler
             AppHelper.setUserDetails(cognitoUserDetails);
+            // Change the nav header to vendor name
+            vendorName = AppHelper.getUserDetails().getAttributes().getAttributes().get("custom:vendor_name");
+            marketName = AppHelper.getUserDetails().getAttributes().getAttributes().get("custom:market_name");
+            Log.e(TAG,"Details of : " + vendorName);
+            if(vendorName != null && mTextViewVendorName != null) {
+                mTextViewVendorName.setText(vendorName);
+                populateContentMain();
+            }
         }
 
         @Override
