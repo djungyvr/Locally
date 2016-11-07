@@ -2,6 +2,12 @@ David
 07.10.16 - 2 hours - Create empty android project, initailize AWS SDK
 16.10.16 - 5 hours - Create base activity for others to work with, update models
 20.10.16 - 2 hours - Begin adding Google Maps API for Alena to work with later
+26.10.16 - 4 hours - Integrate Google maps API
+27.10.16 - 3 hours - Add AWS package, update gradle build
+01.11.16 - 2 hours - Add location services, specifically course location
+02.11.16 - 3 hours - Setup AWS Cognito, add basic login feature
+04.11.16 - 1 hour  - Add fetch single vendor task, update ui
+06.11.16 - 2 hours - Update registration UI, add market field, add sign out, complete vendor sign up form
 
 Anna
 Week of October 3, 2016 - 4 hours - product vision, project planning and use case analysis documentation
