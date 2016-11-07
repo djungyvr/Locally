@@ -13,8 +13,10 @@ import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
@@ -30,6 +32,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private TextInputEditText mEditTextVendorName;
     private TextInputEditText mEditTextEmail;
     private TextInputEditText mEditTextPhoneNumber;
+    private Spinner mSpinnerMarketNames;
     private Button mButtonSignup;
 
     private AlertDialog mDialog;
@@ -37,6 +40,19 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     private String usernameInput;
     private String userPassword;
+
+    // Should not be used in productions, simply for beta, reflects the market names in the db
+    private final String[] marketNames = {
+            "Trout Lake Farmers Market",
+            "West End Farmers Market",
+            "Hastings Park Winter Farmers Market",
+            "Downtown Farmers Market",
+            "Nat Bailey Stadium Winter Market",
+            "Mount Pleasant Farmers Market",
+            "UBC Farmers Market",
+            "Kitsilano Farmers Market",
+            "Main St Station Farmers Market"
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +78,15 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private void initializeFieldsAndViews() {
         mEditTextUserName = (TextInputEditText) findViewById(R.id.edit_text_reg_username);
         mEditTextPassword = (TextInputEditText) findViewById(R.id.edit_text_reg_password);
+        mSpinnerMarketNames = (Spinner) findViewById(R.id.spinner_market_name);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                this,
+                android.R.layout.simple_spinner_dropdown_item,
+                marketNames
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSpinnerMarketNames.setAdapter(adapter);
+
         mEditTextVendorName = (TextInputEditText) findViewById(R.id.edit_text_reg_vendor_name);
         mEditTextEmail = (TextInputEditText) findViewById(R.id.edit_text_reg_email);
         mEditTextPhoneNumber = (TextInputEditText) findViewById(R.id.edit_text_reg_phone);
@@ -227,13 +252,20 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 String userpasswordInput = mEditTextPassword.getText().toString();
                 userPassword = userpasswordInput;
                 if (userpasswordInput == null || userpasswordInput.isEmpty()) {
-                    TextView message = (TextView) findViewById(R.id.text_view_password_message);
+                    TextView message = (TextView) findViewById(R.id.text_view_reg_password_message);
                     message.setText(mEditTextPassword.getHint() + " cannot be empty");
                     //mEditTextPassword.setBackground(getDrawable(R.drawable.text_border_error));
                     return;
                 }
 
-                String userInput = mEditTextVendorName.getText().toString();
+                String userInput = mSpinnerMarketNames.getSelectedItem().toString();
+                if (userInput != null) {
+                    if (userInput.length() > 0) {
+                        userAttributes.addAttribute(AppHelper.getSignUpFieldsC2O().get("Market Name").toString(), userInput);
+                    }
+                }
+
+                userInput = mEditTextVendorName.getText().toString();
                 if (userInput != null) {
                     if (userInput.length() > 0) {
                         userAttributes.addAttribute(AppHelper.getSignUpFieldsC2O().get(mEditTextVendorName.getHint()).toString(), userInput);
