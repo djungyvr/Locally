@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity
 
         try {
             Vendor vendor = vendorPresenter.fetchVendor("TestMarket","Vendor3");
-            Log.e(TAG, "Fetch Single Vendor Result: " + v.getName());
+            Log.e(TAG, "Fetch Single Vendor Result: " + vendor.getName());
         } catch (ExecutionException e) {
             Log.e(TAG,e.getMessage());
         } catch (InterruptedException e) {
