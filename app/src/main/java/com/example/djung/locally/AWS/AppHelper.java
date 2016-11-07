@@ -155,4 +155,8 @@ public class AppHelper {
     public static Map<String, String> getSignUpFieldsC2O() {
         return signUpFieldsC2O;
     }
+
+    public static String getUser() {
+        return user;
+    }
 }
