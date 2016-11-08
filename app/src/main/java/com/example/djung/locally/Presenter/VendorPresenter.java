@@ -325,8 +325,8 @@ public class VendorPresenter {
             vendorToAdd.setName(vendorName);
             HashSet<String> initialHashSet = new HashSet<>();
             initialHashSet.add("empty");
+            vendorToAdd.setDescription("Change this to your own description!");
             vendorToAdd.setItemSet(initialHashSet);
-
             mapper.save(vendorToAdd);
 
             return vendorToAdd;

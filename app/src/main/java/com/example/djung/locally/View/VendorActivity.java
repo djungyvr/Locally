@@ -1,12 +1,18 @@
 package com.example.djung.locally.View;
 
 import android.app.ProgressDialog;
+import android.app.SearchManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -16,13 +22,18 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserDetails;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserSession;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.GetDetailsHandler;
 import com.example.djung.locally.AWS.AppHelper;
+import com.example.djung.locally.DB.VendorItemDatabase;
+import com.example.djung.locally.DB.VendorItemsProvider;
 import com.example.djung.locally.Model.Vendor;
 import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
@@ -32,7 +43,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 public class VendorActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener {
 
     private final String TAG = "VendorActivity";
 
@@ -41,6 +52,9 @@ public class VendorActivity extends AppCompatActivity
     // View objects
     private TextView mTextViewVendorName;
     private VendorItemRecyclerView mRecyclerViewVendorItems;
+    private SearchView mSearchView;
+    private ListView mListView;
+    private TextView mTextView;
 
     // Cognito user objects
     private CognitoUser user;
@@ -68,12 +82,86 @@ public class VendorActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        mListView = (ListView) findViewById(R.id.list);
+        mTextView = (TextView) findViewById(R.id.text);
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.vendor_nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         View headerView =  navigationView.getHeaderView(0);
         mTextViewVendorName = (TextView)headerView.findViewById(R.id.text_view_nav_vendor_name);
         initialize();
+
+        initializeSearch();
+
+        handleIntent(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        // Because this activity has set launchMode="singleTop", the system calls this method
+        // to deliver the intent if this activity is currently the foreground activity when
+        // invoked again (when the user executes a search from this activity, we don't create
+        // a new instance of this activity, so the system delivers the search intent here)
+        handleIntent(intent);
+    }
+
+    private void initializeSearch() {
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        mSearchView = (SearchView) findViewById(R.id.search_view_vendor_items);
+        mSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        mSearchView.setIconifiedByDefault(false);
+        mSearchView.setOnQueryTextListener(this);
+    }
+
+    private void handleIntent(Intent intent) {
+        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            Toast.makeText(this,"YOU CLICKED",Toast.LENGTH_SHORT).show();
+        } else if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            // handles a search query
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            showResults(query);
+        }
+    }
+
+    /**
+     * Searches the vendor items and displays results for the given query.
+     * @param query The search query
+     */
+    private void showResults(String query) {
+
+        Cursor cursor = managedQuery(VendorItemsProvider.CONTENT_URI, null, null,
+                new String[] {query}, null);
+
+        if (cursor == null) {
+            // There are no results
+            mTextView.setText("No results");
+        } else {
+            // Display the number of results
+            int count = cursor.getCount();
+            mTextView.setText("Returned " + count + " results");
+
+            // Specify the columns we want to display in the result
+            String[] from = new String[] {VendorItemDatabase.KEY_VENDOR_ITEM_NAME,
+                    VendorItemDatabase.KEY_VENDOR_ITEM_INFO};
+
+            // Specify the corresponding layout elements where we want the columns to go
+            int[] to = new int[] { R.id.vendor_item_name_search_result,
+                    R.id.vendor_item_info_search_result };
+
+            // Create a simple cursor adapter for the definitions and apply them to the ListView
+            SimpleCursorAdapter words = new SimpleCursorAdapter(this,
+                    R.layout.result, cursor, from, to);
+
+            mListView.setAdapter(words);
+
+            // Define the on-click listener for the list items
+            mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                }
+            });
+        }
     }
 
     @Override
@@ -236,5 +324,17 @@ public class VendorActivity extends AppCompatActivity
         Intent mainActivity = new Intent(this, MainActivity.class);
         startActivity(mainActivity);
         finish();
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        showResults(query);
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        showResults(newText);
+        return false;
     }
 }

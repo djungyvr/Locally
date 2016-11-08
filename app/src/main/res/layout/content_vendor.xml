@@ -25,12 +25,27 @@
             <android.support.v7.widget.SearchView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/search_view_produce_vendor">
+                android:gravity="end"
+                android:iconifiedByDefault="true"
+                android:queryHint="Search"
+                android:id="@+id/search_view_vendor_items">
 
             </android.support.v7.widget.SearchView>
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
+
+    <TextView
+        android:id="@+id/text"
+        android:textColor="?android:textColorPrimary"
+        android:textSize="17dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -61,7 +76,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:textSize="@dimen/large_text_size"
-                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Add some items!"
+                android:textStyle=""
                 android:id="@+id/recycler_view_vendor_items_empty"/>
         </LinearLayout>
 

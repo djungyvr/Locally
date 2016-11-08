@@ -87,4 +87,13 @@ public class Vendor {
     public void setItemSet(Set<String> itemSet) {
         this.itemSet = itemSet;
     }
+
+    @DynamoDBAttribute(attributeName = "Vendor.Description")
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

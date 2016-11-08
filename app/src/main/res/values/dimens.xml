@@ -27,6 +27,6 @@
     <dimen name="nav_text_vendor_name_size">24sp</dimen>
 
     <dimen name="field_text_small">14sp</dimen>
-    <dimen name="recycler_view_large_text_size">40sp</dimen>
+    <dimen name="recycler_view_large_text_size">24sp</dimen>
     <dimen name="large_text_size">72sp</dimen>
 </resources>
