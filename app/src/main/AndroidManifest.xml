@@ -69,6 +69,7 @@
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH"/>
+                <action android:name="android.intent.action.VIEW"/>
             </intent-filter>
 
             <!-- Points to searchable metadata -->

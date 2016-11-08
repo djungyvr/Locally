@@ -42,8 +42,16 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Activity for vendors
+ *
+ * To see how search for items was implemented see here:
+ * https://github.com/android/platform_development/tree/master/samples/SearchableDictionary
+ *
+ * https://www.youtube.com/watch?v=9OWmnYPX1uc
+ */
 public class VendorActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener, SearchView.OnSuggestionListener {
 
     private final String TAG = "VendorActivity";
 
@@ -68,6 +76,10 @@ public class VendorActivity extends AppCompatActivity
     private String vendorName;
     private Set<Integer> vendorItems;
     private Vendor currentVendor;
+
+    // Adapters
+    private SuggestionAdapter mVendorItemsSuggestionAdapter;
+    private VendorItemAdapter mVendorItemAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,11 +124,12 @@ public class VendorActivity extends AppCompatActivity
         mSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         mSearchView.setIconifiedByDefault(false);
         mSearchView.setOnQueryTextListener(this);
+        mSearchView.setOnSuggestionListener(this);
     }
 
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-            Toast.makeText(this,"YOU CLICKED",Toast.LENGTH_SHORT).show();
+            Log.e(TAG, intent.getAction());
         } else if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             // handles a search query
             String query = intent.getStringExtra(SearchManager.QUERY);
@@ -149,18 +162,10 @@ public class VendorActivity extends AppCompatActivity
             int[] to = new int[] { R.id.vendor_item_name_search_result,
                     R.id.vendor_item_info_search_result };
 
-            // Create a simple cursor adapter for the definitions and apply them to the ListView
-            SimpleCursorAdapter words = new SimpleCursorAdapter(this,
-                    R.layout.result, cursor, from, to);
+            // Create a simple cursor adapter for vendor
+            mVendorItemsSuggestionAdapter = new SuggestionAdapter(this,cursor);
 
-            mListView.setAdapter(words);
-
-            // Define the on-click listener for the list items
-            mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                }
-            });
+            mSearchView.setSuggestionsAdapter(mVendorItemsSuggestionAdapter);
         }
     }
 
@@ -247,14 +252,17 @@ public class VendorActivity extends AppCompatActivity
 
             mRecyclerViewVendorItems.setHasFixedSize(true);
 
-            VendorItemAdapter adapter = new VendorItemAdapter(new ArrayList<>(currentVendor.getItemSet()), this);
+            mVendorItemAdapter = new VendorItemAdapter(new ArrayList<>(currentVendor.getItemSet()), this);
 
             mRecyclerViewVendorItems.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
-            mRecyclerViewVendorItems.setAdapter(adapter);
+            mRecyclerViewVendorItems.setAdapter(mVendorItemAdapter);
 
             mRecyclerViewVendorItems.setEmptyView(findViewById(R.id.recycler_view_vendor_items_empty));
         }
+    }
+
+    private void addToVendorList() {
     }
 
     // Handler callbacks
@@ -336,5 +344,17 @@ public class VendorActivity extends AppCompatActivity
     public boolean onQueryTextChange(String newText) {
         showResults(newText);
         return false;
+    }
+
+    @Override
+    public boolean onSuggestionSelect(int position) {
+        return true;
+    }
+
+    @Override
+    public boolean onSuggestionClick(int position) {
+        String vendorItem = mVendorItemsSuggestionAdapter.getVendorItemSuggestion(position);
+        Log.e(TAG,"Selected suggestion: " + vendorItem);
+        return true;
     }
 }

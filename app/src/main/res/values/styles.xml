@@ -22,4 +22,23 @@
         <item name="android:windowBackground">@drawable/background_splash</item>
     </style>
 
+    <!-- ToolBar -->
+    <style name="ToolBarStyle" parent="Theme.AppCompat">
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textColorSecondary">@android:color/white</item>
+        <item name="actionMenuTextColor">@android:color/white</item>
+        <item name="android:dropDownItemStyle">@style/SearchViewSuggestion</item>
+        <item name="android:dropDownListViewStyle">@style/SearchViewSuggestionList</item>
+    </style>
+
+    <!-- Suggestion styling -->
+    <style name="SearchViewSuggestionList" parent="Widget.AppCompat.ListView.DropDown">
+        <item name="android:background">#FFF</item>
+    </style>
+
+    <style name="SearchViewSuggestion" parent="Widget.AppCompat.DropDownItem.Spinner">
+        <item name="android:textColor">@color/secondary_text_default_material_light</item>
+        <item name="android:textSize">14dp</item>
+    </style>
+
 </resources>

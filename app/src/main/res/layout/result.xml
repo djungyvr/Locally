@@ -10,6 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="sample"
+        android:background="@color/white"
         android:layout_gravity="center_vertical"/>
     <TextView
         android:id="@+id/vendor_item_info_search_result"
