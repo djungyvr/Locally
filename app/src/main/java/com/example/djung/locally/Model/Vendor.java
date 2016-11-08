@@ -59,7 +59,7 @@ public class Vendor {
     // Link to vendor image
     private String imageResource;
     // Set of items this vendor carries
-    private Set<Integer> itemIdSet;
+    private Set<String> itemSet;
 
     @DynamoDBHashKey(attributeName = "Vendor.MarketName")
     public String getMarketName() {
@@ -80,11 +80,11 @@ public class Vendor {
     }
 
     @DynamoDBAttribute(attributeName = "Vendor.ItemList")
-    public Set<Integer> getItemIdSet() {
-        return itemIdSet;
+    public Set<String> getItemSet() {
+        return itemSet;
     }
 
-    public void setItemIdSet(Set<Integer> itemIdSet) {
-        this.itemIdSet = itemIdSet;
+    public void setItemSet(Set<String> itemSet) {
+        this.itemSet = itemSet;
     }
 }

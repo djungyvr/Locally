@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="72dp"
+    android:text="vendor item"
+    android:textSize="@dimen/recycler_view_large_text_size"
+    android:gravity="center_vertical"
+    android:id="@+id/vendor_item_name">
+</TextView>

@@ -6,14 +6,12 @@ import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBQueryExpression;
-import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBScanExpression;
 import com.amazonaws.regions.Region;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 import com.amazonaws.services.dynamodbv2.model.Condition;
 import com.example.djung.locally.AWS.AwsConfiguration;
-import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.Model.Vendor;
 
 import java.util.HashSet;
@@ -56,9 +54,9 @@ public class VendorPresenter {
      *
      * Returns true if succesfully updated, false otherwise
      */
-    public boolean updateVendorProducts(String marketName, String vendorName, Set<Integer> productCodes) throws ExecutionException, InterruptedException {
+    public boolean updateVendorProducts(String marketName, String vendorName, Set<String> vendorItems) throws ExecutionException, InterruptedException {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<Boolean> future = executor.submit(new UpdateVendorProducts(marketName,vendorName, productCodes));
+        Future<Boolean> future = executor.submit(new UpdateVendorProducts(marketName,vendorName, vendorItems));
 
         executor.shutdown(); // Important!
 
@@ -66,13 +64,13 @@ public class VendorPresenter {
     }
 
     /**
-     * Fetch all the product ids asynchronously from the database that is associated with a vendor
+     * Fetch all the products asynchronously from the database that is associated with a vendor
      *
      * Returns an empty list if not found
      */
-    public Set<Integer> fetchVendorProducts(String marketName, String vendorName) throws ExecutionException, InterruptedException {
+    public Set<String> fetchVendorProducts(String marketName, String vendorName) throws ExecutionException, InterruptedException {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<Set<Integer>> future = executor.submit(new FetchVendorProducts(marketName,vendorName));
+        Future<Set<String>> future = executor.submit(new FetchVendorProducts(marketName,vendorName));
 
         executor.shutdown(); // Important!
 
@@ -96,6 +94,22 @@ public class VendorPresenter {
             return null;
         else
             return vendors.get(0);
+    }
+
+    /**
+     * Add a vendor asynchronously asynchronously from the database with primary key marketName and range key vendor name
+     *
+     * Returns the Vendor that was added
+     */
+    public Vendor addVendor(String marketName, String vendorName) throws ExecutionException, InterruptedException {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<Vendor> future = executor.submit(new AddVendor(marketName,vendorName));
+
+        executor.shutdown(); // Important!
+
+        Vendor addedVendor = future.get();
+
+        return addedVendor;
     }
 
     class FetchVendorTask implements Callable<List<Vendor>> {
@@ -155,9 +169,9 @@ public class VendorPresenter {
 
         private String marketName;
         private String vendorName;
-        private Set<Integer> productCodes;
+        private Set<String> productCodes;
 
-        UpdateVendorProducts(String marketName, String vendorName, Set<Integer> productCodes) {
+        UpdateVendorProducts(String marketName, String vendorName, Set<String> productCodes) {
             this.marketName = marketName;
             this.vendorName = vendorName;
             this.productCodes = productCodes;
@@ -204,7 +218,7 @@ public class VendorPresenter {
 
             if(!vendors.isEmpty()) {
                 vendorToFind = vendors.get(0);
-                vendorToFind.setItemIdSet(productCodes);
+                vendorToFind.setItemSet(productCodes);
                 mapper.save(vendorToFind);
                 return true;
             } else {
@@ -213,7 +227,10 @@ public class VendorPresenter {
         }
     }
 
-    class FetchVendorProducts implements Callable<Set<Integer>> {
+    /**
+     * Fetch the vendor product list
+     */
+    class FetchVendorProducts implements Callable<Set<String>> {
 
         private String marketName;
         private String vendorName;
@@ -224,7 +241,7 @@ public class VendorPresenter {
         }
 
         @Override
-        public Set<Integer> call() throws Exception {
+        public Set<String> call() throws Exception {
             // Initialize the Amazon Cognito credentials provider
             CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
                     context,
@@ -262,10 +279,57 @@ public class VendorPresenter {
             List<Vendor> vendor = mapper.query(Vendor.class,query);
 
             if(!vendor.isEmpty()) {
-                return vendor.get(0).getItemIdSet();
+                return vendor.get(0).getItemSet();
             }
 
             return new HashSet<>();
+        }
+    }
+
+    /**
+     * Add a vendor to the database
+     */
+    class AddVendor implements Callable<Vendor> {
+
+        private String marketName;
+        private String vendorName;
+
+        AddVendor(String marketName, String vendorName) {
+            this.marketName = marketName;
+            this.vendorName = vendorName;
+        }
+
+        @Override
+        public Vendor call() throws Exception {
+            // Initialize the Amazon Cognito credentials provider
+            CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+                    context,
+                    AwsConfiguration.AMAZON_COGNITO_IDENTITY_POOL_ID, // Identity Pool ID
+                    AwsConfiguration.AMAZON_DYNAMODB_REGION // Region
+            );
+
+            // Create a Dynamo Database Client
+            AmazonDynamoDBClient ddbClient = Region.getRegion(AwsConfiguration.AMAZON_DYNAMODB_REGION) // CRUCIAL
+                    .createClient(
+                            AmazonDynamoDBClient.class,
+                            credentialsProvider,
+                            new ClientConfiguration()
+                    );
+
+            // Create a mapper from the client
+            DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
+
+            Vendor vendorToAdd = new Vendor();
+
+            vendorToAdd.setMarketName(marketName);
+            vendorToAdd.setName(vendorName);
+            HashSet<String> initialHashSet = new HashSet<>();
+            initialHashSet.add("empty");
+            vendorToAdd.setItemSet(initialHashSet);
+
+            mapper.save(vendorToAdd);
+
+            return vendorToAdd;
         }
     }
 

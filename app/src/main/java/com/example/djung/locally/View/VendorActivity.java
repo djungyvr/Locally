@@ -4,9 +4,9 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -15,7 +15,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -25,11 +24,10 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserSession
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.GetDetailsHandler;
 import com.example.djung.locally.AWS.AppHelper;
 import com.example.djung.locally.Model.Vendor;
-import com.example.djung.locally.Presenter.ThreadUtils;
 import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
@@ -42,6 +40,7 @@ public class VendorActivity extends AppCompatActivity
 
     // View objects
     private TextView mTextViewVendorName;
+    private VendorItemRecyclerView mRecyclerViewVendorItems;
 
     // Cognito user objects
     private CognitoUser user;
@@ -131,15 +130,42 @@ public class VendorActivity extends AppCompatActivity
     private void populateContentMain() {
         VendorPresenter vendorPresenter = new VendorPresenter(this);
         try {
-            List<Vendor> vendor = vendorPresenter.fetchVendor(marketName,vendorName);
-            if(!vendor.isEmpty()) {
-                currentVendor = vendor.get(0);
-                //TODO: Display Vendor Products
+            // Fetch the items
+            Vendor vendor = vendorPresenter.fetchVendor(marketName,vendorName);
+            // Check if we found a matching vendor in the database
+            if(vendor != null) {
+                currentVendor = vendor;
+            } else {
+                // Add the vendor to the database since we can't find it
+                currentVendor = vendorPresenter.addVendor(marketName, vendorName);
             }
-        } catch (final ExecutionException e) {
-            showDialogMessage("Error Fetching Items",e.getMessage(),false);
-        } catch (final InterruptedException e) {
-            showDialogMessage("Error Fetching Items",e.getMessage(),false);
+        }
+        // IllegalArgumentException means we didn't find a vendor so we add it
+        catch (final IllegalArgumentException | InterruptedException | ExecutionException findException) {
+            try {
+                // Add the vendor to the database since we can't find it
+                currentVendor = vendorPresenter.addVendor(marketName, vendorName);
+            } catch (final InterruptedException | ExecutionException exception) {
+                showDialogMessage("Error Adding Vendor",exception.getMessage(),false);
+            }
+        }
+
+        initializeAdapter();
+    }
+
+    private void initializeAdapter() {
+        if(currentVendor != null) {
+            mRecyclerViewVendorItems = (VendorItemRecyclerView) findViewById(R.id.recycler_view_vendor_items);
+
+            mRecyclerViewVendorItems.setHasFixedSize(true);
+
+            VendorItemAdapter adapter = new VendorItemAdapter(new ArrayList<>(currentVendor.getItemSet()), this);
+
+            mRecyclerViewVendorItems.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+
+            mRecyclerViewVendorItems.setAdapter(adapter);
+
+            mRecyclerViewVendorItems.setEmptyView(findViewById(R.id.recycler_view_vendor_items_empty));
         }
     }
 
@@ -166,6 +192,13 @@ public class VendorActivity extends AppCompatActivity
             showDialogMessage("Could not fetch user details!", AppHelper.formatException(exception), true);
         }
     };
+
+    /**
+     * Populates the adapter with the vendor items
+     */
+    private void populateRecycler() {
+        Set<String> itemIds = currentVendor.getItemSet();
+    }
 
     // Dialog stuff
     private void showDialogMessage(String title, String body, final boolean exit) {
