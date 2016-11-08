@@ -2,6 +2,8 @@ package com.example.djung.locally.Model;
 
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.*;
 
+import java.io.Serializable;
+
 /**
  * Describes a Market
  *
@@ -13,7 +15,7 @@ import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.*;
  */
 
 @DynamoDBTable(tableName = "Market")
-public class Market {
+public class Market  implements Serializable {
     // Primary Key
     private int id;
     // Name of the market
