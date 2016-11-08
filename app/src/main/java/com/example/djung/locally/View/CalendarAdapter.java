@@ -13,6 +13,8 @@ import com.example.djung.locally.R;
 
 import java.util.ArrayList;
 
+import static com.example.djung.locally.Utils.YearParser.parseYear;
+
 /**
  * Created by Anna on 04.11.2016.
  */
@@ -24,7 +26,6 @@ public class CalendarAdapter extends BaseAdapter {
     public CalendarAdapter(Context context, ArrayList<Market> entry) {
         this.myContext = context;
         this.entry=entry;
-
     }
     public int getCount() {
         return entry.size();
@@ -55,7 +56,7 @@ public class CalendarAdapter extends BaseAdapter {
 
         name.setText(marketItem.getName());
         location.setText(marketItem.getAddress());
-        dates.setText(marketItem.getYearOpen());
+        dates.setText(parseYear(marketItem.getYearOpen()));
         days.setText(marketItem.getDailyHours());
 
         return convertView;
