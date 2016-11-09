@@ -129,11 +129,14 @@ public class MainActivity extends AppCompatActivity
 
             case R.id.nav_manage:
                 if(mSettingsFragment == null)
-
                 break;
             case R.id.nav_use_as_vendor:
                 Intent loginActivity = new Intent(this, LoginActivity.class);
                 startActivity(loginActivity);
+                break;
+            case R.id.nav_calendar:
+                Intent calendarActivity = new Intent(this, CalendarActivity.class);
+                startActivity(calendarActivity);
                 break;
         }
 

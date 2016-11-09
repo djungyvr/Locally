@@ -20,6 +20,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 
+
 /**
  * Initial implementation for fetching and writing from the market database to hand over to the
  * views. All tasks run asynchronously.
@@ -50,7 +51,7 @@ public class MarketPresenter {
     /**
      * Fetches a market object from the database given its name
      *
-     * @param marketName market name in the database
+     * @param marketId market name in the database
      * @return return the Market, or null if not found
      * @throws ExecutionException
      * @throws InterruptedException

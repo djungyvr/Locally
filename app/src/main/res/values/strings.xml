@@ -11,4 +11,18 @@
     <string name="title_activity_register">Register</string>
     <string name="title_activity_vendor_list">VendorListActivity</string>
     <string name="title_activity_vendor_details">VendorDetails</string>
+
+    //to be modified later
+    <string name="market_name">Market Name</string>
+    <string name="market_id">Market ID</string>
+    <string name="market_location">Market Location</string>
+    <string name="market_description">Market Description</string>
+    <string name="directions"><u>Directions</u></string>
+    <string name="market_dates">Market Dates</string>
+    <string name="market_days">Market Days</string>
+    <string name="b1">IN SEASON</string>
+    <string name="b3">Over 30 Vendors! Check Them Out!</string>
+    <string name="b4">Check Out Market Produce</string>
+    <string name="b2">FIND YOUR VENDOR</string>
+    <string name="title">FIND YOUR MARKET</string>
 </resources>

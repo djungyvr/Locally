@@ -9,6 +9,9 @@
 /captures
 # End default
 
+# Don't save
+projectFilesBackup/
+
 # Built application files
 *.apk
 *.ap_
