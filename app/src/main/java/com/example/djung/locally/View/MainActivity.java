@@ -15,7 +15,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.example.djung.locally.AWS.AWSMobileClient;
 import com.example.djung.locally.AWS.AppHelper;
@@ -66,8 +65,6 @@ public class MainActivity extends AppCompatActivity
         initializeAWS();
 
         initializeBaseViews();
-
-        //populateSampleData();
 
         fetchMarketData();
 
@@ -309,37 +306,6 @@ public class MainActivity extends AppCompatActivity
         marketData.add(openNowSection);
 
         recentlyViewedSection.setMarketCardArrayList(marketsRecentlyViewed);
-        marketData.add(recentlyViewedSection);
-    }
-
-    /**
-     * Used to populate layout_main's recycler view with dummy data
-     */
-    void populateSampleData() {
-        marketData = new ArrayList<>();
-
-        // Add sample data for markets open now
-        MarketCardSection openNowSection = new MarketCardSection();
-        openNowSection.setSectionTitle("Markets Open Now");
-
-        ArrayList<MarketCard> marketsOpenNow = new ArrayList<>();
-         marketsOpenNow.add(new MarketCard("Hastings Park Winter Farmers Market","100 m",R.drawable.ubc));
-         marketsOpenNow.add(new MarketCard("Kitsilano","1.1 km",R.drawable.kitsilano));
-
-        openNowSection.setMarketCardArrayList(marketsOpenNow);
-
-        marketData.add(openNowSection);
-
-        // Add sample data for recently viewed markets
-        MarketCardSection recentlyViewedSection = new MarketCardSection();
-        recentlyViewedSection.setSectionTitle("Recently Viewed");
-
-        ArrayList<MarketCard> marketsRecentlyViewed = new ArrayList<>();
-        marketsRecentlyViewed.add(new MarketCard("Hastings Park Winter Farmers Market","100 m",R.drawable.ubc));
-        marketsRecentlyViewed.add(new MarketCard("Kitsilano","1.1 km",R.drawable.kitsilano));
-
-        recentlyViewedSection.setMarketCardArrayList(marketsRecentlyViewed);
-
         marketData.add(recentlyViewedSection);
     }
 
