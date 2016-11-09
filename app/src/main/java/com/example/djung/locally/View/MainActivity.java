@@ -22,7 +22,9 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
 import com.example.djung.locally.AWS.AWSMobileClient;
 import com.example.djung.locally.AWS.AppHelper;
 import com.example.djung.locally.AWS.IdentityManager;
+import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.Model.Vendor;
+import com.example.djung.locally.Presenter.MarketPresenter;
 import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
 
@@ -61,6 +63,8 @@ public class MainActivity extends AppCompatActivity
 
         // Initialize application
         AppHelper.initialize(getApplicationContext());
+
+        //fetchMarket();
     }
 
     @Override
@@ -195,6 +199,17 @@ public class MainActivity extends AppCompatActivity
         recentlyViewedSection.setMarketCardArrayList(marketsRecentlyViewed);
 
         sampleData.add(recentlyViewedSection);
+    }
+
+    void fetchMarket() {
+        MarketPresenter marketPresenter = new MarketPresenter(this);
+        try {
+            Log.e(TAG,"Market Fetched: " + marketPresenter.fetchMarket(0).getName());
+        } catch (ExecutionException e) {
+            Log.e(TAG,e.getMessage());
+        } catch (InterruptedException e) {
+            Log.e(TAG,e.getMessage());
+        }
     }
 
     /**
