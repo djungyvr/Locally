@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.R;
+import com.example.djung.locally.Utils.DateUtils;
 
 import java.util.ArrayList;
 
@@ -59,7 +60,7 @@ public class CalendarAdapter extends BaseAdapter {
         name.setText(marketItem.getName());
         location.setText(marketItem.getAddress());
         dates.setText(parseYear(marketItem.getYearOpen()));
-        days.setText(marketItem.getDailyHours());
+        days.setText(DateUtils.parseHours(marketItem.getDailyHours()));
 
         return convertView;
     }
