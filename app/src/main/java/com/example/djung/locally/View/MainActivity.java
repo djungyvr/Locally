@@ -15,6 +15,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.djung.locally.AWS.AWSMobileClient;
 import com.example.djung.locally.AWS.AppHelper;
@@ -34,13 +35,12 @@ public class MainActivity extends AppCompatActivity
 
     private final String TAG = "MainActivity";
 
-    private ArrayList<MarketCardSection> sampleData;
     private ArrayList<MarketCardSection> marketData;
 
     // Fragment for displaying maps
     private Fragment mGoogleMapsFragment;
 
-    // Fragment for displaying vendor list
+    // Fragment for displaying market list
     private Fragment mMarketListFragment;
 
     // Fragment for displaying vendor list
@@ -207,6 +207,7 @@ public class MainActivity extends AppCompatActivity
      * Launches the VendorList fragment
      */
     void launchVendorListFragment(String marketName) {
+        Toast.makeText(this, marketName, Toast.LENGTH_SHORT).show();
         Bundle bundle = new Bundle();
         bundle.putString("marketName", marketName);
 
@@ -287,7 +288,7 @@ public class MainActivity extends AppCompatActivity
      * Used to populate layout_main's recycler view with dummy data
      */
     void populateSampleData() {
-        sampleData = new ArrayList<>();
+        marketData = new ArrayList<>();
 
         // Add sample data for markets open now
         MarketCardSection openNowSection = new MarketCardSection();
@@ -299,7 +300,7 @@ public class MainActivity extends AppCompatActivity
 
         openNowSection.setMarketCardArrayList(marketsOpenNow);
 
-        sampleData.add(openNowSection);
+        marketData.add(openNowSection);
 
         // Add sample data for recently viewed markets
         MarketCardSection recentlyViewedSection = new MarketCardSection();
@@ -311,7 +312,7 @@ public class MainActivity extends AppCompatActivity
 
         recentlyViewedSection.setMarketCardArrayList(marketsRecentlyViewed);
 
-        sampleData.add(recentlyViewedSection);
+        marketData.add(recentlyViewedSection);
     }
 
     void fetchMarket() {

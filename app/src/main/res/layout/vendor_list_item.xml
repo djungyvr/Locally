@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="100dp"
-    android:padding="10dp"
+    android:padding="15dp"
     android:id="@+id/vendor_list_item"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -19,7 +19,11 @@
             android:lines="1"
             android:text="UBC Farm"
             android:id="@+id/vendor_list_item_name"
-            android:textColor="#000"/>
+            android:textSize="20dp"
+            android:textColor="#000"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:scrollHorizontally="true"/>
 
         <TextView
             android:layout_width="0dp"
@@ -40,7 +44,8 @@
         android:layout_alignParentBottom="true"
         android:id="@+id/vendor_list_item_location"
         android:textColor="#000"
-        android:text="Vendor Location"/>
+        android:text="Vendor Location"
+        android:textSize="15dp"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -50,5 +55,6 @@
         android:layout_above="@id/vendor_list_item_location"
         android:gravity="center_vertical"
         android:textColor="#000"
-        android:text="Open Now!"/>
+        android:text="Open Now!"
+        android:textSize="15dp"/>
 </RelativeLayout>

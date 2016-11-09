@@ -11,15 +11,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.Model.Vendor;
-import com.example.djung.locally.Presenter.MarketPresenter;
 import com.example.djung.locally.Presenter.ThreadUtils;
 import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,18 +96,6 @@ public class VendorListFragment extends Fragment {
                 }
             });
         }
-
-//        Vendor v = new Vendor();
-//        v.setName("Random Vendor");
-//        vendorListItems.add(v);
-
-//
-//        for (int i = 0; i < 20; i++){
-//            String name = "Vendor " + Integer.toString(i + 1);
-//            Vendor v = new Vendor();
-//            v.setName(name);
-//            vendorListItems.add(v);
-//        }
 
         RecyclerView recyclerView = (RecyclerView) getView().findViewById(R.id.vendor_list);
 
