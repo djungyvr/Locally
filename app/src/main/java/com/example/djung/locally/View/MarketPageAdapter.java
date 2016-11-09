@@ -33,10 +33,9 @@ public class MarketPageAdapter extends ArrayAdapter<Market> {
         TextView name = (TextView) convertView.findViewById(R.id.market_name);
         TextView location = (TextView) convertView.findViewById(R.id.market_location);
         TextView description = (TextView) convertView.findViewById(R.id.market_description);
-        //TextView smth = (TextView) convertView.findViewById(R.id.market_);
 
         name.setText(marketItem.getName());
-        location.setText(marketItem.getAddress());
+        location.setText("Location: "+marketItem.getAddress());
         description.setText(marketItem.getDescription());
 
         return convertView;

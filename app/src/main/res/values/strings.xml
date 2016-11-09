@@ -12,6 +12,7 @@
 
 //to be modified later
     <string name="market_name">Market Name</string>
+    <string name="market_id">Market ID</string>
     <string name="market_location">Market Location</string>
     <string name="market_description">Market Description</string>
     <string name="directions"><u>Directions</u></string>

@@ -1,6 +1,7 @@
 package com.example.djung.locally.Presenter;
 
 import android.content.Context;
+import android.telecom.Call;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
@@ -17,6 +18,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
 
 
 /**
@@ -40,6 +42,55 @@ public class MarketPresenter {
 
         return future.get();
     }
+
+  /**
+  * Fetches a market object from the database given its name
+  *
+  * *@param marketName name in the database
+  * @return return the Market, or null if not found
+  * @throws ExecutionException
+  * @throws InterruptedException
+  */
+    public Market fetchMarket(int marketId) throws ExecutionException, InterruptedException {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<Market> future = executor.submit(new FetchMarket(marketId));
+
+        executor.shutdown(); // Important!
+
+        return future.get();
+    }
+
+/**
+  * Fetch a single market with a given id
+  */
+    class FetchMarket implements Callable<Market> {
+        int marketId;
+        public FetchMarket(int marketId) {
+                this.marketId = marketId;
+            }
+        @Override
+        public Market call() throws Exception {
+        // Initialize the Amazon Cognito credentials provider
+        CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+            context,
+            AwsConfiguration.AMAZON_COGNITO_IDENTITY_POOL_ID, // Identity Pool ID
+            AwsConfiguration.AMAZON_DYNAMODB_REGION // Region
+            );
+
+        // Create a Dynamo Database Client
+        AmazonDynamoDBClient ddbClient = Region.getRegion(AwsConfiguration.AMAZON_DYNAMODB_REGION) // CRUCIAL
+        .createClient(
+            AmazonDynamoDBClient.class,
+            credentialsProvider,
+            new ClientConfiguration()
+            );
+
+        // Create a mapper from the client
+        DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
+
+        return mapper.load(Market.class, marketId);
+    }
+}
 
     /**
      * Fetch all the markets asynchronously from the database

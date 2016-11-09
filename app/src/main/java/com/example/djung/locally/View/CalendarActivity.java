@@ -41,29 +41,14 @@ public class CalendarActivity extends AppCompatActivity {
                 Log.e(TAG,e.getMessage());
             }
 
-            ArrayList<Market> sampleMarkets=new ArrayList<Market>();
-            Market entry1= new Market();
-
-            entry1.setId(1);
-            entry1.setName("Market_1 Name");
-            entry1.setLatitude(1);
-            entry1.setLatitude(1);
-            entry1.setAddress("Location 1");
-            entry1.setDescription("Description 1");
-            entry1.setDailyHours("10.00-12.00");
-            entry1.setYearOpen("April-October");
-
-            sampleMarkets.add(entry1);
         }
 
         public void displayMarket(View view) {
             Intent intent = new Intent(this, MarketActivity.class);
-            Market marketItem=new Market();
-            //Bundle extras = new Bundle();
-            //TextView marketName = (TextView)findViewById(R.id.market_name);
-            //String name = marketName.getText().toString();
+            TextView marketName = (TextView)findViewById(R.id.market_id);
+            String name = marketName.getText().toString();
 
-            intent.putExtra("marketItem",marketItem);
+            intent.putExtra("M_ID",name);
             startActivity(intent);
 
         }

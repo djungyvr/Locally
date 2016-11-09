@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_market"
     android:layout_width="match_parent"
+    android:id="@+id/activity_market"
     android:layout_height="match_parent">
 
     <TextView
@@ -10,21 +10,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/market_name"
+        android:textSize="30sp"
+        android:padding="5dp"
+        android:textStyle="bold"
         android:paddingTop="10dp"
-        android:textColor="#a9a485"
+        android:textColor="#00d2ff"
         android:layout_alignParentLeft="true"
-        android:textAppearance="?android:textAppearanceLarge"
         />
 
     <TextView
         android:id="@+id/market_description"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/market_description"
         android:paddingTop="10dp"
+        android:textSize="14sp"
+        android:padding="5dp"
         android:layout_below="@id/market_name"
-        android:textColor="#a9a485"
-        android:layout_alignParentLeft="true"
+        android:textColor="#4c516d"
         android:textAppearance="?android:textAppearanceLarge"
         />
 
@@ -34,11 +37,12 @@
         android:layout_height="wrap_content"
         android:text="@string/market_location"
         android:paddingTop="10dp"
+        android:textSize="14sp"
+        android:padding="5dp"
         android:textStyle="bold"
         android:layout_below="@id/market_description"
-        android:textColor="#A9A485"
+        android:textColor="#4c516d"
         android:layout_alignParentLeft="true"
-        android:textAppearance="?android:textAppearanceMedium"
         />
     <TextView
         android:id="@+id/market_directions"
@@ -48,48 +52,20 @@
         android:paddingTop="10dp"
         android:textStyle="bold"
         android:layout_below="@id/market_location"
-        android:textColor="#A9A485"
+        android:textColor="#4c516d"
         android:layout_centerHorizontal="true"
         android:textAppearance="?android:textAppearanceMedium"
         />
 
     <ImageView
-        android:id="@+id/mapView"
-        android:layout_below="@id/market_location"
-        android:layout_width="wrap_content"
+        android:contentDescription="Specs"
+        android:adjustViewBounds="true"
+        android:layout_below="@id/market_directions"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/map" />
-
-    <View android:id="@+id/fakeView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_centerInParent="true"
-        android:layout_alignParentBottom="true"/>
-
-    <Button
-        style="?android:attr/buttonBarButtonStyle"
-        android:id="@+id/button_1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:textSize="18sp"
-        android:background="#c6ff00"
-        android:textColor="#546e7a"
-        android:layout_alignParentRight="true"
-        android:layout_alignLeft="@id/fakeView"
-        android:text="@string/b3"/>
-
-    <Button
-        style="?android:attr/buttonBarButtonStyle"
-        android:id="@+id/button_2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:textColor="#546e7a"
-        android:background="#76ff03"
-        android:textSize="18sp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignRight="@id/fakeView"
-        android:text="@string/b4"/>
+        android:scrollbars="vertical"
+        android:src="@drawable/map" >
+    </ImageView>
 
 </RelativeLayout>
+
