@@ -13,6 +13,7 @@ import com.example.djung.locally.R;
 
 import java.util.ArrayList;
 
+import static com.example.djung.locally.Utils.DateUtils.parseHours;
 import static com.example.djung.locally.Utils.YearParser.parseYear;
 
 /**
@@ -59,7 +60,7 @@ public class CalendarAdapter extends BaseAdapter {
         name.setText(marketItem.getName());
         location.setText(marketItem.getAddress());
         dates.setText(parseYear(marketItem.getYearOpen()));
-        days.setText(marketItem.getDailyHours());
+        days.setText(parseHours(marketItem.getDailyHours()));
 
         return convertView;
     }
