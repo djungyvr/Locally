@@ -11,6 +11,10 @@
             android:icon="@drawable/ic_action_map"
             android:title="Map" />
         <item
+            android:id="@+id/market_list"
+            android:icon="@drawable/ic_action_list"
+            android:title="Market List" />
+        <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"
             android:title="Settings" />

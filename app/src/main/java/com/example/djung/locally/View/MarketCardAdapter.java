@@ -59,7 +59,9 @@ public class MarketCardAdapter extends RecyclerView.Adapter<MarketCardAdapter.Si
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(view.getContext(), mTitle.getText(),Toast.LENGTH_SHORT).show();
+                    if(mContext instanceof MainActivity){
+                        ((MainActivity)mContext).launchVendorListFragment(mTitle.getText().toString());
+                    }
                 }
             });
         }
