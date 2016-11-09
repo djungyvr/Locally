@@ -31,7 +31,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, VendorListFragment.OnVendorListItemClickListener{
+        implements NavigationView.OnNavigationItemSelectedListener, VendorListFragment.OnVendorListItemClickListener,
+        MarketListFragment.onMarketListItemClick{
 
     private final String TAG = "MainActivity";
 
@@ -201,6 +202,11 @@ public class MainActivity extends AppCompatActivity
         ft.replace(R.id.main_activity_container, mMarketListFragment);
         ft.addToBackStack(null);
         ft.commit();
+    }
+
+    @Override
+    public void onMarketListItemClick(String marketName) {
+        launchVendorListFragment(marketName);
     }
 
     /**

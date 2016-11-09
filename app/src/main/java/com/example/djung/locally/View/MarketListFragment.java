@@ -1,6 +1,5 @@
 package com.example.djung.locally.View;
 
-
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -12,10 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.djung.locally.Model.Market;
-import com.example.djung.locally.Model.Vendor;
 import com.example.djung.locally.Presenter.MarketPresenter;
 import com.example.djung.locally.Presenter.ThreadUtils;
-import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
 
 import java.util.ArrayList;
@@ -27,6 +24,12 @@ import java.util.concurrent.ExecutionException;
  */
 
 public class MarketListFragment extends android.support.v4.app.Fragment {
+    private onMarketListItemClick mCallback;
+
+    public interface onMarketListItemClick{
+        public void onMarketListItemClick(String marketName);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.market_list, container, false);
@@ -37,6 +40,22 @@ public class MarketListFragment extends android.support.v4.app.Fragment {
     public void onActivityCreated(Bundle savedInstance){
         super.onActivityCreated(savedInstance);
         populateMarketList();
+    }
+
+    public void onAttach (Context context) {
+        super.onAttach(context);
+        try {
+            Activity activity = (Activity) context;
+            mCallback = (onMarketListItemClick) activity;
+        } catch (ClassCastException e) {
+
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallback = null;
     }
 
     public void populateMarketList(){
@@ -83,8 +102,7 @@ public class MarketListFragment extends android.support.v4.app.Fragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
 
-        MarketListAdapter adapter = new MarketListAdapter(marketListItems, getActivity());
+        MarketListAdapter adapter = new MarketListAdapter(marketListItems, getActivity(), mCallback);
         recyclerView.setAdapter(adapter);
-
     }
 }

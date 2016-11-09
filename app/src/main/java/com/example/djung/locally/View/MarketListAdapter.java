@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.djung.locally.Model.Market;
+import com.example.djung.locally.Model.Vendor;
 import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.DateUtils;
 
@@ -20,10 +21,12 @@ import java.util.List;
 public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.ViewHolder>{
     private List<Market> marketListItems;
     private Context context;
+    private MarketListFragment.onMarketListItemClick mCallBack;
 
-    public MarketListAdapter(List<Market> marketListItems, Context context){
+    public MarketListAdapter(List<Market> marketListItems, Context context, MarketListFragment.onMarketListItemClick mCallBack){
         this.marketListItems = marketListItems;
         this.context = context;
+        this.mCallBack = mCallBack;
     }
 
     @Override
@@ -52,7 +55,7 @@ public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.Vi
         }
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public TextView marketListItemMarketName;
         public TextView marketListItemMarketLocation;
         public TextView marketListItemMarketHours;
@@ -70,6 +73,14 @@ public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.Vi
             this.marketListItemMarketHours = (TextView) itemView.findViewById(R.id.market_list_item_hours);
             this.marketListItemMarketDistance = (TextView) itemView.findViewById(R.id.market_list_item_distance);
             this.marketListItemMarketDates = (TextView) itemView.findViewById(R.id.market_list_item_open_dates);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int position = getAdapterPosition();
+            Market market = marketListItems.get(position);
+            mCallBack.onMarketListItemClick(market.getName());
         }
     }
 }
