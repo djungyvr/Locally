@@ -117,6 +117,9 @@ public class MainActivity extends AppCompatActivity
                     if (mVendorDetailsFragment != null){
                         mFragmentManager.beginTransaction().remove(mVendorDetailsFragment).commit();
                     }
+                    for (int i = 0; i < mFragmentManager.getBackStackEntryCount(); i++){
+                        mFragmentManager.popBackStack();
+                    }
                 }
                 break;
             case R.id.nav_map:
@@ -223,16 +226,19 @@ public class MainActivity extends AppCompatActivity
      * Launches the VendorList fragment
      */
     void launchVendorListFragment(String marketName) {
-        Toast.makeText(this, marketName, Toast.LENGTH_SHORT).show();
-        Bundle bundle = new Bundle();
-        bundle.putString("marketName", marketName);
-
-        if(mVendorListFragment == null)
+        if(mVendorListFragment == null){
             mVendorListFragment = new VendorListFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("marketName", marketName);
+            mVendorListFragment.setArguments(bundle);
+        }
+        else {
+            Bundle b = mVendorListFragment.getArguments();
+            b.putString("marketName", marketName);
+        }
+
         if(mFragmentManager == null)
             mFragmentManager = getSupportFragmentManager();
-
-        mVendorListFragment.setArguments(bundle);
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.main_activity_container, mVendorListFragment);
@@ -249,16 +255,22 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public void onVendorListItemClick(String vendorName, String marketName) {
-        Bundle bundle = new Bundle();
-        bundle.putString("marketName", marketName);
-        bundle.putString("vendorName", vendorName);
-
-        if(mVendorDetailsFragment == null)
+        if(mVendorDetailsFragment == null){
             mVendorDetailsFragment = new VendorDetailsFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("marketName", marketName);
+            bundle.putString("vendorName", vendorName);
+            mVendorDetailsFragment.setArguments(bundle);
+        }
+        else {
+            Bundle bundle = mVendorDetailsFragment.getArguments();
+            bundle.putString("marketName", marketName);
+            bundle.putString("vendorName", vendorName);
+        }
+
         if(mFragmentManager == null)
             mFragmentManager = getSupportFragmentManager();
 
-        mVendorDetailsFragment.setArguments(bundle);
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.main_activity_container, mVendorDetailsFragment);
