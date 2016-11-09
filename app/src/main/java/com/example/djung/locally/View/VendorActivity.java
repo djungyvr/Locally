@@ -365,6 +365,7 @@ public class VendorActivity extends AppCompatActivity
                 VendorPresenter vendorPresenter = new VendorPresenter(this);
                 try {
                     vendorPresenter.updateVendorProducts(currentVendor.getMarketName(),currentVendor.getName(),new HashSet<String>(mVendorItemAdapter.getItemNames()),currentVendor.getDescription());
+                    Toast.makeText(this,"Updating list",Toast.LENGTH_SHORT).show();
                 } catch (ExecutionException | InterruptedException e) {
                     showDialogMessage("Save Error", "Failed to save item list");
                     Log.e(TAG,e.getMessage());

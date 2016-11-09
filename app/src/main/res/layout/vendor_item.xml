@@ -1,26 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout 
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_gravity="center_vertical"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="48dp">
+    android:layout_height="48dp"
+    android:id="@+id/vendor_recycler_view_item">
     <TextView xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="vendor item"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
         android:textSize="16sp"
+        android:maxLines="1"
+        android:text="sample text"
+        android:layout_weight="1"
+        android:layout_alignParentBottom="true"
         android:gravity="center_vertical"
         android:id="@+id/vendor_item_name"
-        android:textColor="@android:color/black">
-    </TextView>
+        android:textColor="@android:color/black"/>
     <Button
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_margin="6dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_margin="10dp"
         android:id="@+id/button_vendor_item_delete"
         android:background="@drawable/ic_delete"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:gravity="center_vertical"/>
-</RelativeLayout>
+</LinearLayout>
 
