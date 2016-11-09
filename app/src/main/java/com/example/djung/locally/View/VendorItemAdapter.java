@@ -46,6 +46,11 @@ public class VendorItemAdapter extends RecyclerView.Adapter<VendorItemAdapter.Ve
         return (itemNames != null ? itemNames.size() : 0);
     }
 
+    public void addItem(String itemName) {
+        itemNames.add(itemName);
+        notifyItemChanged(itemNames.size() - 1);
+    }
+
     public class VendorItemViewHolder extends RecyclerView.ViewHolder {
         protected TextView mVendorItemName;
 

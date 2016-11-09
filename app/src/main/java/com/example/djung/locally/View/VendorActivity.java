@@ -61,8 +61,6 @@ public class VendorActivity extends AppCompatActivity
     private TextView mTextViewVendorName;
     private VendorItemRecyclerView mRecyclerViewVendorItems;
     private SearchView mSearchView;
-    private ListView mListView;
-    private TextView mTextView;
 
     // Cognito user objects
     private CognitoUser user;
@@ -81,6 +79,8 @@ public class VendorActivity extends AppCompatActivity
     private SuggestionAdapter mVendorItemsSuggestionAdapter;
     private VendorItemAdapter mVendorItemAdapter;
 
+    private boolean haveItemsChanged;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,15 +94,14 @@ public class VendorActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        mListView = (ListView) findViewById(R.id.list);
-        mTextView = (TextView) findViewById(R.id.text);
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.vendor_nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         View headerView =  navigationView.getHeaderView(0);
         mTextViewVendorName = (TextView)headerView.findViewById(R.id.text_view_nav_vendor_name);
         initialize();
+
+        haveItemsChanged = false;
 
         initializeSearch();
 
@@ -147,13 +146,7 @@ public class VendorActivity extends AppCompatActivity
                 new String[] {query}, null);
 
         if (cursor == null) {
-            // There are no results
-            mTextView.setText("No results");
         } else {
-            // Display the number of results
-            int count = cursor.getCount();
-            mTextView.setText("Returned " + count + " results");
-
             // Specify the columns we want to display in the result
             String[] from = new String[] {VendorItemDatabase.KEY_VENDOR_ITEM_NAME,
                     VendorItemDatabase.KEY_VENDOR_ITEM_INFO};
@@ -262,9 +255,6 @@ public class VendorActivity extends AppCompatActivity
         }
     }
 
-    private void addToVendorList() {
-    }
-
     // Handler callbacks
     GetDetailsHandler detailsHandler = new GetDetailsHandler() {
         @Override
@@ -355,6 +345,11 @@ public class VendorActivity extends AppCompatActivity
     public boolean onSuggestionClick(int position) {
         String vendorItem = mVendorItemsSuggestionAdapter.getVendorItemSuggestion(position);
         Log.e(TAG,"Selected suggestion: " + vendorItem);
+        mVendorItemAdapter.addItem(vendorItem);
+
+        if(!haveItemsChanged) {
+            haveItemsChanged = true;
+        }
         return true;
     }
 }
