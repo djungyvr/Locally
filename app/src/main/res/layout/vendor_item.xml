@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="48dp">
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="vendor item"
+        android:textSize="16sp"
+        android:gravity="center_vertical"
+        android:id="@+id/vendor_item_name"
+        android:textColor="@android:color/black">
+    </TextView>
+    <Button
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_margin="6dp"
+        android:id="@+id/button_vendor_item_delete"
+        android:background="@drawable/ic_delete"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:gravity="center_vertical"/>
+</RelativeLayout>
+

@@ -1,6 +1,7 @@
 package com.example.djung.locally.Presenter;
 
 import android.content.Context;
+import android.telecom.Call;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
@@ -32,6 +33,11 @@ public class MarketPresenter {
         this.context = context;
     }
 
+    /**
+     * Fetch all the markets asynchronously from the database
+     *
+     * Returns an empty list if table empty
+     */
     public List<Market> fetchMarkets() throws ExecutionException, InterruptedException {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<List<Market>> future = executor.submit(new FetchAllMarketsTask());
@@ -39,6 +45,55 @@ public class MarketPresenter {
         executor.shutdown(); // Important!
 
         return future.get();
+    }
+
+    /**
+     * Fetches a market object from the database given its name
+     *
+     * @param marketName market name in the database
+     * @return return the Market, or null if not found
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
+    public Market fetchMarket(int marketId) throws ExecutionException, InterruptedException {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<Market> future = executor.submit(new FetchMarket(marketId));
+
+        executor.shutdown(); // Important!
+
+        return future.get();
+    }
+
+    /**
+     * Fetch a single market with a given id
+     */
+    class FetchMarket implements Callable<Market> {
+        int marketId;
+        public FetchMarket(int marketId) {
+            this.marketId = marketId;
+        }
+        @Override
+        public Market call() throws Exception {
+            // Initialize the Amazon Cognito credentials provider
+            CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+                    context,
+                    AwsConfiguration.AMAZON_COGNITO_IDENTITY_POOL_ID, // Identity Pool ID
+                    AwsConfiguration.AMAZON_DYNAMODB_REGION // Region
+            );
+
+            // Create a Dynamo Database Client
+            AmazonDynamoDBClient ddbClient = Region.getRegion(AwsConfiguration.AMAZON_DYNAMODB_REGION) // CRUCIAL
+                    .createClient(
+                            AmazonDynamoDBClient.class,
+                            credentialsProvider,
+                            new ClientConfiguration()
+                    );
+
+            // Create a mapper from the client
+            DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
+
+            return mapper.load(Market.class, marketId);
+        }
     }
 
     /**
@@ -83,6 +138,8 @@ public class MarketPresenter {
 
     /**
      * Fetch all markets in a radius
+     *
+     * NOTICE DO NOT USE THIS
      */
     class FetchAllNearbyMarketsTask implements Callable<List<Market>> {
         private final double distance;

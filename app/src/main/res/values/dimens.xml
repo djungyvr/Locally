@@ -13,7 +13,7 @@
     <dimen name="activity_button_border">1dp</dimen>
     <dimen name="activity_button_radius">2dp</dimen>
     <dimen name="activity_button_text_size">20dp</dimen>
-    <dimen name="activity_text_height">40dp</dimen>
+    <dimen name="activity_text_height">60dp</dimen>
     <dimen name="activity_text_border">1dp</dimen>
     <dimen name="activity_text_radius">1dp</dimen>
     <dimen name="activity_text_size_small">16sp</dimen>
@@ -25,4 +25,8 @@
 
     <dimen name="nav_text_header_size">32sp</dimen>
     <dimen name="nav_text_vendor_name_size">24sp</dimen>
+
+    <dimen name="field_text_small">14sp</dimen>
+    <dimen name="recycler_view_large_text_size">24sp</dimen>
+    <dimen name="large_text_size">72sp</dimen>
 </resources>

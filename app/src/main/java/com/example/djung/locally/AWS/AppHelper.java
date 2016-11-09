@@ -69,6 +69,7 @@ public class AppHelper {
         signUpFieldsC2O.put("Phone number verified", "custom:number_verified");
         signUpFieldsC2O.put("Email verified", "custom:email_verified");
         signUpFieldsC2O.put("Email","email");
+        signUpFieldsC2O.put("Market Name", "custom:market_name");
 
         signUpFieldsO2C = new HashMap<String, String>();
         signUpFieldsO2C.put("custom:username", "Username");
@@ -77,6 +78,7 @@ public class AppHelper {
         signUpFieldsO2C.put("custom:number_verified", "Phone number verified");
         signUpFieldsO2C.put("custom:email_verified", "Email verified");
         signUpFieldsO2C.put("email", "Email");
+        signUpFieldsC2O.put("custom:market_name", "Market Name");
     }
 
     public static String formatException(Exception exception) {
@@ -152,5 +154,13 @@ public class AppHelper {
 
     public static Map<String, String> getSignUpFieldsC2O() {
         return signUpFieldsC2O;
+    }
+
+    public static String getUser() {
+        return user;
+    }
+
+    public static CognitoUserDetails getUserDetails() {
+        return userDetails;
     }
 }

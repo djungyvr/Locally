@@ -133,10 +133,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
 
         dropPins(mGoogleMap);
 
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(latitude, longitude)).zoom(12).build();
-        mGoogleMap.animateCamera(CameraUpdateFactory
-                .newCameraPosition(cameraPosition));
+        googleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(latitude,longitude) , 14.0f) );
     }
 
     /**
