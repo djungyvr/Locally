@@ -2,6 +2,7 @@ package com.example.djung.locally.Model;
 
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -56,8 +57,6 @@ public class Vendor {
     private String name;
     // Description of the vendor
     private String description;
-    // Link to vendor image
-    private String imageResource;
     // Set of items this vendor carries
     private Set<String> itemSet;
 
@@ -79,8 +78,10 @@ public class Vendor {
         this.name = name;
     }
 
-    @DynamoDBAttribute(attributeName = "Vendor.ItemList")
+    @DynamoDBAttribute(attributeName = "Vendor.ItemSet")
     public Set<String> getItemSet() {
+        // Since AWS does not allow empty string sets, we keep a place holder, but we get rid of it
+        // once we try to fetch it
         return itemSet;
     }
 

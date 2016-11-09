@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 import com.example.djung.locally.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Adapter for displaying vendor items in a recycler view
@@ -46,18 +48,45 @@ public class VendorItemAdapter extends RecyclerView.Adapter<VendorItemAdapter.Ve
         return (itemNames != null ? itemNames.size() : 0);
     }
 
+    /**
+     * Adds an item to the adapter if it is not already in there
+     * @param itemName name of the item to add
+     */
     public void addItem(String itemName) {
-        itemNames.add(itemName);
-        notifyItemChanged(itemNames.size() - 1);
+        // Only add the item if it unique
+        if(!itemNames.contains(itemName))
+            itemNames.add(itemName);
+        notifyDataSetChanged();
     }
 
-    public class VendorItemViewHolder extends RecyclerView.ViewHolder {
+    public List<String> getItemNames() {
+        return itemNames;
+    }
+
+    public class VendorItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         protected TextView mVendorItemName;
+        protected Button mButtonDelete;
 
         public VendorItemViewHolder(View view) {
             super(view);
-
+            this.mButtonDelete = (Button) view.findViewById(R.id.button_vendor_item_delete);
+            this.mButtonDelete.setOnClickListener(this);
             this.mVendorItemName = (TextView) view.findViewById(R.id.vendor_item_name);
+        }
+
+        @Override
+        public void onClick(View view) {
+            switch (view.getId()) {
+                case R.id.button_vendor_item_delete:
+                    removeAt(getAdapterPosition());
+                    break;
+            }
+        }
+
+        public void removeAt(int position) {
+            itemNames.remove(position);
+            notifyItemRemoved(position);
+            notifyItemRangeChanged(position, itemNames.size());
         }
     }
 }

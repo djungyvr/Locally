@@ -1,5 +1,6 @@
 package com.example.djung.locally.View;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.ComponentName;
@@ -9,9 +10,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
@@ -39,6 +42,7 @@ import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
@@ -51,7 +55,7 @@ import java.util.concurrent.ExecutionException;
  * https://www.youtube.com/watch?v=9OWmnYPX1uc
  */
 public class VendorActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener, SearchView.OnSuggestionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener, SearchView.OnSuggestionListener, View.OnClickListener {
 
     private final String TAG = "VendorActivity";
 
@@ -61,6 +65,7 @@ public class VendorActivity extends AppCompatActivity
     private TextView mTextViewVendorName;
     private VendorItemRecyclerView mRecyclerViewVendorItems;
     private SearchView mSearchView;
+    private FloatingActionButton mFabSearch;
 
     // Cognito user objects
     private CognitoUser user;
@@ -80,6 +85,7 @@ public class VendorActivity extends AppCompatActivity
     private VendorItemAdapter mVendorItemAdapter;
 
     private boolean haveItemsChanged;
+    private Dialog mVendorSaveDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +106,9 @@ public class VendorActivity extends AppCompatActivity
         View headerView =  navigationView.getHeaderView(0);
         mTextViewVendorName = (TextView)headerView.findViewById(R.id.text_view_nav_vendor_name);
         initialize();
+
+        mFabSearch = (FloatingActionButton) findViewById(R.id.fab_save);
+        mFabSearch.setOnClickListener(this);
 
         haveItemsChanged = false;
 
@@ -346,10 +355,37 @@ public class VendorActivity extends AppCompatActivity
         String vendorItem = mVendorItemsSuggestionAdapter.getVendorItemSuggestion(position);
         Log.e(TAG,"Selected suggestion: " + vendorItem);
         mVendorItemAdapter.addItem(vendorItem);
-
-        if(!haveItemsChanged) {
-            haveItemsChanged = true;
-        }
         return true;
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.fab_save:
+                VendorPresenter vendorPresenter = new VendorPresenter(this);
+                try {
+                    vendorPresenter.updateVendorProducts(currentVendor.getMarketName(),currentVendor.getName(),new HashSet<String>(mVendorItemAdapter.getItemNames()),currentVendor.getDescription());
+                } catch (ExecutionException | InterruptedException e) {
+                    showDialogMessage("Save Error", "Failed to save item list");
+                    Log.e(TAG,e.getMessage());
+                }
+                break;
+        }
+    }
+
+    private void showDialogMessage(String title, String body) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title).setMessage(body).setNeutralButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                try {
+                    mVendorSaveDialog.dismiss();
+                } catch (Exception e) {
+                    //
+                }
+            }
+        });
+        mVendorSaveDialog = builder.create();
+        mVendorSaveDialog.show();
     }
 }

@@ -1,6 +1,7 @@
 package com.example.djung.locally.Presenter;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
@@ -54,9 +55,9 @@ public class VendorPresenter {
      *
      * Returns true if succesfully updated, false otherwise
      */
-    public boolean updateVendorProducts(String marketName, String vendorName, Set<String> vendorItems) throws ExecutionException, InterruptedException {
+    public boolean updateVendorProducts(String marketName, String vendorName, Set<String> vendorItems,String description) throws ExecutionException, InterruptedException {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<Boolean> future = executor.submit(new UpdateVendorProducts(marketName,vendorName, vendorItems));
+        Future<Boolean> future = executor.submit(new UpdateVendorProducts(marketName,vendorName, vendorItems,description));
 
         executor.shutdown(); // Important!
 
@@ -158,7 +159,9 @@ public class VendorPresenter {
                     .withRangeKeyCondition("Vendor.Name",rangeKeyCondition)
                     .withConsistentRead(false);
 
-            return mapper.query(Vendor.class,query);
+            List<Vendor> vendors = mapper.query(Vendor.class,query);
+
+            return vendors;
         }
     }
 
@@ -166,15 +169,17 @@ public class VendorPresenter {
      * Updates the vendor product list
      */
     class UpdateVendorProducts implements Callable<Boolean> {
-
+        private final String TAG = "UpdateProducts";
         private String marketName;
         private String vendorName;
         private Set<String> productCodes;
+        private String description;
 
-        UpdateVendorProducts(String marketName, String vendorName, Set<String> productCodes) {
+        UpdateVendorProducts(String marketName, String vendorName, Set<String> productCodes, String description) {
             this.marketName = marketName;
             this.vendorName = vendorName;
             this.productCodes = productCodes;
+            this.description = description;
         }
 
         @Override
@@ -218,8 +223,14 @@ public class VendorPresenter {
 
             if(!vendors.isEmpty()) {
                 vendorToFind = vendors.get(0);
+                if(productCodes.isEmpty())
+                    productCodes.add("PLACEHOLDER");
+                if(description.isEmpty() || description == null)
+                    description = "Description";
                 vendorToFind.setItemSet(productCodes);
+                vendorToFind.setDescription(description);
                 mapper.save(vendorToFind);
+                Log.e(TAG,"Succesfully updated vendor items");
                 return true;
             } else {
                 return false;
@@ -324,7 +335,7 @@ public class VendorPresenter {
             vendorToAdd.setMarketName(marketName);
             vendorToAdd.setName(vendorName);
             HashSet<String> initialHashSet = new HashSet<>();
-            initialHashSet.add("empty");
+            initialHashSet.add("PLACEHOLDER");
             vendorToAdd.setDescription("Change this to your own description!");
             vendorToAdd.setItemSet(initialHashSet);
             mapper.save(vendorToAdd);
