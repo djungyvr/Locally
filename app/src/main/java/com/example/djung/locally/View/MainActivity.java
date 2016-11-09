@@ -104,10 +104,20 @@ public class MainActivity extends AppCompatActivity
 
         switch(id) {
             case R.id.nav_home:
-                if(mFragmentManager != null && mGoogleMapsFragment != null)
-                    mFragmentManager.beginTransaction().remove(mGoogleMapsFragment).commit();
-                else if (mFragmentManager != null && mVendorListFragment != null)
-                    mFragmentManager.beginTransaction().remove(mVendorListFragment).commit();
+                if(mFragmentManager != null){
+                    if (mGoogleMapsFragment != null){
+                        mFragmentManager.beginTransaction().remove(mGoogleMapsFragment).commit();
+                    }
+                    if (mMarketListFragment != null){
+                        mFragmentManager.beginTransaction().remove(mMarketListFragment).commit();
+                    }
+                    if (mVendorListFragment != null){
+                        mFragmentManager.beginTransaction().remove(mVendorListFragment).commit();
+                    }
+                    if (mVendorDetailsFragment != null){
+                        mFragmentManager.beginTransaction().remove(mVendorDetailsFragment).commit();
+                    }
+                }
                 break;
             case R.id.nav_map:
                 launchMapFragment();
