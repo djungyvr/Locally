@@ -2,11 +2,10 @@ package com.example.djung.locally.View;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -16,9 +15,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 
-import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
 import com.example.djung.locally.AWS.AWSMobileClient;
 import com.example.djung.locally.AWS.AppHelper;
 import com.example.djung.locally.AWS.IdentityManager;
@@ -33,13 +30,25 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, VendorListFragment.OnVendorListItemClickListener,
+        MarketListFragment.onMarketListItemClick{
 
     private final String TAG = "MainActivity";
 
-    private ArrayList<MarketCardSection> sampleData;
+    private ArrayList<MarketCardSection> marketData;
+
     // Fragment for displaying maps
     private Fragment mGoogleMapsFragment;
+
+    // Fragment for displaying market list
+    private Fragment mMarketListFragment;
+
+    // Fragment for displaying vendor list
+    private Fragment mVendorListFragment;
+
+    // Fragment for displaying vendor detail
+    private Fragment mVendorDetailsFragment;
+
     // Fragment for displaying settings
     private Fragment mSettingsFragment;
 
@@ -57,7 +66,7 @@ public class MainActivity extends AppCompatActivity
 
         initializeBaseViews();
 
-        populateSampleData();
+        fetchMarketData();
 
         initializeContentMain();
 
@@ -92,12 +101,32 @@ public class MainActivity extends AppCompatActivity
 
         switch(id) {
             case R.id.nav_home:
-                if(mFragmentManager != null && mGoogleMapsFragment != null)
-                    mFragmentManager.beginTransaction().remove(mGoogleMapsFragment).commit();
+                if(mFragmentManager != null){
+                    if (mGoogleMapsFragment != null){
+                        mFragmentManager.beginTransaction().remove(mGoogleMapsFragment).commit();
+                    }
+                    if (mMarketListFragment != null){
+                        mFragmentManager.beginTransaction().remove(mMarketListFragment).commit();
+                    }
+                    if (mVendorListFragment != null){
+                        mFragmentManager.beginTransaction().remove(mVendorListFragment).commit();
+                    }
+                    if (mVendorDetailsFragment != null){
+                        mFragmentManager.beginTransaction().remove(mVendorDetailsFragment).commit();
+                    }
+                    for (int i = 0; i < mFragmentManager.getBackStackEntryCount(); i++){
+                        mFragmentManager.popBackStack();
+                    }
+                }
                 break;
             case R.id.nav_map:
                 launchMapFragment();
                 break;
+
+            case R.id.market_list:
+                launchMarketFragment();
+                break;
+
             case R.id.nav_manage:
                 if(mSettingsFragment == null)
 
@@ -121,7 +150,7 @@ public class MainActivity extends AppCompatActivity
 
         recyclerView.setHasFixedSize(true);
 
-        MarketCardSectionAdapter adapter = new MarketCardSectionAdapter(this,sampleData);
+        MarketCardSectionAdapter adapter = new MarketCardSectionAdapter(this,marketData);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
@@ -171,34 +200,113 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * Used to populate layout_main's recycler view with dummy data
+     * Launches the MarketList fragment
      */
-    void populateSampleData() {
-        sampleData = new ArrayList<>();
+    void launchMarketFragment() {
+        if(mMarketListFragment == null)
+            mMarketListFragment = new MarketListFragment();
+        if(mFragmentManager == null)
+            mFragmentManager = getSupportFragmentManager();
 
-        // Add sample data for markets open now
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.main_activity_container, mMarketListFragment);
+        ft.addToBackStack(null);
+        ft.commit();
+    }
+
+    @Override
+    public void onMarketListItemClick(String marketName) {
+        launchVendorListFragment(marketName);
+    }
+
+    /**
+     * Launches the VendorList fragment
+     */
+    void launchVendorListFragment(String marketName) {
+        if(mVendorListFragment == null){
+            mVendorListFragment = new VendorListFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("marketName", marketName);
+            mVendorListFragment.setArguments(bundle);
+        }
+        else {
+            Bundle b = mVendorListFragment.getArguments();
+            b.putString("marketName", marketName);
+        }
+
+        if(mFragmentManager == null)
+            mFragmentManager = getSupportFragmentManager();
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.main_activity_container, mVendorListFragment);
+        ft.addToBackStack(null);
+        ft.commit();
+    }
+
+    /**
+     * Launches the vendor details fragment on click from the vendor list fragment
+     * @param vendorName
+     *      Name of the vendor that was selected
+     * @param marketName
+     *      Name of the market that the vendor belongs to
+     */
+    @Override
+    public void onVendorListItemClick(String vendorName, String marketName) {
+        if(mVendorDetailsFragment == null){
+            mVendorDetailsFragment = new VendorDetailsFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("marketName", marketName);
+            bundle.putString("vendorName", vendorName);
+            mVendorDetailsFragment.setArguments(bundle);
+        }
+        else {
+            Bundle bundle = mVendorDetailsFragment.getArguments();
+            bundle.putString("marketName", marketName);
+            bundle.putString("vendorName", vendorName);
+        }
+
+        if(mFragmentManager == null)
+            mFragmentManager = getSupportFragmentManager();
+
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.main_activity_container, mVendorDetailsFragment);
+        ft.addToBackStack(null);
+        ft.commit();
+    }
+
+    void fetchMarketData(){
+        marketData = new ArrayList<>();
+
         MarketCardSection openNowSection = new MarketCardSection();
         openNowSection.setSectionTitle("Markets Open Now");
-
         ArrayList<MarketCard> marketsOpenNow = new ArrayList<>();
-         marketsOpenNow.add(new MarketCard("UBC","100 m",R.drawable.ubc));
-         marketsOpenNow.add(new MarketCard("Kitsilano","1.1 km",R.drawable.kitsilano));
 
-        openNowSection.setMarketCardArrayList(marketsOpenNow);
-
-        sampleData.add(openNowSection);
-
-        // Add sample data for recently viewed markets
         MarketCardSection recentlyViewedSection = new MarketCardSection();
         recentlyViewedSection.setSectionTitle("Recently Viewed");
-
         ArrayList<MarketCard> marketsRecentlyViewed = new ArrayList<>();
-        marketsRecentlyViewed.add(new MarketCard("UBC","100 m",R.drawable.ubc));
-        marketsRecentlyViewed.add(new MarketCard("Kitsilano","1.1 km",R.drawable.kitsilano));
+
+        MarketPresenter presenter = new MarketPresenter(this);
+        try {
+            List<Market> marketList = presenter.fetchMarkets();
+
+            for(Market market : marketList) {
+                marketsOpenNow.add(new MarketCard(market.getName(), "100m", R.drawable.ubc));
+                marketsRecentlyViewed.add(new MarketCard(market.getName(), "100m", R.drawable.ubc));
+            }
+        }
+        catch (final ExecutionException e) {
+            Log.e(TAG,e.getMessage());
+        }
+        catch(final InterruptedException e) {
+            Log.e(TAG,e.getMessage());
+        }
+
+        openNowSection.setMarketCardArrayList(marketsOpenNow);
+        marketData.add(openNowSection);
 
         recentlyViewedSection.setMarketCardArrayList(marketsRecentlyViewed);
-
-        sampleData.add(recentlyViewedSection);
+        marketData.add(recentlyViewedSection);
     }
 
     void fetchMarket() {
@@ -248,5 +356,4 @@ public class MainActivity extends AppCompatActivity
             Log.e(TAG,e.getMessage());
         }
     }
-
 }
