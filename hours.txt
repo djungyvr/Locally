@@ -14,7 +14,8 @@ Anna
 Week of October 3, 2016 - 4 hours - Product vision, project planning and use case analysis documentation
 Week of October 10, 2016 - 7 hours - UI prototypes for Calendar, project design planning, Android Studio Lessons
 Week of October 17, 2016 - 6 hours - Android Studio Lessons + started designing Calendar UI
-<<<<<<< HEAD
+Week of October 24, 2016 - 8 hours - Designed calendar activity UI, market activity UI
+Week of October 31, 2016 - 8 hours - Redesigned calendar UI to have a custom grid adapter, connected market names with market activity UI
 
 Andy 
 October 7, 2016   - 2 Hours - Set up my own Android Project and Learn Android Development
@@ -24,8 +25,7 @@ October 27, 2016  - 3 Hours - Start UI design of vendor details layout
 October 30, 2016  - 3 Hours - Work on replacing ListView with RecyclerView and fixing custom adapters
 November 5, 2016  - 3 Hours - Continue with replacing ListView with RecyclerView and start to fetch data from database to populate UI
 November 7, 2016  - 2 Hours - Fetch data from database to populate vendor list and vendor detail view
-November 8, 2016  - 6 Hours - Create market list UI, custom adapter and populate market list with data from database. Replace sample data of market cards with data from database. mplement fragement interactions between market list, vendor list, and vendor details with on click listeners
-=======
-Week of October 24, 2016 - 8 hours - Designed calendar activity UI, market activity UI
-Week of October 31, 2016 - 8 hours - Redesigned calendar UI to have a custom grid adapter, connected market names with market activity UI
->>>>>>> d80ab0800121b37bc00ef47d1bf86422b94e4270
+November 8, 2016  - 6 Hours - Create market list UI, custom adapter and populate market list with data from database. Replace sample data of market cards with data from database. Implement fragement interactions between market list, vendor list, and vendor details with on click listeners
+
+
+

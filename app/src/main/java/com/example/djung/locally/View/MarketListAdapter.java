@@ -11,6 +11,7 @@ import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.Model.Vendor;
 import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.DateUtils;
+import com.example.djung.locally.Utils.YearParser;
 
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.Vi
         holder.marketListItemMarketName.setText(item.getName());
         holder.marketListItemMarketHours.setText(DateUtils.parseHours(item.getDailyHours()));
         holder.marketListItemMarketLocation.setText(item.getAddress());
-        holder.marketListItemMarketDates.setText(item.getYearOpen());
+        holder.marketListItemMarketDates.setText(YearParser.parseYear(item.getYearOpen()));
     }
 
     @Override
