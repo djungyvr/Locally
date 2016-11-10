@@ -30,5 +30,11 @@ November 7, 2016  - 2 Hours - Fetch data from database to populate vendor list a
 November 8, 2016  - 6 Hours - Create market list UI, custom adapter and populate market list with data from database. Replace sample data of market cards with data from database. Implement fragement interactions between market list, vendor list, and vendor details with on click listeners
 November 9, 2016  - 7 Hours - Use util functions to populate distance to market, market open status, and sort markets by closest distance. Populate related fields from market list to vendor list and vendor detail list
 
-
+Alena
+October 3-9, 2016 - 4 hours - Learning Andriod Studio through setting up mini-project  
+October 10-16, 2016 - 16 hours - Brushing up on basics of working with git, java programming
+October 17-23, 2016 - 2 hours -Explore mock-up map feature and how it will integrate with the rest of the app
+October 24-30, 2016 - 11 hours - Familiarizing with Google Maps API, continue Android Studios tutorial
+Oct. 31 - Nov. 6, 2016 - 6 hours - Exploring existing Locally code
+November 7 - 10, 2016 - 18 hours - Learning to write unit tests in TDD style, learning instrumental testing, attempting to write instrumental test suite for login user case
 
