@@ -8,7 +8,8 @@ David
 02.11.16 - 3 hours - Setup AWS Cognito, add basic login feature
 04.11.16 - 1 hour  - Add fetch single vendor task, update ui
 06.11.16 - 2 hours - Update registration UI, add market field, add sign out, complete vendor sign up form
-08.11.16 - 4 hour  - Add autocomplete search, create local database containing goods currently just PLU stuff, allow users to add items to vendors
+08.11.16 - 4 hours - Add autocomplete search, create local database containing goods currently just PLU stuff, allow users to add items to vendors
+09.11.16 - 3 hours - Integrate Anna's calendar, add update vendor details fragment, UI updates
 
 Anna
 Week of October 3, 2016 - 4 hours - Product vision, project planning and use case analysis documentation
