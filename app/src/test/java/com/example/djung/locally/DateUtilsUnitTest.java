@@ -1,14 +1,9 @@
 package com.example.djung.locally;
 
-import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.Utils.DateUtils;
-import com.example.djung.locally.Utils.MarketUtils;
 
-import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.*;
 

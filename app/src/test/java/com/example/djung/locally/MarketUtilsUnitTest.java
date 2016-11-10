@@ -18,14 +18,14 @@ import static org.junit.Assert.*;
  */
 
 public class MarketUtilsUnitTest {
-    private String alwaysClosedHours = "00:00-00:00,00:00-00:00,00:00-00:00,00:00-00:00,00:00-00:00,00:00-00:00,00:00-00:00";
-    private String alwaysOpenYear = "01/01-31/12";
-    private String alwaysOpenHours = "00:00-23:59,00:00-23:59,00:00-23:59,00:00-23:59,00:00-23:59,00:00-23:59,00:00-23:59";
+    private String mAlwaysClosedHours = "00:00-00:00,00:00-00:00,00:00-00:00,00:00-00:00,00:00-00:00,00:00-00:00,00:00-00:00";
+    private String mAlwaysOpenYear = "01/01-31/12";
+    private String mAlwaysOpenHours = "00:00-23:59,00:00-23:59,00:00-23:59,00:00-23:59,00:00-23:59,00:00-23:59,00:00-23:59";
 
     private MarketTest m1, m2, m3, m4;
-    private List<Market> markets_list;
-    private double ubcNest_latitude = 49.266579;
-    private double ubcNest_longitude = -123.249809;
+    private List<Market> mMarketsList;
+//    private double ubcNest_latitude = 49.266579;
+//    private double ubcNest_longitude = -123.249809;
 
     @Before
     public void initialize() {
@@ -52,27 +52,27 @@ public class MarketUtilsUnitTest {
 
         m4 = new MarketTest();
 
-        markets_list = new ArrayList<>();
-        markets_list.add(m1);
-        markets_list.add(m2);
-        markets_list.add(m3);
+        mMarketsList = new ArrayList<>();
+        mMarketsList.add(m1);
+        mMarketsList.add(m2);
+        mMarketsList.add(m3);
 
     }
 
     @Test
     public void testIsAlwaysClosedOrOpenMarketCurrentlyOpen() {
-        m4.setYearOpen(alwaysOpenYear);
-        m4.setDailyHours(alwaysClosedHours);
+        m4.setYearOpen(mAlwaysOpenYear);
+        m4.setDailyHours(mAlwaysClosedHours);
         boolean result1 = MarketUtils.isMarketCurrentlyOpen(m4);
         assertFalse(result1);
-        m4.setDailyHours(alwaysOpenHours);
+        m4.setDailyHours(mAlwaysOpenHours);
         boolean result2 = MarketUtils.isMarketCurrentlyOpen(m4);
         assertTrue(result2);
     }
 
     @Test
     public void testIsMarketOpenOnTodaysWeekday() {
-        m4.setYearOpen(alwaysOpenYear);
+        m4.setYearOpen(mAlwaysOpenYear);
         // get today's current day of the week
         int weekday = Integer.parseInt(DateUtils.getCurrentDateAndTime("u"));
         String hours;
