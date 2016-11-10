@@ -1,6 +1,5 @@
 package com.example.djung.locally;
 
-import android.location.Location;
 
 import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.Utils.DateUtils;
