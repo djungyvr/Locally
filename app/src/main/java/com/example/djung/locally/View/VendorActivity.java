@@ -3,21 +3,16 @@ package com.example.djung.locally.View;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
@@ -28,8 +23,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -68,7 +61,7 @@ public class VendorActivity extends AppCompatActivity
     private TextView mTextViewVendorName;
     private VendorItemRecyclerView mRecyclerViewVendorItems;
     private SearchView mSearchView;
-    private FloatingActionButton mFabSearch;
+    private FloatingActionButton mFabSaveList;
 
     // Cognito user objects
     private CognitoUser user;
@@ -114,8 +107,8 @@ public class VendorActivity extends AppCompatActivity
         mTextViewVendorName = (TextView)headerView.findViewById(R.id.text_view_nav_vendor_name);
         initialize();
 
-        mFabSearch = (FloatingActionButton) findViewById(R.id.fab_save_vendor_list);
-        mFabSearch.setOnClickListener(this);
+        mFabSaveList = (FloatingActionButton) findViewById(R.id.fab_save_vendor_list);
+        mFabSaveList.setOnClickListener(this);
 
         haveItemsChanged = false;
 
@@ -198,15 +191,17 @@ public class VendorActivity extends AppCompatActivity
             launchEditDetailsFragment();
         } else if (id == R.id.nav_edit_goods_list) {
             mSearchView.setVisibility(View.VISIBLE);
-            if(mFragmentManager != null){
-                if (mEditVendorDetailsFragment != null){
+            mFabSaveList.setVisibility(View.VISIBLE);
+            if (mFragmentManager != null) {
+                if (mEditVendorDetailsFragment != null) {
                     mFragmentManager.beginTransaction().remove(mEditVendorDetailsFragment).commit();
                 }
-                for (int i = 0; i < mFragmentManager.getBackStackEntryCount(); i++){
+                for (int i = 0; i < mFragmentManager.getBackStackEntryCount(); i++) {
                     mFragmentManager.popBackStack();
                 }
             }
-        } else if (id == R.id.nav_signout) {
+        }
+         else if (id == R.id.nav_signout) {
             user.signOut();
             exit();
         }
@@ -230,7 +225,9 @@ public class VendorActivity extends AppCompatActivity
             mFragmentManager = getSupportFragmentManager();
 
         // Hide the searchbar
+        // TODO: FIX THIS HACK
         mSearchView.setVisibility(View.INVISIBLE);
+        mFabSaveList.setVisibility(View.INVISIBLE);
 
         // Replace the container with the fragment
         mFragmentManager.beginTransaction().replace(R.id.include_content_vendor, mEditVendorDetailsFragment).addToBackStack(null).commit();
