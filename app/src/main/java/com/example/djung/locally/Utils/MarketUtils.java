@@ -23,6 +23,20 @@ public class MarketUtils {
      public static boolean isMarketCurrentlyOpen(Market market){
         String currDate = DateUtils.getCurrentDateAndTime("MMdd HHmm");
         return isMarketOpenAtThisTime(market, currDate);
+     }
+
+    /**
+     * Check if market is currently open at this date and time (Vancouver time zone)
+     * @param datesOpen  dates of the year that the market is open, given in the format of "DD/MM-DD/MM" where
+     *                  first pair of days and months is the opening date and the second pair is the closing date
+     * @param dailyHours    daily hours of the market, given in the format of
+     *                      "HH:MM-HH:MM,HH:MM-HH:MM,HH:MM-HH:MM,HH:MM-HH:MM,HH:MM-HH:MM,HH:MM-HH:MM,HH:MM-HH:MM"
+     *                      where each comma separated string is the daily hours of that particular day, starting from Monday and ending on Sunday.
+     * @return
+     */
+    public static boolean isMarketCurrentlyOpen(String datesOpen, String dailyHours){
+        String currDate = DateUtils.getCurrentDateAndTime("MMdd HHmm");
+        return isMarketOpenAtThisTime(datesOpen, dailyHours, currDate);
     }
 
     /**

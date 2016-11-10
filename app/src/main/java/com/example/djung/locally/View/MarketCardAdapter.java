@@ -66,7 +66,7 @@ public class MarketCardAdapter extends RecyclerView.Adapter<MarketCardAdapter.Si
         public void onClick(View view) {
             if(mContext instanceof MainActivity){
                 Market m = markets.get(getAdapterPosition());
-                ((MainActivity)mContext).launchVendorListFragment(m.getName(), m.getAddress(), m.getDailyHours());
+                ((MainActivity)mContext).launchVendorListFragment(m);
             }
         }
     }

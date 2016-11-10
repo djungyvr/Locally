@@ -2,6 +2,7 @@ package com.example.djung.locally.View;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
@@ -11,8 +12,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.Model.Vendor;
 import com.example.djung.locally.R;
+import com.example.djung.locally.Utils.LocationUtils;
+import com.example.djung.locally.Utils.MarketUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,16 +29,23 @@ public class VendorListAdapter extends RecyclerView.Adapter<VendorListAdapter.Vi
     private List<Vendor> vendorListItems;
     private Context context;
     private VendorListFragment.OnVendorListItemClickListener listener;
-    private String vendorLocation;
-    private String vendorHours;
+//    private String vendorLocation;
+//    private String vendorHours;
+//    private String vendorDatesOpen;
+    private Location currentLocation;
+    private Market currentMarket;
 
     public VendorListAdapter(List<Vendor> list, Context context, VendorListFragment.OnVendorListItemClickListener listener,
-                             String vendorLocation, String vendorHours){
+                             Location currentLocation, Market currentMarket){
         this.vendorListItems = list;
         this.context = context;
         this.listener = listener;
-        this.vendorLocation = vendorLocation;
-        this.vendorHours = vendorHours;
+        this.currentLocation = currentLocation;
+//        this.vendorLocation = currentMarket;
+//        this.vendorHours = vendorHours;
+//        this.vendorDatesOpen = vendorDatesOpen;
+//        this.currentLocation = currentLocation;
+        this.currentMarket = currentMarket;
     }
 
     @Override
@@ -48,11 +59,22 @@ public class VendorListAdapter extends RecyclerView.Adapter<VendorListAdapter.Vi
     public void onBindViewHolder(VendorListAdapter.ViewHolder holder, int position) {
         Vendor item = vendorListItems.get(position);
         holder.vendorListItemVendorName.setText(item.getName());
-        holder.vendorListItemVendorLocation.setText(vendorLocation);
-        
-//        holder.vendorListItemVendorStatus.setText(item.get());
-//        holder.vendorListItemVendorLocation.setText(item.getVendorLocation());
-//        holder.vendorListItemVendorDistance.setText(item.getVendorDistance());
+        holder.vendorListItemVendorLocation.setText(currentMarket.getAddress());
+
+        if (MarketUtils.isMarketCurrentlyOpen(currentMarket)){
+            holder.vendorListItemVendorStatus.setText("Open Now!");
+        }
+        else {
+            holder.vendorListItemVendorStatus.setText("Closed Now!");
+        }
+
+        if (currentLocation != null){
+            float distance = MarketUtils.getDistanceFromMarket(currentMarket, currentLocation);
+            holder.vendorListItemVendorDistance.setText(LocationUtils.formatDistanceInKm(distance));
+        }
+        else {
+            holder.vendorListItemVendorDistance.setText("");
+        }
     }
 
     @Override
@@ -88,7 +110,7 @@ public class VendorListAdapter extends RecyclerView.Adapter<VendorListAdapter.Vi
         public void onClick(View v) {
             int position = getAdapterPosition();
             Vendor vendor = vendorListItems.get(position);
-            listener.onVendorListItemClick(vendor.getName(), vendor.getMarketName());
+            listener.onVendorListItemClick(vendor.getName(), currentMarket);
         }
     }
 }

@@ -14,9 +14,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.djung.locally.Model.Vendor;
+import com.example.djung.locally.Utils.MarketUtils;
 import com.example.djung.locally.Utils.ThreadUtils;
 import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -32,6 +35,9 @@ public class VendorDetailsFragment extends Fragment implements View.OnClickListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         String marketName = getArguments().getString("marketName");
         String vendorName = getArguments().getString("vendorName");
+        String vendorAddress = getArguments().getString("marketAddress");
+        String vendorHours = getArguments().getString("marketHours");
+        String vendorDatesOpen = getArguments().getString("marketDatesOpen");
 
         View view = inflater.inflate(R.layout.vendor_details, container, false);
 
@@ -67,6 +73,20 @@ public class VendorDetailsFragment extends Fragment implements View.OnClickListe
 
         TextView vendorNameView = (TextView) view.findViewById(R.id.vendor_detail_banner_name);
         vendorNameView.setText(currentVendor.getName());
+
+        TextView vendorStatusView = (TextView) view.findViewById(R.id.vendor_detail_banner_status);
+        if (MarketUtils.isMarketCurrentlyOpen(vendorDatesOpen, vendorHours)){
+            vendorStatusView.setText("Open Now!");
+        }
+        else {
+            vendorStatusView.setText("Closed Now!");
+        }
+
+        Button vendorLocationButton = (Button) view.findViewById(R.id.vendor_detail_location_button);
+        vendorLocationButton.setText(vendorAddress);
+
+        TextView vendorHoursView = (TextView) view.findViewById(R.id.vendor_detail_hours);
+        vendorHoursView.setText(vendorHours);
 
         TextView vendorDescriptionView = (TextView) view.findViewById(R.id.vendor_detail_description);
         vendorDescriptionView.setText(currentVendor.getDescription());

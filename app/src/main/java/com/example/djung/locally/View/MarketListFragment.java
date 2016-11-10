@@ -35,7 +35,7 @@ public class MarketListFragment extends android.support.v4.app.Fragment {
     private Location currentLocation;
 
     public interface onMarketListItemClick {
-        public void onMarketListItemClick(String marketName, String marketAddress, String marketHours);
+        public void onMarketListItemClick(Market market);
     }
 
     @Override

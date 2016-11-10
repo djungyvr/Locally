@@ -24,6 +24,8 @@ import com.example.djung.locally.Model.Vendor;
 import com.example.djung.locally.Presenter.MarketPresenter;
 import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
+import com.example.djung.locally.Utils.DateUtils;
+import com.example.djung.locally.Utils.MarketUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -218,26 +220,30 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onMarketListItemClick(String marketName, String marketAddress, String marketHours) {
-        launchVendorListFragment(marketName, marketAddress, marketHours);
+    public void onMarketListItemClick(Market market) {
+        launchVendorListFragment(market);
     }
 
     /**
      * Launches the VendorList fragment
      */
-    void launchVendorListFragment(String marketName, String marketAddress, String marketHours) {
+    void launchVendorListFragment(Market market) {
         if (mVendorListFragment == null) {
             mVendorListFragment = new VendorListFragment();
             Bundle bundle = new Bundle();
-            bundle.putString("marketName", marketName);
-            bundle.putString("marketAddress", marketAddress);
-            bundle.putString("marketHours", marketHours);
+            bundle.putSerializable("currentMarket", market);
+            bundle.putString("marketName", market.getName());
+            bundle.putString("marketAddress", market.getAddress());
+            bundle.putString("marketHours", market.getDailyHours());
+            bundle.putString("marketDatesOpen", market.getYearOpen());
             mVendorListFragment.setArguments(bundle);
         } else {
             Bundle b = mVendorListFragment.getArguments();
-            b.putString("marketName", marketName);
-            b.putString("marketAddress", marketAddress);
-            b.putString("marketHours", marketHours);
+            b.putSerializable("currentMarket", market);
+            b.putString("marketName", market.getName());
+            b.putString("marketAddress", market.getAddress());
+            b.putString("marketHours", market.getDailyHours());
+            b.putString("marketDatesOpen", market.getYearOpen());
         }
 
         if (mFragmentManager == null)
@@ -253,20 +259,26 @@ public class MainActivity extends AppCompatActivity
      * Launches the vendor details fragment on click from the vendor list fragment
      *
      * @param vendorName Name of the vendor that was selected
-     * @param marketName Name of the market that the vendor belongs to
+     * @param market The market that the vendor belongs to
      */
     @Override
-    public void onVendorListItemClick(String vendorName, String marketName) {
+    public void onVendorListItemClick(String vendorName, Market market) {
         if (mVendorDetailsFragment == null) {
             mVendorDetailsFragment = new VendorDetailsFragment();
             Bundle bundle = new Bundle();
-            bundle.putString("marketName", marketName);
+            bundle.putString("marketName", market.getName());
             bundle.putString("vendorName", vendorName);
+            bundle.putString("marketHours", DateUtils.parseHours(market.getDailyHours()));
+            bundle.putString("marketAddress", market.getAddress());
+            bundle.putString("marketDatesOpen", market.getYearOpen());
             mVendorDetailsFragment.setArguments(bundle);
         } else {
             Bundle bundle = mVendorDetailsFragment.getArguments();
-            bundle.putString("marketName", marketName);
+            bundle.putString("marketName", market.getName());
             bundle.putString("vendorName", vendorName);
+            bundle.putString("marketHours", DateUtils.parseHours(market.getDailyHours()));
+            bundle.putString("marketAddress", market.getAddress());
+            bundle.putString("marketDatesOpen", market.getYearOpen());
         }
 
         if (mFragmentManager == null)
@@ -284,20 +296,13 @@ public class MainActivity extends AppCompatActivity
 
         MarketCardSection openNowSection = new MarketCardSection();
         openNowSection.setSectionTitle("Markets Open Now");
-        //ArrayList<MarketCard> marketsOpenNow = new ArrayList<>();
 
         MarketCardSection recentlyViewedSection = new MarketCardSection();
         recentlyViewedSection.setSectionTitle("Recently Viewed");
-        //ArrayList<MarketCard> marketsRecentlyViewed = new ArrayList<>();
 
         MarketPresenter presenter = new MarketPresenter(this);
         try {
             ArrayList<Market> marketList = new ArrayList<>(presenter.fetchMarkets());
-            /*
-            for(Market market : marketList) {
-                marketsOpenNow.add(new MarketCard(market.getName(), market.getAddress(), market.getDailyHours(), "100m", R.drawable.ubc));
-                marketsRecentlyViewed.add(new MarketCard(market.getName(), market.getAddress(), market.getDailyHours(), "100m", R.drawable.ubc));
-            }*/
 
             if (marketList != null || !marketList.isEmpty()) {
                 openNowSection.setMarketList(marketList);
@@ -309,6 +314,7 @@ public class MainActivity extends AppCompatActivity
         } catch (final InterruptedException e) {
             Log.e(TAG, e.getMessage());
         }
+        
         marketData.add(openNowSection);
         marketData.add(recentlyViewedSection);
     }
