@@ -26,6 +26,7 @@ October 30, 2016  - 3 Hours - Work on replacing ListView with RecyclerView and f
 November 5, 2016  - 3 Hours - Continue with replacing ListView with RecyclerView and start to fetch data from database to populate UI
 November 7, 2016  - 2 Hours - Fetch data from database to populate vendor list and vendor detail view
 November 8, 2016  - 6 Hours - Create market list UI, custom adapter and populate market list with data from database. Replace sample data of market cards with data from database. Implement fragement interactions between market list, vendor list, and vendor details with on click listeners
+November 9, 2016  - 7 Hours - Use util functions to populate distance to market, market open status, and sort markets by closest distance. Populate related fields from market list to vendor list and vendor detail list
 
 
 
