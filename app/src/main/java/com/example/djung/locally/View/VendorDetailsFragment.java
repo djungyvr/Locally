@@ -7,7 +7,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.djung.locally.Model.Vendor;
@@ -15,6 +17,8 @@ import com.example.djung.locally.Utils.ThreadUtils;
 import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
 
+import java.util.ArrayList;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -63,6 +67,9 @@ public class VendorDetailsFragment extends Fragment implements View.OnClickListe
         TextView vendorNameView = (TextView) view.findViewById(R.id.vendor_detail_banner_name);
         vendorNameView.setText(currentVendor.getName());
 
+        TextView vendorDescriptionView = (TextView) view.findViewById(R.id.vendor_detail_description);
+        vendorDescriptionView.setText(currentVendor.getDescription());
+
         Button hoursButton = (Button) view.findViewById(R.id.vendor_detail_hours_button);
         hoursButton.setOnClickListener(this);
 
@@ -71,6 +78,20 @@ public class VendorDetailsFragment extends Fragment implements View.OnClickListe
 
         Button produceListButton = (Button) view.findViewById(R.id.vendor_detail_produce_list_button);
         produceListButton.setOnClickListener(this);
+
+
+        //Populate produce list using data from Database
+        ListView produceListView = (ListView) view.findViewById(R.id.produce_list);
+        ArrayList<String> produceListAdapter = new ArrayList<String>();
+
+        Set<String> produceItemsSet = currentVendor.getItemSet();
+
+        for (String item: produceItemsSet){
+            produceListAdapter.add(item);
+        }
+
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, produceListAdapter );
+        produceListView.setAdapter(arrayAdapter);
 
         return view;
     }
@@ -116,7 +137,7 @@ public class VendorDetailsFragment extends Fragment implements View.OnClickListe
     }
 
     public void toggleProduceList(){
-        RecyclerView description = (RecyclerView)  getView().findViewById(R.id.produce_list);
+        ListView description = (ListView)  getView().findViewById(R.id.produce_list);
         if (description.getVisibility() == View.VISIBLE){
             description.setVisibility(View.GONE);
         }

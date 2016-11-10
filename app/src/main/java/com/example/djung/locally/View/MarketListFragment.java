@@ -27,7 +27,7 @@ public class MarketListFragment extends android.support.v4.app.Fragment {
     private onMarketListItemClick mCallback;
 
     public interface onMarketListItemClick{
-        public void onMarketListItemClick(String marketName);
+        public void onMarketListItemClick(String marketName, String marketAddress, String marketHours);
     }
 
     @Override

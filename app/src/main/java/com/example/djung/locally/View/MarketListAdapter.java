@@ -79,7 +79,7 @@ public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.Vi
         public void onClick(View v) {
             int position = getAdapterPosition();
             Market market = marketListItems.get(position);
-            mCallBack.onMarketListItemClick(market.getName());
+            mCallBack.onMarketListItemClick(market.getName(), market.getAddress(), market.getDailyHours());
         }
     }
 }

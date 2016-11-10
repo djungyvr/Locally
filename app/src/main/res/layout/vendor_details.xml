@@ -120,7 +120,7 @@
                 android:padding="10dp"
                 android:text="Produce List" />
 
-            <android.support.v7.widget.RecyclerView
+            <ListView
                 android:id="@+id/produce_list"
                 android:scrollbars="vertical"
                 android:layout_width="match_parent"

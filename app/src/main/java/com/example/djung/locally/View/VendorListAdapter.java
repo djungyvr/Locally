@@ -25,11 +25,16 @@ public class VendorListAdapter extends RecyclerView.Adapter<VendorListAdapter.Vi
     private List<Vendor> vendorListItems;
     private Context context;
     private VendorListFragment.OnVendorListItemClickListener listener;
+    private String vendorLocation;
+    private String vendorHours;
 
-    public VendorListAdapter(List<Vendor> list, Context context, VendorListFragment.OnVendorListItemClickListener listener){
+    public VendorListAdapter(List<Vendor> list, Context context, VendorListFragment.OnVendorListItemClickListener listener,
+                             String vendorLocation, String vendorHours){
         this.vendorListItems = list;
         this.context = context;
         this.listener = listener;
+        this.vendorLocation = vendorLocation;
+        this.vendorHours = vendorHours;
     }
 
     @Override
@@ -43,7 +48,8 @@ public class VendorListAdapter extends RecyclerView.Adapter<VendorListAdapter.Vi
     public void onBindViewHolder(VendorListAdapter.ViewHolder holder, int position) {
         Vendor item = vendorListItems.get(position);
         holder.vendorListItemVendorName.setText(item.getName());
-//        holder.vendorListItemImage.setImageResource(item.get);
+        holder.vendorListItemVendorLocation.setText(vendorLocation);
+        
 //        holder.vendorListItemVendorStatus.setText(item.get());
 //        holder.vendorListItemVendorLocation.setText(item.getVendorLocation());
 //        holder.vendorListItemVendorDistance.setText(item.getVendorDistance());

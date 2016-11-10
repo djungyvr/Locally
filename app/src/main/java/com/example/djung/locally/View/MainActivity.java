@@ -31,7 +31,7 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, VendorListFragment.OnVendorListItemClickListener,
-        MarketListFragment.onMarketListItemClick{
+        MarketListFragment.onMarketListItemClick {
 
     private final String TAG = "MainActivity";
 
@@ -99,22 +99,22 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        switch(id) {
+        switch (id) {
             case R.id.nav_home:
-                if(mFragmentManager != null){
-                    if (mGoogleMapsFragment != null){
+                if (mFragmentManager != null) {
+                    if (mGoogleMapsFragment != null) {
                         mFragmentManager.beginTransaction().remove(mGoogleMapsFragment).commit();
                     }
-                    if (mMarketListFragment != null){
+                    if (mMarketListFragment != null) {
                         mFragmentManager.beginTransaction().remove(mMarketListFragment).commit();
                     }
-                    if (mVendorListFragment != null){
+                    if (mVendorListFragment != null) {
                         mFragmentManager.beginTransaction().remove(mVendorListFragment).commit();
                     }
-                    if (mVendorDetailsFragment != null){
+                    if (mVendorDetailsFragment != null) {
                         mFragmentManager.beginTransaction().remove(mVendorDetailsFragment).commit();
                     }
-                    for (int i = 0; i < mFragmentManager.getBackStackEntryCount(); i++){
+                    for (int i = 0; i < mFragmentManager.getBackStackEntryCount(); i++) {
                         mFragmentManager.popBackStack();
                     }
                 }
@@ -128,8 +128,8 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             case R.id.nav_manage:
-                if(mSettingsFragment == null)
-                break;
+                if (mSettingsFragment == null)
+                    break;
             case R.id.nav_use_as_vendor:
                 Intent loginActivity = new Intent(this, LoginActivity.class);
                 startActivity(loginActivity);
@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity
 
         recyclerView.setHasFixedSize(true);
 
-        MarketCardSectionAdapter adapter = new MarketCardSectionAdapter(this,marketData);
+        MarketCardSectionAdapter adapter = new MarketCardSectionAdapter(this, marketData);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
@@ -193,9 +193,9 @@ public class MainActivity extends AppCompatActivity
      * Launches the Google maps fragment
      */
     void launchMapFragment() {
-        if(mGoogleMapsFragment == null)
+        if (mGoogleMapsFragment == null)
             mGoogleMapsFragment = new MapFragment();
-        if(mFragmentManager == null)
+        if (mFragmentManager == null)
             mFragmentManager = getSupportFragmentManager();
 
         // Replace the container with the fragment
@@ -206,9 +206,9 @@ public class MainActivity extends AppCompatActivity
      * Launches the MarketList fragment
      */
     void launchMarketFragment() {
-        if(mMarketListFragment == null)
+        if (mMarketListFragment == null)
             mMarketListFragment = new MarketListFragment();
-        if(mFragmentManager == null)
+        if (mFragmentManager == null)
             mFragmentManager = getSupportFragmentManager();
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -218,26 +218,29 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onMarketListItemClick(String marketName) {
-        launchVendorListFragment(marketName);
+    public void onMarketListItemClick(String marketName, String marketAddress, String marketHours) {
+        launchVendorListFragment(marketName, marketAddress, marketHours);
     }
 
     /**
      * Launches the VendorList fragment
      */
-    void launchVendorListFragment(String marketName) {
-        if(mVendorListFragment == null){
+    void launchVendorListFragment(String marketName, String marketAddress, String marketHours) {
+        if (mVendorListFragment == null) {
             mVendorListFragment = new VendorListFragment();
             Bundle bundle = new Bundle();
             bundle.putString("marketName", marketName);
+            bundle.putString("marketAddress", marketAddress);
+            bundle.putString("marketHours", marketHours);
             mVendorListFragment.setArguments(bundle);
-        }
-        else {
+        } else {
             Bundle b = mVendorListFragment.getArguments();
             b.putString("marketName", marketName);
+            b.putString("marketAddress", marketAddress);
+            b.putString("marketHours", marketHours);
         }
 
-        if(mFragmentManager == null)
+        if (mFragmentManager == null)
             mFragmentManager = getSupportFragmentManager();
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -248,27 +251,25 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * Launches the vendor details fragment on click from the vendor list fragment
-     * @param vendorName
-     *      Name of the vendor that was selected
-     * @param marketName
-     *      Name of the market that the vendor belongs to
+     *
+     * @param vendorName Name of the vendor that was selected
+     * @param marketName Name of the market that the vendor belongs to
      */
     @Override
     public void onVendorListItemClick(String vendorName, String marketName) {
-        if(mVendorDetailsFragment == null){
+        if (mVendorDetailsFragment == null) {
             mVendorDetailsFragment = new VendorDetailsFragment();
             Bundle bundle = new Bundle();
             bundle.putString("marketName", marketName);
             bundle.putString("vendorName", vendorName);
             mVendorDetailsFragment.setArguments(bundle);
-        }
-        else {
+        } else {
             Bundle bundle = mVendorDetailsFragment.getArguments();
             bundle.putString("marketName", marketName);
             bundle.putString("vendorName", vendorName);
         }
 
-        if(mFragmentManager == null)
+        if (mFragmentManager == null)
             mFragmentManager = getSupportFragmentManager();
 
 
@@ -278,48 +279,48 @@ public class MainActivity extends AppCompatActivity
         ft.commit();
     }
 
-    void fetchMarketData(){
+    void fetchMarketData() {
         marketData = new ArrayList<>();
 
         MarketCardSection openNowSection = new MarketCardSection();
         openNowSection.setSectionTitle("Markets Open Now");
-        ArrayList<MarketCard> marketsOpenNow = new ArrayList<>();
+        //ArrayList<MarketCard> marketsOpenNow = new ArrayList<>();
 
         MarketCardSection recentlyViewedSection = new MarketCardSection();
         recentlyViewedSection.setSectionTitle("Recently Viewed");
-        ArrayList<MarketCard> marketsRecentlyViewed = new ArrayList<>();
+        //ArrayList<MarketCard> marketsRecentlyViewed = new ArrayList<>();
 
         MarketPresenter presenter = new MarketPresenter(this);
         try {
-            List<Market> marketList = presenter.fetchMarkets();
-
+            ArrayList<Market> marketList = new ArrayList<>(presenter.fetchMarkets());
+            /*
             for(Market market : marketList) {
-                marketsOpenNow.add(new MarketCard(market.getName(), "100m", R.drawable.ubc));
-                marketsRecentlyViewed.add(new MarketCard(market.getName(), "100m", R.drawable.ubc));
+                marketsOpenNow.add(new MarketCard(market.getName(), market.getAddress(), market.getDailyHours(), "100m", R.drawable.ubc));
+                marketsRecentlyViewed.add(new MarketCard(market.getName(), market.getAddress(), market.getDailyHours(), "100m", R.drawable.ubc));
+            }*/
+
+            if (marketList != null || !marketList.isEmpty()) {
+                openNowSection.setMarketList(marketList);
+                recentlyViewedSection.setMarketList(marketList);
             }
-        }
-        catch (final ExecutionException e) {
-            Log.e(TAG,e.getMessage());
-        }
-        catch(final InterruptedException e) {
-            Log.e(TAG,e.getMessage());
-        }
 
-        openNowSection.setMarketCardArrayList(marketsOpenNow);
+        } catch (final ExecutionException e) {
+            Log.e(TAG, e.getMessage());
+        } catch (final InterruptedException e) {
+            Log.e(TAG, e.getMessage());
+        }
         marketData.add(openNowSection);
-
-        recentlyViewedSection.setMarketCardArrayList(marketsRecentlyViewed);
         marketData.add(recentlyViewedSection);
     }
 
     void fetchMarket() {
         MarketPresenter marketPresenter = new MarketPresenter(this);
         try {
-            Log.e(TAG,"Market Fetched: " + marketPresenter.fetchMarket(0).getName());
+            Log.e(TAG, "Market Fetched: " + marketPresenter.fetchMarket(0).getName());
         } catch (ExecutionException e) {
-            Log.e(TAG,e.getMessage());
+            Log.e(TAG, e.getMessage());
         } catch (InterruptedException e) {
-            Log.e(TAG,e.getMessage());
+            Log.e(TAG, e.getMessage());
         }
     }
 
@@ -332,31 +333,31 @@ public class MainActivity extends AppCompatActivity
         try {
             List<Vendor> vendorList = vendorPresenter.fetchVendors("TestMarket");
 
-            for(Vendor v : vendorList) {
+            for (Vendor v : vendorList) {
                 Log.e(TAG, "Fetch Vendors Result: " + v.getName());
             }
         } catch (ExecutionException e) {
-            Log.e(TAG,e.getMessage());
+            Log.e(TAG, e.getMessage());
         } catch (InterruptedException e) {
-            Log.e(TAG,e.getMessage());
+            Log.e(TAG, e.getMessage());
         }
 
         try {
-            Vendor vendor = vendorPresenter.fetchVendor("TestMarket","Vendor1");
+            Vendor vendor = vendorPresenter.fetchVendor("TestMarket", "Vendor1");
             Log.e(TAG, "Fetch Single Vendor Result: " + vendor.getName());
         } catch (ExecutionException e) {
-            Log.e(TAG,e.getMessage());
+            Log.e(TAG, e.getMessage());
         } catch (InterruptedException e) {
-            Log.e(TAG,e.getMessage());
+            Log.e(TAG, e.getMessage());
         }
 
         try {
-            Vendor vendor = vendorPresenter.fetchVendor("TestMarket","Vendor3");
+            Vendor vendor = vendorPresenter.fetchVendor("TestMarket", "Vendor3");
             Log.e(TAG, "Fetch Single Vendor Result: " + vendor.getName());
         } catch (ExecutionException e) {
-            Log.e(TAG,e.getMessage());
+            Log.e(TAG, e.getMessage());
         } catch (InterruptedException e) {
-            Log.e(TAG,e.getMessage());
+            Log.e(TAG, e.getMessage());
         }
     }
 }

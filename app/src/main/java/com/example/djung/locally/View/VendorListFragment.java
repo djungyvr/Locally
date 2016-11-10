@@ -15,6 +15,7 @@ import com.example.djung.locally.Model.Vendor;
 import com.example.djung.locally.Utils.ThreadUtils;
 import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
+import com.example.djung.locally.Utils.DateUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,8 @@ public class VendorListFragment extends Fragment {
 
     private OnVendorListItemClickListener mCallback;
     private String marketName;
+    private String marketAddress;
+    private String marketHours;
 
     public interface OnVendorListItemClickListener{
         public void onVendorListItemClick(String vendorName, String marketName);
@@ -36,6 +39,8 @@ public class VendorListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         this.marketName = getArguments().getString("marketName");
+        this.marketAddress = getArguments().getString("marketAddress");
+        this.marketHours = DateUtils.parseHours(getArguments().getString("marketHours"));
         View view = inflater.inflate(R.layout.vendor_list, container, false);
         return view;
     }
@@ -105,7 +110,7 @@ public class VendorListFragment extends Fragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
 
-        VendorListAdapter adapter = new VendorListAdapter(vendorListItems, getActivity(), mCallback);
+        VendorListAdapter adapter = new VendorListAdapter(vendorListItems, getActivity(), mCallback, marketAddress, marketHours);
         recyclerView.setAdapter(adapter);
     }
 }

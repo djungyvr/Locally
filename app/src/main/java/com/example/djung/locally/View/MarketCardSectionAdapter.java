@@ -39,7 +39,7 @@ public class MarketCardSectionAdapter extends RecyclerView.Adapter<MarketCardSec
     public void onBindViewHolder(MarketCardSectionAdapter.ItemRowHolder holder, int position) {
         final String sectionName = dataList.get(position).getSectionTitle();
 
-        ArrayList singleSectionItems = dataList.get(position).getMarketCardArrayList();
+        ArrayList singleSectionItems = dataList.get(position).getMarketList();
 
         holder.mItemTitle.setText(sectionName);
 
