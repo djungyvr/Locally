@@ -17,6 +17,7 @@ Week of October 10, 2016 - 7 hours - UI prototypes for Calendar, project design 
 Week of October 17, 2016 - 6 hours - Android Studio Lessons + started designing Calendar UI
 Week of October 24, 2016 - 8 hours - Designed calendar activity UI, market activity UI
 Week of October 31, 2016 - 8 hours - Redesigned calendar UI to have a custom grid adapter, connected market names with market activity UI
+November 7-9 - 10 hours - Integration with David's and Andy's parts, fetching and displaying actual database data
 
 Andy 
 October 7, 2016   - 2 Hours - Set up my own Android Project and Learn Android Development
