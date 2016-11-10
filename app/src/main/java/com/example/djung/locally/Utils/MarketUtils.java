@@ -21,7 +21,7 @@ public class MarketUtils {
      * @return whether or not market is currently open
      */
      public static boolean isMarketCurrentlyOpen(Market market){
-        String currDate = DateUtils.getCurrentDateAndTime("u MMdd HHmm");
+        String currDate = DateUtils.getCurrentDateAndTime("MMdd HHmm");
         return isMarketOpenAtThisTime(market, currDate);
     }
 
@@ -35,9 +35,23 @@ public class MarketUtils {
      * @return
      */
     public static boolean isMarketOpenAtThisTime(Market market, String weekdayDateTime) {
-        String yearOpen = market.getYearOpen();
-        String dailyHours = market.getDailyHours();
+        return isMarketOpenAtThisTime(market.getYearOpen(), market.getDailyHours(), weekdayDateTime);
+    }
 
+    /**
+     * Check if market is open given a certain date and time represented by a string
+     * @param yearOpen  dates of the year that the market is open, given in the format of "DD/MM-DD/MM" where
+     *                  first pair of days and months is the opening date and the second pair is the closing date
+     * @param dailyHours    daily hours of the market, given in the format of
+     *                      "HH:MM-HH:MM,HH:MM-HH:MM,HH:MM-HH:MM,HH:MM-HH:MM,HH:MM-HH:MM,HH:MM-HH:MM,HH:MM-HH:MM"
+     *                      where each comma separated string is the daily hours of that particular day, starting from Monday and ending on Sunday.
+     * @param weekdayDateTime date and time pattern string of the form "u MMdd HHmm" where
+     *                        u = weekday (Monday = 1, ..., Sunday = 7)
+     *                        MMdd = Monday(1-12) and day(1-31)
+     *                        HHmm = hour(0-23) and minute (0-59)
+     * @return
+     */
+    public static boolean isMarketOpenAtThisTime(String yearOpen, String dailyHours, String weekdayDateTime) {
         String dates[] = weekdayDateTime.split(" ");
 
         // check if market is open during this time of year
@@ -62,6 +76,7 @@ public class MarketUtils {
         if(open == 0 && close == 0) return false;    // market not open today
         return (time >= open && time <= close);
     }
+
 
 
     /**

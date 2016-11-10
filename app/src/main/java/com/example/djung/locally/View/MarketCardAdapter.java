@@ -39,7 +39,7 @@ public class MarketCardAdapter extends RecyclerView.Adapter<MarketCardAdapter.Si
         Market market = marketsList.get(position);
         holder.mTitle.setText(market.getName());
         holder.mImage.setImageResource(R.drawable.ubc);
-        holder.mDistance.setText("100");
+        holder.mDistance.setText("100m");
     }
 
     @Override

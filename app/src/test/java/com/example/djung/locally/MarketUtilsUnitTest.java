@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -74,7 +75,7 @@ public class MarketUtilsUnitTest {
     public void testIsMarketOpenOnTodaysWeekday() {
         m4.setYearOpen(mAlwaysOpenYear);
         // get today's current day of the week
-        int weekday = Integer.parseInt(DateUtils.getCurrentDateAndTime("u"));
+        int weekday = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
         String hours;
 
         switch(weekday) {

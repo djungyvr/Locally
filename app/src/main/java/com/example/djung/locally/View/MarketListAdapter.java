@@ -1,6 +1,7 @@
 package com.example.djung.locally.View;
 
 import android.content.Context;
+import android.location.Location;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,10 @@ import android.widget.TextView;
 import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.DateUtils;
+import com.example.djung.locally.Utils.LocationUtils;
+import com.example.djung.locally.Utils.MarketUtils;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -21,11 +26,13 @@ public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.Vi
     private List<Market> marketListItems;
     private Context context;
     private MarketListFragment.onMarketListItemClick mCallBack;
+    private Location currentLocation;
 
-    public MarketListAdapter(List<Market> marketListItems, Context context, MarketListFragment.onMarketListItemClick mCallBack){
+    public MarketListAdapter(List<Market> marketListItems, Context context, MarketListFragment.onMarketListItemClick mCallBack, Location currentLocation){
         this.marketListItems = marketListItems;
         this.context = context;
         this.mCallBack = mCallBack;
+        this.currentLocation = currentLocation;
     }
 
     @Override
@@ -42,6 +49,21 @@ public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.Vi
         holder.marketListItemMarketHours.setText(DateUtils.parseHours(item.getDailyHours()));
         holder.marketListItemMarketLocation.setText(item.getAddress());
         holder.marketListItemMarketDates.setText(DateUtils.parseYear(item.getYearOpen()));
+
+        if (MarketUtils.isMarketCurrentlyOpen(item)){
+            holder.marketListItemMarketStatus.setText("Open Now!");
+        }
+        else {
+            holder.marketListItemMarketStatus.setText("Closed Now!");
+        }
+
+        if (currentLocation != null){
+            float distance = MarketUtils.getDistanceFromMarket(item, currentLocation);
+            holder.marketListItemMarketDistance.setText(LocationUtils.formatDistanceInKm(distance));
+        }
+        else {
+            holder.marketListItemMarketDistance.setText("");
+        }
     }
 
     @Override
@@ -60,6 +82,7 @@ public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.Vi
         public TextView marketListItemMarketHours;
         public TextView marketListItemMarketDistance;
         public TextView marketListItemMarketDates;
+        public TextView marketListItemMarketStatus;
         public Context context;
         public List<Market> items;
 
@@ -72,6 +95,7 @@ public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.Vi
             this.marketListItemMarketHours = (TextView) itemView.findViewById(R.id.market_list_item_hours);
             this.marketListItemMarketDistance = (TextView) itemView.findViewById(R.id.market_list_item_distance);
             this.marketListItemMarketDates = (TextView) itemView.findViewById(R.id.market_list_item_open_dates);
+            this.marketListItemMarketStatus = (TextView) itemView.findViewById(R.id.market_list_item_open_status);
             itemView.setOnClickListener(this);
         }
 
