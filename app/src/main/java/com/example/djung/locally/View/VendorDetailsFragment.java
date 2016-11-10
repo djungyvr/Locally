@@ -18,10 +18,12 @@ import com.example.djung.locally.Utils.MarketUtils;
 import com.example.djung.locally.Utils.ThreadUtils;
 import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
+import com.example.djung.locally.Utils.VendorUtils;
 
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
@@ -103,15 +105,12 @@ public class VendorDetailsFragment extends Fragment implements View.OnClickListe
 
         //Populate produce list using data from Database
         ListView produceListView = (ListView) view.findViewById(R.id.produce_list);
-        ArrayList<String> produceListAdapter = new ArrayList<String>();
+
+        List<String> filteredVendorItems = VendorUtils.filterPlaceholderText(new ArrayList<String>(currentVendor.getItemSet()));
 
         Set<String> produceItemsSet = currentVendor.getItemSet();
-
-        for (String item: produceItemsSet){
-            produceListAdapter.add(item);
-        }
-
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, produceListAdapter );
+        
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, filteredVendorItems );
         produceListView.setAdapter(arrayAdapter);
 
         return view;
