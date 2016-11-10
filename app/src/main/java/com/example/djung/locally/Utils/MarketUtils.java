@@ -101,7 +101,13 @@ public class MarketUtils {
      *          empty list if no markets provided
      */
     public static List<Market> getClosestMarkets(List<Market> markets, Location location) {
-        return getClosestMarkets(markets, location.getLatitude(), location.getLongitude());
+        // Latitude and longitude of Vancouver
+        double latitude = 49.2827;
+        double longitude = -123.1207;
+        if(location == null)
+            return getClosestMarkets(markets, latitude, longitude);
+        else
+            return getClosestMarkets(markets, location.getLatitude(), location.getLongitude());
     }
 
     /**
@@ -144,7 +150,13 @@ public class MarketUtils {
      * @return distance between in metres
      */
     public static float getDistanceFromMarket( Market market, Location location) {
-        return getDistanceFromMarket(market, location.getLatitude(), location.getLongitude());
+        // Latitude and longitude of Vancouver
+        double latitude = 49.2827;
+        double longitude = -123.1207;
+        if(location == null)
+            return getDistanceFromMarket(market, latitude, longitude);
+        else
+            return getDistanceFromMarket(market, location.getLatitude(), location.getLongitude());
     }
 
     /**
