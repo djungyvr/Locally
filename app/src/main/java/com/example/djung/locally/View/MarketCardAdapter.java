@@ -1,6 +1,7 @@
 package com.example.djung.locally.View;
 
 import android.content.Context;
+import android.location.Location;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,8 @@ import android.widget.Toast;
 
 import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.R;
+import com.example.djung.locally.Utils.LocationUtils;
+import com.example.djung.locally.Utils.MarketUtils;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -21,10 +24,12 @@ import java.util.ArrayList;
 public class MarketCardAdapter extends RecyclerView.Adapter<MarketCardAdapter.SingleItemRowHolder> {
     private ArrayList<Market> marketsList;
     private Context mContext;
+    private Location currentLocation;
 
-    MarketCardAdapter(Context context, ArrayList<Market> marketsList) {
+    MarketCardAdapter(Context context, ArrayList<Market> marketsList, Location currentLocation) {
         this.marketsList = marketsList;
         this.mContext = context;
+        this.currentLocation = currentLocation;
     }
 
     @Override
@@ -39,7 +44,13 @@ public class MarketCardAdapter extends RecyclerView.Adapter<MarketCardAdapter.Si
         Market market = marketsList.get(position);
         holder.mTitle.setText(market.getName());
         holder.mImage.setImageResource(R.drawable.ubc);
-        holder.mDistance.setText("100m");
+        if (currentLocation != null){
+            float distance = MarketUtils.getDistanceFromMarket(market, currentLocation);
+            holder.mDistance.setText(LocationUtils.formatDistanceInKm(distance));
+        }
+        else {
+            holder.mDistance.setText("");
+        }
     }
 
     @Override
