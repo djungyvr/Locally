@@ -32,7 +32,7 @@ public class VendorItemAdapter extends RecyclerView.Adapter<VendorItemAdapter.Ve
 
     @Override
     public VendorItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.vendor_item,null);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.vendor_item,parent,false);
         VendorItemViewHolder rowHolder = new VendorItemViewHolder(view);
         return rowHolder;
     }
