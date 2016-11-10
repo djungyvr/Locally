@@ -55,6 +55,12 @@ public class DateUtilsUnitTest {
         assertEquals("12:00 AM - 11:59 PM", DateUtils.formatTimeRangeString("00:00-23:59"));
     }
 
+    @Test
+    public void testParseYear() {
+        assertEquals("January 1 - December 31", DateUtils.parseYear("01/01-31/12"));
+        assertEquals("June 10", DateUtils.parseYear("10/06-10/06"));
+        assertEquals("February 14 - July 11", DateUtils.parseYear("14/02-11/07"));
+    }
 
 
 }
