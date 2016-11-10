@@ -11,6 +11,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -87,6 +90,10 @@ public class VendorActivity extends AppCompatActivity
     private boolean haveItemsChanged;
     private Dialog mVendorSaveDialog;
 
+    // Fragment for editing vendor details
+    private Fragment mEditVendorDetailsFragment;
+    private FragmentManager mFragmentManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,7 +114,7 @@ public class VendorActivity extends AppCompatActivity
         mTextViewVendorName = (TextView)headerView.findViewById(R.id.text_view_nav_vendor_name);
         initialize();
 
-        mFabSearch = (FloatingActionButton) findViewById(R.id.fab_save);
+        mFabSearch = (FloatingActionButton) findViewById(R.id.fab_save_vendor_list);
         mFabSearch.setOnClickListener(this);
 
         haveItemsChanged = false;
@@ -188,9 +195,17 @@ public class VendorActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_manage) {
-
+            launchEditDetailsFragment();
         } else if (id == R.id.nav_edit_goods_list) {
-
+            mSearchView.setVisibility(View.VISIBLE);
+            if(mFragmentManager != null){
+                if (mEditVendorDetailsFragment != null){
+                    mFragmentManager.beginTransaction().remove(mEditVendorDetailsFragment).commit();
+                }
+                for (int i = 0; i < mFragmentManager.getBackStackEntryCount(); i++){
+                    mFragmentManager.popBackStack();
+                }
+            }
         } else if (id == R.id.nav_signout) {
             user.signOut();
             exit();
@@ -199,6 +214,27 @@ public class VendorActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.vendor_drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void launchEditDetailsFragment() {
+        if(mEditVendorDetailsFragment == null) {
+            mEditVendorDetailsFragment = new EditVendorDetailsFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("vendor_name", currentVendor.getName());
+            bundle.putString("market_name", currentVendor.getMarketName());
+            bundle.putString("vendor_description", currentVendor.getDescription());
+
+            mEditVendorDetailsFragment.setArguments(bundle);
+        }
+        if(mFragmentManager == null)
+            mFragmentManager = getSupportFragmentManager();
+
+        // Hide the searchbar
+        mSearchView.setVisibility(View.INVISIBLE);
+
+        // Replace the container with the fragment
+        mFragmentManager.beginTransaction().replace(R.id.include_content_vendor, mEditVendorDetailsFragment).addToBackStack(null).commit();
+        //mFragmentManager.beginTransaction().add(R.id.frame_container,mEditVendorDetailsFragment).commit();
     }
 
     /**
@@ -361,10 +397,11 @@ public class VendorActivity extends AppCompatActivity
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.fab_save:
+            case R.id.fab_save_vendor_list:
                 VendorPresenter vendorPresenter = new VendorPresenter(this);
                 try {
                     vendorPresenter.updateVendorProducts(currentVendor.getMarketName(),currentVendor.getName(),new HashSet<String>(mVendorItemAdapter.getItemNames()),currentVendor.getDescription());
+                    Toast.makeText(this,"Updating list",Toast.LENGTH_SHORT).show();
                 } catch (ExecutionException | InterruptedException e) {
                     showDialogMessage("Save Error", "Failed to save item list");
                     Log.e(TAG,e.getMessage());

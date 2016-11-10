@@ -51,6 +51,18 @@ public class VendorPresenter {
     }
 
     /**
+     * Updates the description of the vendor
+     */
+    public boolean updateVendorDetails(String marketName, String vendorName, String description) throws ExecutionException, InterruptedException {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<Boolean> future = executor.submit(new UpdateVendorDetails(marketName,vendorName, description));
+
+        executor.shutdown(); // Important!
+
+        return future.get();
+    }
+
+    /**
      * Updates the items of the vendor
      *
      * Returns true if succesfully updated, false otherwise
@@ -231,6 +243,74 @@ public class VendorPresenter {
                 vendorToFind.setDescription(description);
                 mapper.save(vendorToFind);
                 Log.e(TAG,"Succesfully updated vendor items");
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    /**
+     * Updates the vendor product list
+     */
+    class UpdateVendorDetails implements Callable<Boolean> {
+        private final String TAG = "UpdateDetail";
+        private String marketName;
+        private String vendorName;
+        private String description;
+
+        UpdateVendorDetails(String marketName, String vendorName, String description) {
+            this.marketName = marketName;
+            this.vendorName = vendorName;
+            this.description = description;
+        }
+
+        @Override
+        public Boolean call() throws Exception {
+            // Initialize the Amazon Cognito credentials provider
+            CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+                    context,
+                    AwsConfiguration.AMAZON_COGNITO_IDENTITY_POOL_ID, // Identity Pool ID
+                    AwsConfiguration.AMAZON_DYNAMODB_REGION // Region
+            );
+
+            // Create a Dynamo Database Client
+            AmazonDynamoDBClient ddbClient = Region.getRegion(AwsConfiguration.AMAZON_DYNAMODB_REGION) // CRUCIAL
+                    .createClient(
+                            AmazonDynamoDBClient.class,
+                            credentialsProvider,
+                            new ClientConfiguration()
+                    );
+
+            // Create a mapper from the client
+            DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
+
+            Vendor vendorToFind = new Vendor();
+            // Set primary hash key
+            vendorToFind.setMarketName(marketName);
+
+
+            // Note ComparisonOperator.CONTAINS is not supported by query only by scan
+            // Set range key condition
+            Condition rangeKeyCondition = new Condition()
+                    .withComparisonOperator(ComparisonOperator.BEGINS_WITH.toString())
+                    .withAttributeValueList(new AttributeValue().withS(vendorName.toString()));
+
+            DynamoDBQueryExpression query = new DynamoDBQueryExpression()
+                    .withHashKeyValues(vendorToFind)
+                    .withRangeKeyCondition("Vendor.Name",rangeKeyCondition)
+                    .withConsistentRead(false);
+
+
+            List<Vendor> vendors = mapper.query(Vendor.class,query);
+
+            if(!vendors.isEmpty()) {
+                vendorToFind = vendors.get(0);
+                if(description.isEmpty() || description == null)
+                    description = "Add your own description!";
+                vendorToFind.setDescription(description);
+                mapper.save(vendorToFind);
+                Log.e(TAG,"Succesfully updated vendor description");
                 return true;
             } else {
                 return false;

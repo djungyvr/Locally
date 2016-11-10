@@ -6,7 +6,7 @@
     android:padding="5dp">
     <TextView
         android:id="@+id/vendor_item_name_search_result"
-        style="@android:style/TextAppearance.Large"
+        style="16sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="sample"
