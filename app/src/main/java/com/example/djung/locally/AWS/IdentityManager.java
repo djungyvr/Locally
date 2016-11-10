@@ -6,7 +6,7 @@ import android.util.Log;
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.SDKGlobalConfiguration;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
-import com.example.djung.locally.Presenter.ThreadUtils;
+import com.example.djung.locally.Utils.ThreadUtils;
 
 import java.util.Date;
 import java.util.concurrent.ExecutorService;

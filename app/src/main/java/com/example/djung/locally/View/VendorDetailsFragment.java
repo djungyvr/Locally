@@ -11,11 +11,10 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.djung.locally.Model.Vendor;
-import com.example.djung.locally.Presenter.ThreadUtils;
+import com.example.djung.locally.Utils.ThreadUtils;
 import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
 
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**

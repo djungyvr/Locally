@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 
 import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.Presenter.MarketPresenter;
-import com.example.djung.locally.Presenter.ThreadUtils;
+import com.example.djung.locally.Utils.ThreadUtils;
 import com.example.djung.locally.R;
 
 import java.util.ArrayList;

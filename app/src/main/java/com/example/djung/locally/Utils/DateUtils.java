@@ -1,5 +1,11 @@
 package com.example.djung.locally.Utils;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.TimeZone;
+
 /**
  * Created by Andy Lin on 2016-11-08.
  */
@@ -18,5 +24,18 @@ public class DateUtils {
             }
         }
         return result;
+    }
+
+    /**
+     *  Returns the current date and time in Vancouver as a string with the specified format
+     *
+     * @param format date and time pattern string
+     * @return
+     */
+    public static String getCurrentDateAndTime(String format) {
+        DateFormat df = new SimpleDateFormat(format);
+        df.setTimeZone(TimeZone.getTimeZone("America/Vancouver"));
+        return df.format(Calendar.getInstance(
+                TimeZone.getTimeZone("America/Vancouver"), Locale.CANADA).getTime());
     }
 }
