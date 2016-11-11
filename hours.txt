@@ -38,3 +38,12 @@ October 24-30, 2016 - 11 hours - Familiarizing with Google Maps API, continue An
 Oct. 31 - Nov. 6, 2016 - 6 hours - Exploring existing Locally code
 November 7 - 10, 2016 - 18 hours - Learning to write unit tests in TDD style, learning instrumental testing, attempting to write instrumental test suite for login user case
 
+Angy
+October   7-13, 2016 - 3 hours - Project vision, project design planning, starting on documentation and creating use cases
+October  14-20, 2016 - 5 hours - Create mock UI prototypes, start learning Android development
+October  21-27, 2016 - 3 hours - Learning Android development, Google's Material Design, working on Vendor UI
+October  28-31, 2016 - 5 hours - Redesign Vendor UI with RecyclerView and custom adapter + adding searchable
+November  1- 2, 2016 - 2 hours - Looking into MapFragment and Location's permission bug
+November  3   , 2016 - 5 hours - Learning Inkscape to create vector art, designing and integrating our app's launcher icon
+November  6   , 2016 - 3 hours - Design splash screen and integrate into app
+November  8- 9, 2016 - 7 hours - Create utility functions for markets, locations, dates and creating unit tests for each
