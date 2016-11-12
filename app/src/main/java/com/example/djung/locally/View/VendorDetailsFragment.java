@@ -3,15 +3,13 @@ package com.example.djung.locally.View;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.djung.locally.Model.Vendor;
 import com.example.djung.locally.Utils.MarketUtils;
@@ -19,8 +17,6 @@ import com.example.djung.locally.Utils.ThreadUtils;
 import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.VendorUtils;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,19 +28,37 @@ import java.util.concurrent.ExecutionException;
  */
 
 public class VendorDetailsFragment extends Fragment implements View.OnClickListener{
+    private List<String> produceList;
+    private Vendor currentVendor;
+    private String vendorHours;
+    private String vendorAddress;
+    private String vendorDatesOpen;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         String marketName = getArguments().getString("marketName");
         String vendorName = getArguments().getString("vendorName");
-        String vendorAddress = getArguments().getString("marketAddress");
-        String vendorHours = getArguments().getString("marketHours");
-        String vendorDatesOpen = getArguments().getString("marketDatesOpen");
+        vendorAddress = getArguments().getString("marketAddress");
+        vendorHours = getArguments().getString("marketHours");
+        vendorDatesOpen = getArguments().getString("marketDatesOpen");
 
         View view = inflater.inflate(R.layout.vendor_details, container, false);
 
+        getVendor(marketName, vendorName);
+        populateViews(view);
+        addButtonListeners(view);
+
+        return view;
+    }
+
+    /**
+     * Fetch the vendor details of the vendor with the given market name and vendor name from the database
+     * @param marketName
+     * @param vendorName
+     */
+    public void getVendor(String marketName, String vendorName){
         VendorPresenter presenter = new VendorPresenter(this.getContext());
-        Vendor currentVendor = new Vendor();
+        currentVendor = new Vendor();
 
         try {
             currentVendor = presenter.fetchVendor(marketName,vendorName);
@@ -73,8 +87,28 @@ public class VendorDetailsFragment extends Fragment implements View.OnClickListe
             });
         }
 
+        //Get the list of products that the vendor sells
+        produceList = new ArrayList<String>();
+        Set<String> produceItemsSet = currentVendor.getItemSet();
+
+        for (String item: produceItemsSet){
+            produceList.add(item);
+        }
+    }
+
+    /**
+     * Populate the text inside the buttons and views based on the details of the vendor
+     * @param view
+     */
+    public void populateViews(View view){
         TextView vendorNameView = (TextView) view.findViewById(R.id.vendor_detail_banner_name);
         vendorNameView.setText(currentVendor.getName());
+
+        TextView vendorDescriptionView = (TextView) view.findViewById(R.id.vendor_detail_description);
+        vendorDescriptionView.setText(currentVendor.getDescription());
+
+        Button vendorLocationButton = (Button) view.findViewById(R.id.vendor_detail_location_button);
+        vendorLocationButton.setText(vendorAddress);
 
         TextView vendorStatusView = (TextView) view.findViewById(R.id.vendor_detail_banner_status);
         if (MarketUtils.isMarketCurrentlyOpen(vendorDatesOpen, vendorHours)){
@@ -84,15 +118,15 @@ public class VendorDetailsFragment extends Fragment implements View.OnClickListe
             vendorStatusView.setText("Closed Now!");
         }
 
-        Button vendorLocationButton = (Button) view.findViewById(R.id.vendor_detail_location_button);
-        vendorLocationButton.setText(vendorAddress);
-
         TextView vendorHoursView = (TextView) view.findViewById(R.id.vendor_detail_hours);
         vendorHoursView.setText(vendorHours);
+    }
 
-        TextView vendorDescriptionView = (TextView) view.findViewById(R.id.vendor_detail_description);
-        vendorDescriptionView.setText(currentVendor.getDescription());
-
+    /**
+     * Add button listeners to each of the buttons in the view
+     * @param view
+     */
+    public void addButtonListeners(View view){
         Button hoursButton = (Button) view.findViewById(R.id.vendor_detail_hours_button);
         hoursButton.setOnClickListener(this);
 
@@ -101,24 +135,12 @@ public class VendorDetailsFragment extends Fragment implements View.OnClickListe
 
         Button produceListButton = (Button) view.findViewById(R.id.vendor_detail_produce_list_button);
         produceListButton.setOnClickListener(this);
-
-
-        //Populate produce list using data from Database
-        ListView produceListView = (ListView) view.findViewById(R.id.produce_list);
-
-        List<String> filteredVendorItems = VendorUtils.filterPlaceholderText(new ArrayList<String>(currentVendor.getItemSet()));
-
-        Set<String> produceItemsSet = currentVendor.getItemSet();
-        
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, filteredVendorItems );
-        produceListView.setAdapter(arrayAdapter);
-
-        return view;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstance){
         super.onActivityCreated(savedInstance);
+        populateProduceList(produceList);
     }
 
     @Override
@@ -136,6 +158,26 @@ public class VendorDetailsFragment extends Fragment implements View.OnClickListe
         }
     }
 
+    /**
+     * Populate the RecyclerView with the produce names in the given produceList
+     * @param produceList
+     */
+    public void populateProduceList(List<String> produceList){
+        RecyclerView recyclerView = (RecyclerView) getView().findViewById(R.id.produce_list);
+
+        recyclerView.setHasFixedSize(true);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
+
+        VendorProduceListAdapter adapter = new VendorProduceListAdapter(produceList, getActivity());
+        recyclerView.setAdapter(adapter);
+    }
+
+    /**
+     * Toggle the visibility of the description
+     */
     public void toggleDescription(){
         TextView description = (TextView) getView().findViewById(R.id.vendor_detail_description);
         if (description.getVisibility() == View.VISIBLE){
@@ -146,6 +188,9 @@ public class VendorDetailsFragment extends Fragment implements View.OnClickListe
         }
     }
 
+    /**
+     * Toggle the visibility of the hours
+     */
     public void toggleHours(){
         TextView description = (TextView)  getView().findViewById(R.id.vendor_detail_hours);
         if (description.getVisibility() == View.VISIBLE){
@@ -156,8 +201,11 @@ public class VendorDetailsFragment extends Fragment implements View.OnClickListe
         }
     }
 
+    /**
+     * Toggle the visibility of the produce list
+     */
     public void toggleProduceList(){
-        ListView description = (ListView)  getView().findViewById(R.id.produce_list);
+        RecyclerView description = (RecyclerView)  getView().findViewById(R.id.produce_list);
         if (description.getVisibility() == View.VISIBLE){
             description.setVisibility(View.GONE);
         }
