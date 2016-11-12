@@ -36,9 +36,11 @@ import com.example.djung.locally.DB.VendorItemsProvider;
 import com.example.djung.locally.Model.Vendor;
 import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
+import com.example.djung.locally.Utils.VendorUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
@@ -287,7 +289,9 @@ public class VendorActivity extends AppCompatActivity
 
             mRecyclerViewVendorItems.setHasFixedSize(true);
 
-            mVendorItemAdapter = new VendorItemAdapter(new ArrayList<>(currentVendor.getItemSet()), this);
+            ArrayList<String> filteredList = VendorUtils.filterPlaceholderText(new ArrayList<>(currentVendor.getItemSet()));
+
+            mVendorItemAdapter = new VendorItemAdapter(filteredList, this);
 
             mRecyclerViewVendorItems.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 

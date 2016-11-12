@@ -16,8 +16,7 @@ import com.example.djung.locally.Utils.MarketUtils;
 import com.example.djung.locally.Utils.ThreadUtils;
 import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
-
-import org.w3c.dom.Text;
+import com.example.djung.locally.Utils.VendorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
