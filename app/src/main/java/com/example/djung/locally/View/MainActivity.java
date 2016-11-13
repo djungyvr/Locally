@@ -1,8 +1,15 @@
 package com.example.djung.locally.View;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -15,6 +22,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.djung.locally.AWS.AWSMobileClient;
 import com.example.djung.locally.AWS.AppHelper;
@@ -24,6 +32,7 @@ import com.example.djung.locally.Model.Vendor;
 import com.example.djung.locally.Presenter.MarketPresenter;
 import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
+import com.example.djung.locally.Utils.DateUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,11 +40,13 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, VendorListFragment.OnVendorListItemClickListener,
-        MarketListFragment.onMarketListItemClick{
+        MarketListFragment.onMarketListItemClick {
 
     private final String TAG = "MainActivity";
 
     private ArrayList<MarketCardSection> marketData;
+    private Location currentLocation;
+    private LocationManager locationManager;
 
     // Fragment for displaying maps
     private Fragment mGoogleMapsFragment;
@@ -68,6 +79,8 @@ public class MainActivity extends AppCompatActivity
 
         fetchMarketData();
 
+        getUserLocation();
+
         initializeContentMain();
 
         // Initialize application
@@ -99,22 +112,22 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        switch(id) {
+        switch (id) {
             case R.id.nav_home:
-                if(mFragmentManager != null){
-                    if (mGoogleMapsFragment != null){
+                if (mFragmentManager != null) {
+                    if (mGoogleMapsFragment != null) {
                         mFragmentManager.beginTransaction().remove(mGoogleMapsFragment).commit();
                     }
-                    if (mMarketListFragment != null){
+                    if (mMarketListFragment != null) {
                         mFragmentManager.beginTransaction().remove(mMarketListFragment).commit();
                     }
-                    if (mVendorListFragment != null){
+                    if (mVendorListFragment != null) {
                         mFragmentManager.beginTransaction().remove(mVendorListFragment).commit();
                     }
-                    if (mVendorDetailsFragment != null){
+                    if (mVendorDetailsFragment != null) {
                         mFragmentManager.beginTransaction().remove(mVendorDetailsFragment).commit();
                     }
-                    for (int i = 0; i < mFragmentManager.getBackStackEntryCount(); i++){
+                    for (int i = 0; i < mFragmentManager.getBackStackEntryCount(); i++) {
                         mFragmentManager.popBackStack();
                     }
                 }
@@ -128,8 +141,8 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             case R.id.nav_manage:
-                if(mSettingsFragment == null)
-                break;
+                if (mSettingsFragment == null)
+                    break;
             case R.id.nav_use_as_vendor:
                 Intent loginActivity = new Intent(this, LoginActivity.class);
                 startActivity(loginActivity);
@@ -150,14 +163,20 @@ public class MainActivity extends AppCompatActivity
      */
     public void initializeContentMain() {
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-
         recyclerView.setHasFixedSize(true);
-
-        MarketCardSectionAdapter adapter = new MarketCardSectionAdapter(this,marketData);
-
+        MarketCardSectionAdapter adapter = new MarketCardSectionAdapter(this, marketData, currentLocation);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-
         recyclerView.setAdapter(adapter);
+    }
+
+    /**
+     * Creates a new adapter for the MarketCardSection and replaces the old adapter with the new one
+     */
+    public void updateContentMain(){
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        MarketCardSectionAdapter adapter = new MarketCardSectionAdapter(this, marketData, currentLocation);
+        recyclerView.swapAdapter(adapter,false);
+        Log.e(TAG, "Replaced old adapter with new adapter for recycler view due to updated location permissions");
     }
 
     public void initializeAWS() {
@@ -193,9 +212,9 @@ public class MainActivity extends AppCompatActivity
      * Launches the Google maps fragment
      */
     void launchMapFragment() {
-        if(mGoogleMapsFragment == null)
+        if (mGoogleMapsFragment == null)
             mGoogleMapsFragment = new MapFragment();
-        if(mFragmentManager == null)
+        if (mFragmentManager == null)
             mFragmentManager = getSupportFragmentManager();
 
         // Replace the container with the fragment
@@ -206,9 +225,9 @@ public class MainActivity extends AppCompatActivity
      * Launches the MarketList fragment
      */
     void launchMarketFragment() {
-        if(mMarketListFragment == null)
+        if (mMarketListFragment == null)
             mMarketListFragment = new MarketListFragment();
-        if(mFragmentManager == null)
+        if (mFragmentManager == null)
             mFragmentManager = getSupportFragmentManager();
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -218,26 +237,33 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onMarketListItemClick(String marketName) {
-        launchVendorListFragment(marketName);
+    public void onMarketListItemClick(Market market) {
+        launchVendorListFragment(market);
     }
 
     /**
      * Launches the VendorList fragment
      */
-    void launchVendorListFragment(String marketName) {
-        if(mVendorListFragment == null){
+    void launchVendorListFragment(Market market) {
+        if (mVendorListFragment == null) {
             mVendorListFragment = new VendorListFragment();
             Bundle bundle = new Bundle();
-            bundle.putString("marketName", marketName);
+            bundle.putSerializable("currentMarket", market);
+            bundle.putString("marketName", market.getName());
+            bundle.putString("marketAddress", market.getAddress());
+            bundle.putString("marketHours", market.getDailyHours());
+            bundle.putString("marketDatesOpen", market.getYearOpen());
             mVendorListFragment.setArguments(bundle);
-        }
-        else {
+        } else {
             Bundle b = mVendorListFragment.getArguments();
-            b.putString("marketName", marketName);
+            b.putSerializable("currentMarket", market);
+            b.putString("marketName", market.getName());
+            b.putString("marketAddress", market.getAddress());
+            b.putString("marketHours", market.getDailyHours());
+            b.putString("marketDatesOpen", market.getYearOpen());
         }
 
-        if(mFragmentManager == null)
+        if (mFragmentManager == null)
             mFragmentManager = getSupportFragmentManager();
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -248,27 +274,31 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * Launches the vendor details fragment on click from the vendor list fragment
-     * @param vendorName
-     *      Name of the vendor that was selected
-     * @param marketName
-     *      Name of the market that the vendor belongs to
+     *
+     * @param vendorName Name of the vendor that was selected
+     * @param market The market that the vendor belongs to
      */
     @Override
-    public void onVendorListItemClick(String vendorName, String marketName) {
-        if(mVendorDetailsFragment == null){
+    public void onVendorListItemClick(String vendorName, Market market) {
+        if (mVendorDetailsFragment == null) {
             mVendorDetailsFragment = new VendorDetailsFragment();
             Bundle bundle = new Bundle();
-            bundle.putString("marketName", marketName);
+            bundle.putString("marketName", market.getName());
             bundle.putString("vendorName", vendorName);
+            bundle.putString("marketHours", DateUtils.parseHours(market.getDailyHours()));
+            bundle.putString("marketAddress", market.getAddress());
+            bundle.putString("marketDatesOpen", market.getYearOpen());
             mVendorDetailsFragment.setArguments(bundle);
-        }
-        else {
+        } else {
             Bundle bundle = mVendorDetailsFragment.getArguments();
-            bundle.putString("marketName", marketName);
+            bundle.putString("marketName", market.getName());
             bundle.putString("vendorName", vendorName);
+            bundle.putString("marketHours", DateUtils.parseHours(market.getDailyHours()));
+            bundle.putString("marketAddress", market.getAddress());
+            bundle.putString("marketDatesOpen", market.getYearOpen());
         }
 
-        if(mFragmentManager == null)
+        if (mFragmentManager == null)
             mFragmentManager = getSupportFragmentManager();
 
 
@@ -278,48 +308,119 @@ public class MainActivity extends AppCompatActivity
         ft.commit();
     }
 
-    void fetchMarketData(){
+    void fetchMarketData() {
         marketData = new ArrayList<>();
 
         MarketCardSection openNowSection = new MarketCardSection();
         openNowSection.setSectionTitle("Markets Open Now");
-        ArrayList<MarketCard> marketsOpenNow = new ArrayList<>();
 
         MarketCardSection recentlyViewedSection = new MarketCardSection();
         recentlyViewedSection.setSectionTitle("Recently Viewed");
-        ArrayList<MarketCard> marketsRecentlyViewed = new ArrayList<>();
 
         MarketPresenter presenter = new MarketPresenter(this);
         try {
-            List<Market> marketList = presenter.fetchMarkets();
+            ArrayList<Market> marketList = new ArrayList<>(presenter.fetchMarkets());
 
-            for(Market market : marketList) {
-                marketsOpenNow.add(new MarketCard(market.getName(), "100m", R.drawable.ubc));
-                marketsRecentlyViewed.add(new MarketCard(market.getName(), "100m", R.drawable.ubc));
+            if (marketList != null || !marketList.isEmpty()) {
+                openNowSection.setMarketList(marketList);
+                recentlyViewedSection.setMarketList(marketList);
+            }
+
+        } catch (final ExecutionException e) {
+            Log.e(TAG, e.getMessage());
+        } catch (final InterruptedException e) {
+            Log.e(TAG, e.getMessage());
+        }
+
+        marketData.add(openNowSection);
+        marketData.add(recentlyViewedSection);
+    }
+
+    /**
+     * Get the current user location. Need to check runtime permissions to access location data.
+     */
+    void getUserLocation() {
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            //We should show an explanation to the user about why we need location data
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                Toast.makeText(this, "Location permission is needed to show distances to markets.", Toast.LENGTH_SHORT).show();
+            }
+
+            // No explanation needed, we can request the permission.
+            else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, Permissions.REQUEST_COURSE_PERMISSION);
             }
         }
-        catch (final ExecutionException e) {
-            Log.e(TAG,e.getMessage());
+
+        //Permission is granted and we go ahead to access the location data
+        else {
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+            currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            Log.e(TAG, "Location permissions passed, successfully got user location");
+            updateContentMain();
         }
-        catch(final InterruptedException e) {
-            Log.e(TAG,e.getMessage());
+    }
+
+    LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            currentLocation = location;
         }
 
-        openNowSection.setMarketCardArrayList(marketsOpenNow);
-        marketData.add(openNowSection);
+        @Override
+        public void onStatusChanged(String s, int i, Bundle bundle) {
 
-        recentlyViewedSection.setMarketCardArrayList(marketsRecentlyViewed);
-        marketData.add(recentlyViewedSection);
+        }
+
+        @Override
+        public void onProviderEnabled(String s) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String s) {
+
+        }
+    };
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case Permissions.REQUEST_COURSE_PERMISSION:
+
+                //Permission is granted to use location data
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        return;
+                    }
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+                    currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                    Log.e(TAG, "Location permissions passed, successfully got user location");
+                    updateContentMain();
+                }
+
+                //Permission is denied to use location data and we explain to the user that distance to markets will not be shown
+                else {
+                    currentLocation = null;
+                    Toast.makeText(this, "Location permission denied, distances to markets will not be shown.", Toast.LENGTH_SHORT).show();
+                }
+                return;
+        }
     }
 
     void fetchMarket() {
         MarketPresenter marketPresenter = new MarketPresenter(this);
         try {
-            Log.e(TAG,"Market Fetched: " + marketPresenter.fetchMarket(0).getName());
+            Log.e(TAG, "Market Fetched: " + marketPresenter.fetchMarket(0).getName());
         } catch (ExecutionException e) {
-            Log.e(TAG,e.getMessage());
+            Log.e(TAG, e.getMessage());
         } catch (InterruptedException e) {
-            Log.e(TAG,e.getMessage());
+            Log.e(TAG, e.getMessage());
         }
     }
 
@@ -332,31 +433,31 @@ public class MainActivity extends AppCompatActivity
         try {
             List<Vendor> vendorList = vendorPresenter.fetchVendors("TestMarket");
 
-            for(Vendor v : vendorList) {
+            for (Vendor v : vendorList) {
                 Log.e(TAG, "Fetch Vendors Result: " + v.getName());
             }
         } catch (ExecutionException e) {
-            Log.e(TAG,e.getMessage());
+            Log.e(TAG, e.getMessage());
         } catch (InterruptedException e) {
-            Log.e(TAG,e.getMessage());
+            Log.e(TAG, e.getMessage());
         }
 
         try {
-            Vendor vendor = vendorPresenter.fetchVendor("TestMarket","Vendor1");
+            Vendor vendor = vendorPresenter.fetchVendor("TestMarket", "Vendor1");
             Log.e(TAG, "Fetch Single Vendor Result: " + vendor.getName());
         } catch (ExecutionException e) {
-            Log.e(TAG,e.getMessage());
+            Log.e(TAG, e.getMessage());
         } catch (InterruptedException e) {
-            Log.e(TAG,e.getMessage());
+            Log.e(TAG, e.getMessage());
         }
 
         try {
-            Vendor vendor = vendorPresenter.fetchVendor("TestMarket","Vendor3");
+            Vendor vendor = vendorPresenter.fetchVendor("TestMarket", "Vendor3");
             Log.e(TAG, "Fetch Single Vendor Result: " + vendor.getName());
         } catch (ExecutionException e) {
-            Log.e(TAG,e.getMessage());
+            Log.e(TAG, e.getMessage());
         } catch (InterruptedException e) {
-            Log.e(TAG,e.getMessage());
+            Log.e(TAG, e.getMessage());
         }
     }
 }

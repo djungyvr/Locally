@@ -1,8 +1,14 @@
 package com.example.djung.locally.View;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,7 +18,8 @@ import android.view.ViewGroup;
 
 import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.Presenter.MarketPresenter;
-import com.example.djung.locally.Presenter.ThreadUtils;
+import com.example.djung.locally.Utils.MarketUtils;
+import com.example.djung.locally.Utils.ThreadUtils;
 import com.example.djung.locally.R;
 
 import java.util.ArrayList;
@@ -25,9 +32,10 @@ import java.util.concurrent.ExecutionException;
 
 public class MarketListFragment extends android.support.v4.app.Fragment {
     private onMarketListItemClick mCallback;
+    private Location currentLocation;
 
-    public interface onMarketListItemClick{
-        public void onMarketListItemClick(String marketName);
+    public interface onMarketListItemClick {
+        public void onMarketListItemClick(Market market);
     }
 
     @Override
@@ -37,10 +45,39 @@ public class MarketListFragment extends android.support.v4.app.Fragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstance){
+    public void onActivityCreated(Bundle savedInstance) {
         super.onActivityCreated(savedInstance);
+        LocationManager lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+            currentLocation = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        }
         populateMarketList();
     }
+
+
+    LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            currentLocation = location;
+        }
+
+        @Override
+        public void onStatusChanged(String s, int i, Bundle bundle) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String s) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String s) {
+
+        }
+    };
 
     public void onAttach (Context context) {
         super.onAttach(context);
@@ -94,6 +131,10 @@ public class MarketListFragment extends android.support.v4.app.Fragment {
             });
         }
 
+        if (currentLocation != null){
+            marketListItems = MarketUtils.getClosestMarkets(marketListItems, currentLocation);
+        }
+
         RecyclerView recyclerView = (RecyclerView) getView().findViewById(R.id.market_list);
 
         recyclerView.setHasFixedSize(true);
@@ -102,7 +143,7 @@ public class MarketListFragment extends android.support.v4.app.Fragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
 
-        MarketListAdapter adapter = new MarketListAdapter(marketListItems, getActivity(), mCallback);
+        MarketListAdapter adapter = new MarketListAdapter(marketListItems, getActivity(), mCallback, currentLocation);
         recyclerView.setAdapter(adapter);
     }
 }

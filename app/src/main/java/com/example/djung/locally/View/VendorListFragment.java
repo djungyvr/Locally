@@ -1,8 +1,14 @@
 package com.example.djung.locally.View;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,10 +17,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.Model.Vendor;
-import com.example.djung.locally.Presenter.ThreadUtils;
+import com.example.djung.locally.Utils.ThreadUtils;
 import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
+import com.example.djung.locally.Utils.DateUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,17 +33,25 @@ import java.util.concurrent.ExecutionException;
  */
 
 public class VendorListFragment extends Fragment {
-
     private OnVendorListItemClickListener mCallback;
     private String marketName;
+    private String marketAddress;
+    private String marketHours;
+    private String marketDatesOpen;
+    private Location currentLocation;
+    private Market currentMarket;
 
     public interface OnVendorListItemClickListener{
-        public void onVendorListItemClick(String vendorName, String marketName);
+        public void onVendorListItemClick(String vendorName, Market market);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         this.marketName = getArguments().getString("marketName");
+        this.marketAddress = getArguments().getString("marketAddress");
+        this.marketDatesOpen = getArguments().getString("marketDatesOpen");
+        this.marketHours = DateUtils.parseHours(getArguments().getString("marketHours"));
+        this.currentMarket = (Market)  getArguments().getSerializable("currentMarket");
         View view = inflater.inflate(R.layout.vendor_list, container, false);
         return view;
     }
@@ -43,8 +59,36 @@ public class VendorListFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstance){
         super.onActivityCreated(savedInstance);
+        LocationManager lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+            currentLocation = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        }
         populateVendorList();
     }
+
+    LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            currentLocation = location;
+        }
+
+        @Override
+        public void onStatusChanged(String s, int i, Bundle bundle) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String s) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String s) {
+
+        }
+    };
 
     public void onAttach (Context context) {
         super.onAttach(context);
@@ -101,11 +145,11 @@ public class VendorListFragment extends Fragment {
 
         recyclerView.setHasFixedSize(true);
 
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
 
-        VendorListAdapter adapter = new VendorListAdapter(vendorListItems, getActivity(), mCallback);
+        VendorListAdapter adapter = new VendorListAdapter(vendorListItems, getActivity(), mCallback, currentLocation, currentMarket);
         recyclerView.setAdapter(adapter);
     }
 }

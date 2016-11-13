@@ -8,7 +8,8 @@ David
 02.11.16 - 3 hours - Setup AWS Cognito, add basic login feature
 04.11.16 - 1 hour  - Add fetch single vendor task, update ui
 06.11.16 - 2 hours - Update registration UI, add market field, add sign out, complete vendor sign up form
-08.11.16 - 4 hour  - Add autocomplete search, create local database containing goods currently just PLU stuff, allow users to add items to vendors
+08.11.16 - 4 hours - Add autocomplete search, create local database containing goods currently just PLU stuff, allow users to add items to vendors
+09.11.16 - 3 hours - Integrate Anna's calendar, add update vendor details fragment, UI updates
 
 Anna
 Week of October 3, 2016 - 4 hours - Product vision, project planning and use case analysis documentation
@@ -16,6 +17,7 @@ Week of October 10, 2016 - 7 hours - UI prototypes for Calendar, project design 
 Week of October 17, 2016 - 6 hours - Android Studio Lessons + started designing Calendar UI
 Week of October 24, 2016 - 8 hours - Designed calendar activity UI, market activity UI
 Week of October 31, 2016 - 8 hours - Redesigned calendar UI to have a custom grid adapter, connected market names with market activity UI
+November 7-9 - 10 hours - Integration with David's and Andy's parts, fetching and displaying actual database data
 
 Andy 
 October 7, 2016   - 2 Hours - Set up my own Android Project and Learn Android Development
@@ -26,6 +28,22 @@ October 30, 2016  - 3 Hours - Work on replacing ListView with RecyclerView and f
 November 5, 2016  - 3 Hours - Continue with replacing ListView with RecyclerView and start to fetch data from database to populate UI
 November 7, 2016  - 2 Hours - Fetch data from database to populate vendor list and vendor detail view
 November 8, 2016  - 6 Hours - Create market list UI, custom adapter and populate market list with data from database. Replace sample data of market cards with data from database. Implement fragement interactions between market list, vendor list, and vendor details with on click listeners
+November 9, 2016  - 7 Hours - Use util functions to populate distance to market, market open status, and sort markets by closest distance. Populate related fields from market list to vendor list and vendor detail list
 
+Alena
+October 3-9, 2016 - 4 hours - Learning Andriod Studio through setting up mini-project  
+October 10-16, 2016 - 16 hours - Brushing up on basics of working with git, java programming
+October 17-23, 2016 - 2 hours -Explore mock-up map feature and how it will integrate with the rest of the app
+October 24-30, 2016 - 11 hours - Familiarizing with Google Maps API, continue Android Studios tutorial
+Oct. 31 - Nov. 6, 2016 - 6 hours - Exploring existing Locally code
+November 7 - 10, 2016 - 18 hours - Learning to write unit tests in TDD style, learning instrumental testing, attempting to write instrumental test suite for login user case
 
-
+Angy
+October   7-13, 2016 - 3 hours - Project vision, project design planning, starting on documentation and creating use cases
+October  14-20, 2016 - 5 hours - Create mock UI prototypes, start learning Android development
+October  21-27, 2016 - 3 hours - Learning Android development, Google's Material Design, working on Vendor UI
+October  28-31, 2016 - 5 hours - Redesign Vendor UI with RecyclerView and custom adapter + adding searchable
+November  1- 2, 2016 - 2 hours - Looking into MapFragment and Location's permission bug
+November  3   , 2016 - 5 hours - Learning Inkscape to create vector art, designing and integrating our app's launcher icon
+November  6   , 2016 - 3 hours - Design splash screen and integrate into app
+November  8- 9, 2016 - 7 hours - Create utility functions for markets, locations, dates and creating unit tests for each

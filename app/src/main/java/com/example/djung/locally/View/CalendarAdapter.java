@@ -14,7 +14,7 @@ import com.example.djung.locally.Utils.DateUtils;
 
 import java.util.ArrayList;
 
-import static com.example.djung.locally.Utils.YearParser.parseYear;
+import static com.example.djung.locally.Utils.DateUtils.parseYear;
 
 /**
  * Created by Anna on 04.11.2016.

@@ -1,7 +1,6 @@
 package com.example.djung.locally.Presenter;
 
 import android.content.Context;
-import android.telecom.Call;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
@@ -11,6 +10,7 @@ import com.amazonaws.regions.Region;
 import com.amazonaws.services.dynamodbv2.*;
 import com.example.djung.locally.AWS.AwsConfiguration;
 import com.example.djung.locally.Model.Market;
+import com.example.djung.locally.Utils.LocationUtils;
 
 import java.util.List;
 import java.util.concurrent.Callable;

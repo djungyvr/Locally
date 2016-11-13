@@ -41,16 +41,23 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/market_list_item_open_dates"
-        android:text="Market Dates Open"
+        android:id="@+id/market_list_item_open_status"
+        android:text="Market Open Status"
         android:textColor="#000"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/market_list_item_hours"
-        android:text="Market Hours"
+        android:id="@+id/market_list_item_open_dates"
+        android:text="Market Dates Open"
         android:textColor="#000"/>
+
+    <TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/market_list_item_hours"
+    android:text="Market Hours"
+    android:textColor="#000"/>
 
     <TextView
         android:layout_width="match_parent"

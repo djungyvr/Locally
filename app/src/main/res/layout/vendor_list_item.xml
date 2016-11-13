@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="3"
             android:lines="1"
-            android:text="UBC Farm"
+            android:text="Vendor Name"
             android:id="@+id/vendor_list_item_name"
             android:textSize="20dp"
             android:textColor="#000"
@@ -31,9 +31,12 @@
             android:layout_weight="1"
             android:lines="1"
             android:gravity="end"
-            android:text="50 KM"
+            android:text="Vendor Distance"
             android:textColor="#000"
-            android:id="@+id/vendor_list_item_distance"/>
+            android:id="@+id/vendor_list_item_distance"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:scrollHorizontally="true"/>
 
     </LinearLayout>
 
