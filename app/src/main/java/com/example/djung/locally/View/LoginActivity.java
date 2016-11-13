@@ -5,7 +5,12 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.Snackbar;
+import android.support.test.espresso.IdlingResource;
+import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -32,6 +37,12 @@ import java.util.Locale;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     private final String TAG = "LoginActivity";
+
+
+
+    // The Idling Resource which will be null in production.
+    @Nullable
+    private CountingIdlingResource mIdlingResource = new CountingIdlingResource("LOGIN IDLING RESOURCE");
 
     // Fields
     private EditText mEditTextUsername;
@@ -62,6 +73,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         initializeViews();
+
+        // Initialize app helper
+        // used for testing
+        AppHelper.initialize(getApplicationContext());
     }
 
     /**
@@ -123,6 +138,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
 
         showWaitDialog("Signing in...");
+        // Background work starting so increment the idler
+        mIdlingResource.increment();
         AppHelper.getCognitoUserPool().getUser(username).getSessionInBackground(authenticationHandler);
     }
 
@@ -176,11 +193,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     AuthenticationHandler authenticationHandler = new AuthenticationHandler() {
         @Override
         public void onSuccess(CognitoUserSession cognitoUserSession, CognitoDevice cognitoDevice) {
+            // Login successful but background task done so we decrement the idler
+            mIdlingResource.decrement();
+
             Log.e(TAG,"Authentication Success");
             AppHelper.setCurrSession(cognitoUserSession);
             AppHelper.setNewDevice(cognitoDevice);
             closeWaitDialog();
-            //TODO: CHECK TO SEE IF FIRST LOGIN AND VENDOR IS IN DATABASE, OTHERWISE CREATE A NEW ENTRY
             // Launch the vendor activity
             launchVendor();
         }
@@ -214,6 +233,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         @Override
         public void onFailure(Exception e) {
+            // Login failed but background task done so we decrement the idler
+            mIdlingResource.decrement();
+
             closeWaitDialog();
             TextView label = (TextView) findViewById(R.id.text_view_username_message);
             label.setText("Sign-in failed");
@@ -325,5 +347,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 //        intent.putExtra("destination",forgotPasswordContinuation.getParameters().getDestination());
 //        intent.putExtra("deliveryMed", forgotPasswordContinuation.getParameters().getDeliveryMedium());
 //        startActivityForResult(intent, 3);
+    }
+
+    public CountingIdlingResource getIdlingResource() {
+        return mIdlingResource;
     }
 }

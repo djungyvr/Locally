@@ -1,6 +1,7 @@
 package com.example.djung.locally;
 
 import android.content.Intent;
+import android.support.test.espresso.Espresso;
 import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.ViewAssertion;
 import android.support.test.rule.ActivityTestRule;
@@ -38,9 +39,6 @@ public class LoginActivityTest {
     public ActivityTestRule<LoginActivity> mActivityRule =
             new ActivityTestRule<>(LoginActivity.class);
 
-    // Used to wait for network call
-    private IdlingResource mIdlingResource;
-
     @Test
     public void invalidUsernameTest() {
         // Type text and then press the button.
@@ -73,5 +71,9 @@ public class LoginActivityTest {
                 closeSoftKeyboard());
 
         onView(withId(R.id.button_login)).perform(click());
+
+        Espresso.registerIdlingResources(mActivityRule.getActivity().getIdlingResource());
+
+        onView(withId(R.id.fab_save_vendor_list)).check(matches(isDisplayed()));
     }
 }
