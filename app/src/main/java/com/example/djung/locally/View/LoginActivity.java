@@ -193,13 +193,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     AuthenticationHandler authenticationHandler = new AuthenticationHandler() {
         @Override
         public void onSuccess(CognitoUserSession cognitoUserSession, CognitoDevice cognitoDevice) {
-            // Login successful but background task done so we decrement the idler
-            mIdlingResource.decrement();
 
             Log.e(TAG,"Authentication Success");
+            showDialogMessage("Sign-in successful!", " ");
             AppHelper.setCurrSession(cognitoUserSession);
             AppHelper.setNewDevice(cognitoDevice);
             closeWaitDialog();
+
+            // Login successful but background task done so we decrement the idler
+            mIdlingResource.decrement();
+
             // Launch the vendor activity
             launchVendor();
         }
@@ -233,9 +236,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         @Override
         public void onFailure(Exception e) {
-            // Login failed but background task done so we decrement the idler
-            mIdlingResource.decrement();
-
             closeWaitDialog();
             TextView label = (TextView) findViewById(R.id.text_view_username_message);
             label.setText("Sign-in failed");
@@ -245,6 +245,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             label.setText("Sign-in failed");
 
             showDialogMessage("Sign-in failed", AppHelper.formatException(e));
+
+            // Login failed but background task done so we decrement the idler
+            mIdlingResource.decrement();
         }
     };
 
