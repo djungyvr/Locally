@@ -35,6 +35,10 @@ import static org.hamcrest.core.IsNot.not;
 /**
  * Tests the login activity
  *
+ * Better to do each one individually because of AWS
+ *
+ * User should sign out of test user after successful login
+ *
  * Created by David Jung on 09/11/16.
  */
 @RunWith(AndroidJUnit4.class)
@@ -117,9 +121,13 @@ public class LoginActivityTest {
 
         try {
             onView(withText(containsString("Sign-in successful!"))).check(matches(withText(containsString("Sign-in successful!"))));
-        } catch(NoMatchingViewException e) {
-            onView(withId(R.id.fab_save_vendor_list)).check(matches(isDisplayed()));
+        } catch (NoMatchingViewException e) {
+            try {
+                // Too many login attemps
+                onView(withText(containsString("Sign-in failed"))).check(matches(withText(containsString("Sign-in failed"))));
+            } catch(NoMatchingViewException e1) {
+                onView(withId(R.id.fab_save_vendor_list)).check(matches(isDisplayed()));
+            }
         }
-
     }
 }
