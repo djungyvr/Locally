@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.SearchView
+            android:id="@+id/search_view_grocery_list_items"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:gravity="end"
+            android:iconifiedByDefault="true"
+            android:queryHint="Search"
+            android:theme="@style/ToolBarStyle"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/activity_text_height"
+            android:gravity="center_vertical"
+            android:text="Your Grocery List"
+            android:textSize="@dimen/nav_text_header_size" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view_grocery_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="16dp"
+        android:id="@+id/fab_search_grocery_list"
+        android:src ="@drawable/ic_check_circle"/>
+</android.support.design.widget.CoordinatorLayout>

@@ -50,7 +50,7 @@ public class SuggestionAdapter extends CursorAdapter {
         return view;
     }
 
-    public String getVendorItemSuggestion(int position) {
+    public String getSuggestion(int position) {
         return items.get(position);
     }
 }

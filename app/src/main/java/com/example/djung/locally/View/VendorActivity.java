@@ -40,7 +40,6 @@ import com.example.djung.locally.Utils.VendorUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
@@ -189,23 +188,27 @@ public class VendorActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_manage) {
-            launchEditDetailsFragment();
-        } else if (id == R.id.nav_edit_goods_list) {
-            mSearchView.setVisibility(View.VISIBLE);
-            mFabSaveList.setVisibility(View.VISIBLE);
-            if (mFragmentManager != null) {
-                if (mEditVendorDetailsFragment != null) {
-                    mFragmentManager.beginTransaction().remove(mEditVendorDetailsFragment).commit();
+        switch (id) {
+            case R.id.nav_manage:
+                launchEditDetailsFragment();
+                break;
+            case R.id.nav_edit_goods_list:
+                mSearchView.setVisibility(View.VISIBLE);
+                mFabSaveList.setVisibility(View.VISIBLE);
+                if (mFragmentManager != null) {
+                    if (mEditVendorDetailsFragment != null) {
+                        mFragmentManager.beginTransaction().remove(mEditVendorDetailsFragment).commit();
+                    }
+                    for (int i = 0; i < mFragmentManager.getBackStackEntryCount(); i++) {
+                        mFragmentManager.popBackStack();
+                    }
                 }
-                for (int i = 0; i < mFragmentManager.getBackStackEntryCount(); i++) {
-                    mFragmentManager.popBackStack();
-                }
-            }
-        }
-         else if (id == R.id.nav_signout) {
-            user.signOut();
-            exit();
+                break;
+            case R.id.nav_signout:
+                user.signOut();
+                exit();
+                break;
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.vendor_drawer_layout);
@@ -389,7 +392,7 @@ public class VendorActivity extends AppCompatActivity
 
     @Override
     public boolean onSuggestionClick(int position) {
-        String vendorItem = mVendorItemsSuggestionAdapter.getVendorItemSuggestion(position);
+        String vendorItem = mVendorItemsSuggestionAdapter.getSuggestion(position);
         Log.e(TAG,"Selected suggestion: " + vendorItem);
         mVendorItemAdapter.addItem(vendorItem);
         return true;

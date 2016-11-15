@@ -63,6 +63,9 @@ public class MainActivity extends AppCompatActivity
     // Fragment for displaying settings
     private Fragment mSettingsFragment;
 
+    // Fragment for displaying grocery list
+    private Fragment mGroceryListFragment;
+
     private FragmentManager mFragmentManager;
 
     private IdentityManager identityManager;
@@ -134,6 +137,10 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_map:
                 launchMapFragment();
+                break;
+
+            case R.id.nav_grocery_list:
+                launchGroceryList();
                 break;
 
             case R.id.market_list:
@@ -236,6 +243,21 @@ public class MainActivity extends AppCompatActivity
         ft.commit();
     }
 
+    /**
+     * Launches the grocery fragment
+     */
+    void launchGroceryList() {
+        if (mGroceryListFragment == null)
+            mGroceryListFragment = new GroceryListFragment();
+        if (mFragmentManager == null)
+            mFragmentManager = getSupportFragmentManager();
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.main_activity_container, mGroceryListFragment);
+        ft.addToBackStack(null);
+        ft.commit();
+    }
+
     @Override
     public void onMarketListItemClick(Market market) {
         launchVendorListFragment(market);
@@ -308,7 +330,7 @@ public class MainActivity extends AppCompatActivity
         ft.commit();
     }
 
-    void fetchMarketData() {
+    private void fetchMarketData() {
         marketData = new ArrayList<>();
 
         MarketCardSection openNowSection = new MarketCardSection();
@@ -339,7 +361,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * Get the current user location. Need to check runtime permissions to access location data.
      */
-    void getUserLocation() {
+    private void getUserLocation() {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
@@ -410,54 +432,6 @@ public class MainActivity extends AppCompatActivity
                     Toast.makeText(this, "Location permission denied, distances to markets will not be shown.", Toast.LENGTH_SHORT).show();
                 }
                 return;
-        }
-    }
-
-    void fetchMarket() {
-        MarketPresenter marketPresenter = new MarketPresenter(this);
-        try {
-            Log.e(TAG, "Market Fetched: " + marketPresenter.fetchMarket(0).getName());
-        } catch (ExecutionException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (InterruptedException e) {
-            Log.e(TAG, e.getMessage());
-        }
-    }
-
-    /**
-     * Used for testing, tries to fetch from Vendor table using Vendor presenter
-     */
-    void fetchVendorData() {
-        VendorPresenter vendorPresenter = new VendorPresenter(this);
-
-        try {
-            List<Vendor> vendorList = vendorPresenter.fetchVendors("TestMarket");
-
-            for (Vendor v : vendorList) {
-                Log.e(TAG, "Fetch Vendors Result: " + v.getName());
-            }
-        } catch (ExecutionException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (InterruptedException e) {
-            Log.e(TAG, e.getMessage());
-        }
-
-        try {
-            Vendor vendor = vendorPresenter.fetchVendor("TestMarket", "Vendor1");
-            Log.e(TAG, "Fetch Single Vendor Result: " + vendor.getName());
-        } catch (ExecutionException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (InterruptedException e) {
-            Log.e(TAG, e.getMessage());
-        }
-
-        try {
-            Vendor vendor = vendorPresenter.fetchVendor("TestMarket", "Vendor3");
-            Log.e(TAG, "Fetch Single Vendor Result: " + vendor.getName());
-        } catch (ExecutionException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (InterruptedException e) {
-            Log.e(TAG, e.getMessage());
         }
     }
 }
