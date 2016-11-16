@@ -20,6 +20,12 @@
             android:queryHint="Search"
             android:theme="@style/ToolBarStyle"/>
 
+        <android.support.v7.widget.AppCompatSpinner
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/activity_text_height"
+            android:id="@+id/spinner_market_name" />
+
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="@dimen/activity_text_height"

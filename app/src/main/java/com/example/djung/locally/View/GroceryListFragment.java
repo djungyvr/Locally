@@ -14,15 +14,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import com.example.djung.locally.DB.GroceryListDatabase;
 import com.example.djung.locally.DB.VendorItemDatabase;
 import com.example.djung.locally.DB.VendorItemsProvider;
+import com.example.djung.locally.Model.Vendor;
+import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
-import com.example.djung.locally.Utils.VendorUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by David Jung on 15/11/16.
@@ -31,9 +35,23 @@ import java.util.ArrayList;
 public class GroceryListFragment extends Fragment implements View.OnClickListener, SearchView.OnQueryTextListener, SearchView.OnSuggestionListener {
     private final String TAG = "GroceryListFragment";
 
+    // Should not be used in productions, simply for beta, reflects the market names in the db
+    private final String[] marketNames = {
+            "Trout Lake Farmers Market",
+            "West End Farmers Market",
+            "Hastings Park Winter Farmers Market",
+            "Downtown Farmers Market",
+            "Nat Bailey Stadium Winter Market",
+            "Mount Pleasant Farmers Market",
+            "UBC Farmers Market",
+            "Kitsilano Farmers Market",
+            "Main St Station Farmers Market"
+    };
+
     private RecyclerView mRecyclerViewGroceryList;
     private SearchView mSearchView;
     private FloatingActionButton mSearchGroceryList;
+    private Spinner mSpinnerMarketNames;
 
     private SuggestionAdapter mGroceryItemsSuggestionAdapter;
     private GroceryListAdapter mGroceryListAdapter;
@@ -78,8 +96,18 @@ public class GroceryListFragment extends Fragment implements View.OnClickListene
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            // Search the vendors in the market that have the items
             case R.id.fab_search_grocery_list:
                 Log.d(TAG, "Start searching");
+                VendorPresenter vendorPresenter = new VendorPresenter(getContext());
+                try {
+                    List<Vendor> vendorList = vendorPresenter.lookForVendors(mSpinnerMarketNames.getSelectedItem().toString(), mGroceryListAdapter.getItemNames());
+                    for(Vendor v : vendorList) {
+                        Log.d(TAG,v.getName());
+                    }
+                } catch (ExecutionException | InterruptedException e) {
+                    Log.e(TAG,e.getMessage());
+                }
                 break;
         }
     }
@@ -112,6 +140,14 @@ public class GroceryListFragment extends Fragment implements View.OnClickListene
     private void initializeViews(View view) {
         mSearchGroceryList = (FloatingActionButton) view.findViewById(R.id.fab_search_grocery_list);
         mSearchGroceryList.setOnClickListener(this);
+        mSpinnerMarketNames = (Spinner) view.findViewById(R.id.spinner_market_name);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                getContext(),
+                android.R.layout.simple_spinner_dropdown_item,
+                marketNames
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSpinnerMarketNames.setAdapter(adapter);
     }
 
     private void initializeSearch(View view) {

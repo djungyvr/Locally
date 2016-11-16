@@ -15,6 +15,7 @@ import com.amazonaws.services.dynamodbv2.model.Condition;
 import com.example.djung.locally.AWS.AwsConfiguration;
 import com.example.djung.locally.Model.Vendor;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -125,7 +126,21 @@ public class VendorPresenter {
         return addedVendor;
     }
 
-    class FetchVendorTask implements Callable<List<Vendor>> {
+    /**
+     * In a given market return the vendors that have atleast one of your grocery list items
+     *
+     * Returns the Vendor that was added
+     */
+    public List<Vendor> lookForVendors(String marketName, List<String> groceryList) throws ExecutionException, InterruptedException {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<List<Vendor>> future = executor.submit(new LookForVendorsTask(marketName,groceryList));
+
+        executor.shutdown(); // Important!
+
+        return future.get();
+    }
+
+    private class FetchVendorTask implements Callable<List<Vendor>> {
 
         private String marketName;
         private String vendorName;
@@ -180,7 +195,7 @@ public class VendorPresenter {
     /**
      * Updates the vendor product list
      */
-    class UpdateVendorProducts implements Callable<Boolean> {
+    private class UpdateVendorProducts implements Callable<Boolean> {
         private final String TAG = "UpdateProducts";
         private String marketName;
         private String vendorName;
@@ -253,7 +268,7 @@ public class VendorPresenter {
     /**
      * Updates the vendor product list
      */
-    class UpdateVendorDetails implements Callable<Boolean> {
+    private class UpdateVendorDetails implements Callable<Boolean> {
         private final String TAG = "UpdateDetail";
         private String marketName;
         private String vendorName;
@@ -321,7 +336,7 @@ public class VendorPresenter {
     /**
      * Fetch the vendor product list
      */
-    class FetchVendorProducts implements Callable<Set<String>> {
+    private class FetchVendorProducts implements Callable<Set<String>> {
 
         private String marketName;
         private String vendorName;
@@ -380,7 +395,7 @@ public class VendorPresenter {
     /**
      * Add a vendor to the database
      */
-    class AddVendor implements Callable<Vendor> {
+    private class AddVendor implements Callable<Vendor> {
 
         private String marketName;
         private String vendorName;
@@ -425,9 +440,65 @@ public class VendorPresenter {
     }
 
     /**
+     * Fetch vendors in a given market that have one or more items in your grocery list
+     */
+    private class LookForVendorsTask implements Callable<List<Vendor>> {
+
+        private String marketName;
+        private List<String> items;
+
+        LookForVendorsTask(String marketName, List<String> items) {
+            this.marketName = marketName;
+            this.items = items;
+        }
+
+        @Override
+        public List<Vendor> call() throws Exception {
+            // Initialize the Amazon Cognito credentials provider
+            CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+                    context,
+                    AwsConfiguration.AMAZON_COGNITO_IDENTITY_POOL_ID, // Identity Pool ID
+                    AwsConfiguration.AMAZON_DYNAMODB_REGION // Region
+            );
+
+            // Create a Dynamo Database Client
+            AmazonDynamoDBClient ddbClient = Region.getRegion(AwsConfiguration.AMAZON_DYNAMODB_REGION) // CRUCIAL
+                    .createClient(
+                            AmazonDynamoDBClient.class,
+                            credentialsProvider,
+                            new ClientConfiguration()
+                    );
+
+            // Create a mapper from the client
+            DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
+
+            DynamoDBQueryExpression<Vendor> query =
+                    new DynamoDBQueryExpression<>();
+            Vendor hashKeyValues = new Vendor();
+            hashKeyValues.setMarketName(marketName);
+            query.setHashKeyValues(hashKeyValues);
+
+            List<Vendor> matchingVendors = new ArrayList<>();
+
+            List<Vendor> vendors = mapper.query(Vendor.class,query);
+            // Iterate through the vendors and add to the list if they have it
+            for(Vendor vendor : vendors) {
+                for(String item : items) {
+                    // Add if it contains the grocery list item and if the vendor isn't already added
+                    if (vendor.getItemSet().contains(item) && !matchingVendors.contains(vendor)) {
+                        matchingVendors.add(vendor);
+                    }
+                }
+            }
+
+            return matchingVendors;
+        }
+    }
+
+    /**
      * Fetch all the vendors that are associated with that market name
      */
-    class FetchVendorsTask implements Callable<List<Vendor>> {
+    private class FetchVendorsTask implements Callable<List<Vendor>> {
 
         private String marketName;
 

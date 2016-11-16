@@ -89,8 +89,7 @@ public class VendorDetailsFragment extends Fragment implements View.OnClickListe
 
         //Get the list of products that the vendor sells
         produceList = new ArrayList<String>();
-        Set<String> produceItemsSet = currentVendor.getItemSet();
-
+        List<String> produceItemsSet = VendorUtils.filterPlaceholderText(new ArrayList<String>(currentVendor.getItemSet()));
         for (String item: produceItemsSet){
             produceList.add(item);
         }
