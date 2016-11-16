@@ -15,11 +15,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.djung.locally.DB.GroceryListDatabase;
 import com.example.djung.locally.DB.VendorItemDatabase;
 import com.example.djung.locally.DB.VendorItemsProvider;
 import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.VendorUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -36,15 +38,36 @@ public class GroceryListFragment extends Fragment implements View.OnClickListene
     private SuggestionAdapter mGroceryItemsSuggestionAdapter;
     private GroceryListAdapter mGroceryListAdapter;
 
+    private GroceryListDatabase mGroceryListDatabase;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.grocery_list_fragment, container, false);
+
+        mGroceryListDatabase = new GroceryListDatabase(getContext());
 
         initializeViews(view);
         initializeSearch(view);
         initializeAdapter(view);
 
         return view;
+    }
+
+    @Override
+    public void onPause() {
+        // Each time we pause we update the database
+        mGroceryListDatabase.clear();
+        if (mGroceryListDatabase != null) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (String item : mGroceryListAdapter.getItemNames()) {
+                        mGroceryListDatabase.addGroceryItem(item);
+                    }
+                }
+            }).start();
+        }
+        super.onPause();
     }
 
     @Override
@@ -56,7 +79,7 @@ public class GroceryListFragment extends Fragment implements View.OnClickListene
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.fab_search_grocery_list:
-                Log.d(TAG,"Start searching");
+                Log.d(TAG, "Start searching");
                 break;
         }
     }
@@ -105,14 +128,22 @@ public class GroceryListFragment extends Fragment implements View.OnClickListene
 
         mRecyclerViewGroceryList.setHasFixedSize(true);
 
-        ArrayList<String> filteredList = new ArrayList<>();
-        filteredList.add("Placeholder 1");
-        filteredList.add("Placeholder 2");
-        filteredList.add("Placeholder 3");
-        filteredList.add("Placeholder 4");
-        filteredList.add("Placeholder 5");
+        ArrayList<String> groceryList = new ArrayList<>();
 
-        mGroceryListAdapter = new GroceryListAdapter(filteredList, getContext());
+        Cursor cursor = mGroceryListDatabase.getGroceryItems();
+
+        // Iterate through the cursor and add the items
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                String name = cursor.getString(cursor
+                        .getColumnIndex(GroceryListDatabase.KEY_GROCERY_ITEM_NAME));
+
+                groceryList.add(name);
+                cursor.moveToNext();
+            }
+        }
+
+        mGroceryListAdapter = new GroceryListAdapter(groceryList, getContext());
 
         mRecyclerViewGroceryList.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 
