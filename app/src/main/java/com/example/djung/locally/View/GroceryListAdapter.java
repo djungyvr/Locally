@@ -21,6 +21,7 @@ public class GroceryListAdapter extends RecyclerView.Adapter<GroceryListAdapter.
 
     private ArrayList<String> itemNames;
     private Context context;
+    private List<String> foundItems;
 
     GroceryListAdapter(ArrayList<String> itemNames, Context context) {
         this.itemNames = itemNames;
@@ -38,6 +39,15 @@ public class GroceryListAdapter extends RecyclerView.Adapter<GroceryListAdapter.
     public void onBindViewHolder(GroceryListAdapter.GroceryListItemViewHolder holder, int position) {
         // Set the text view
         holder.mGroceryListItemName.setText(itemNames.get(position));
+
+        // Handle setting the text colour
+        if(foundItems != null) {
+            if(foundItems.contains(itemNames.get(position))) {
+                holder.mGroceryListItemName.setTextColor(context.getResources().getColor(R.color.success));
+            } else {
+                holder.mGroceryListItemName.setTextColor(context.getResources().getColor(R.color.black));
+            }
+        }
     }
 
     @Override
@@ -58,6 +68,11 @@ public class GroceryListAdapter extends RecyclerView.Adapter<GroceryListAdapter.
 
     public List<String> getItemNames() {
         return itemNames;
+    }
+
+    public void setFound(List<String> foundItems) {
+        this.foundItems = foundItems;
+        notifyDataSetChanged();
     }
 
     public class GroceryListItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

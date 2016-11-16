@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.djung.locally.DB.GroceryListDatabase;
 import com.example.djung.locally.DB.VendorItemDatabase;
@@ -101,9 +102,17 @@ public class GroceryListFragment extends Fragment implements View.OnClickListene
                 Log.d(TAG, "Start searching");
                 VendorPresenter vendorPresenter = new VendorPresenter(getContext());
                 try {
-                    List<Vendor> vendorList = vendorPresenter.lookForVendors(mSpinnerMarketNames.getSelectedItem().toString(), mGroceryListAdapter.getItemNames());
-                    for(Vendor v : vendorList) {
-                        Log.d(TAG,v.getName());
+                    List<String> items = vendorPresenter.lookupGroceryList(mSpinnerMarketNames.getSelectedItem().toString(), mGroceryListAdapter.getItemNames());
+                    if(items.size() > 1) {
+                        Toast.makeText(getContext(),"Found " + items.size() + " items",Toast.LENGTH_SHORT).show();
+                    } else if(items.size() == 1) {
+                        Toast.makeText(getContext(),"Found " + items.size() + " item",Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(),"No items found",Toast.LENGTH_SHORT).show();
+                    }
+                    mGroceryListAdapter.setFound(items);
+                    for(String item : items) {
+                        Log.d(TAG,item);
                     }
                 } catch (ExecutionException | InterruptedException e) {
                     Log.e(TAG,e.getMessage());

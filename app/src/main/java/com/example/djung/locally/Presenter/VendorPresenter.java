@@ -140,6 +140,20 @@ public class VendorPresenter {
         return future.get();
     }
 
+    /**
+     * In a given market return the items that have been found in your grocery list items
+     *
+     * Returns a list of grocery list items that were found
+     */
+    public List<String> lookupGroceryList(String marketName, List<String> groceryList) throws ExecutionException, InterruptedException {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<List<String>> future = executor.submit(new LookForAvailableTask(marketName,groceryList));
+
+        executor.shutdown(); // Important!
+
+        return future.get();
+    }
+
     private class FetchVendorTask implements Callable<List<Vendor>> {
 
         private String marketName;
@@ -480,10 +494,10 @@ public class VendorPresenter {
 
             List<Vendor> matchingVendors = new ArrayList<>();
 
-            List<Vendor> vendors = mapper.query(Vendor.class,query);
+            List<Vendor> vendors = mapper.query(Vendor.class, query);
             // Iterate through the vendors and add to the list if they have it
-            for(Vendor vendor : vendors) {
-                for(String item : items) {
+            for (Vendor vendor : vendors) {
+                for (String item : items) {
                     // Add if it contains the grocery list item and if the vendor isn't already added
                     if (vendor.getItemSet().contains(item) && !matchingVendors.contains(vendor)) {
                         matchingVendors.add(vendor);
@@ -492,6 +506,62 @@ public class VendorPresenter {
             }
 
             return matchingVendors;
+        }
+    }
+
+    /**
+     * Fetch the list of items that are available from the grocery list in a given market
+     */
+    private class LookForAvailableTask implements Callable<List<String>> {
+
+        private String marketName;
+        private List<String> items;
+
+        LookForAvailableTask(String marketName, List<String> items) {
+            this.marketName = marketName;
+            this.items = items;
+        }
+
+        @Override
+        public List<String> call() throws Exception {
+            // Initialize the Amazon Cognito credentials provider
+            CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+                    context,
+                    AwsConfiguration.AMAZON_COGNITO_IDENTITY_POOL_ID, // Identity Pool ID
+                    AwsConfiguration.AMAZON_DYNAMODB_REGION // Region
+            );
+
+            // Create a Dynamo Database Client
+            AmazonDynamoDBClient ddbClient = Region.getRegion(AwsConfiguration.AMAZON_DYNAMODB_REGION) // CRUCIAL
+                    .createClient(
+                            AmazonDynamoDBClient.class,
+                            credentialsProvider,
+                            new ClientConfiguration()
+                    );
+
+            // Create a mapper from the client
+            DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
+
+            DynamoDBQueryExpression<Vendor> query =
+                    new DynamoDBQueryExpression<>();
+            Vendor hashKeyValues = new Vendor();
+            hashKeyValues.setMarketName(marketName);
+            query.setHashKeyValues(hashKeyValues);
+
+            List<String> matchingItems = new ArrayList<>();
+
+            List<Vendor> vendors = mapper.query(Vendor.class, query);
+            // Iterate through the vendors and add item to the list if they have it
+            for (Vendor vendor : vendors) {
+                for (String item : items) {
+                    // Add if it contains the grocery list item and if the vendor isn't already added
+                    if (vendor.getItemSet().contains(item) && !matchingItems.contains(item)) {
+                        matchingItems.add(item);
+                    }
+                }
+            }
+
+            return matchingItems;
         }
     }
 
