@@ -211,4 +211,23 @@ public class MarketUtils {
         }
         return "";
     }
+
+    /**
+     * Returns the number of markets currently open
+     * @param markets list of markets
+     * @return number of markets currently open, 0 if empty or null list input
+     */
+    public static int getNumberOfCurrentlyOpenMarkets(List<Market> markets) {
+        if(markets == null || markets.isEmpty()) {
+            return 0;
+        }
+        int count = 0;
+
+        for(int i=0; i<markets.size(); ++i) {
+            if(isMarketCurrentlyOpen(markets.get(i))) {
+                ++count;
+            }
+        }
+        return count;
+    }
 }

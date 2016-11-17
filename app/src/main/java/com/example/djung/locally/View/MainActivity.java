@@ -23,6 +23,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -30,10 +32,12 @@ import android.widget.Toast;
 import com.example.djung.locally.AWS.AWSMobileClient;
 import com.example.djung.locally.AWS.AppHelper;
 import com.example.djung.locally.AWS.IdentityManager;
+import com.example.djung.locally.DB.GroceryListDatabase;
 import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.Presenter.MarketPresenter;
 import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.DateUtils;
+import com.example.djung.locally.Utils.MarketUtils;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
@@ -44,9 +48,12 @@ public class MainActivity extends AppCompatActivity
 
     private final String TAG = "MainActivity";
 
-    private ArrayList<Object> cardSectionsData;
-    private Location currentLocation;
-    private LocationManager locationManager;
+    private ArrayList<Object> mCardSectionsData;
+
+    private ArrayList<Market> mAllMarketsList;
+
+    private Location mCurrentLocation;
+    private LocationManager mLocationManager;
 
     // Fragment for displaying maps
     private Fragment mGoogleMapsFragment;
@@ -80,11 +87,9 @@ public class MainActivity extends AppCompatActivity
 
         initializeBaseViews();
 
-        cardSectionsData = new ArrayList<>();
+        mCardSectionsData = new ArrayList<>();
 
-        initializeQuickLinks();
-
-        fetchMarketData();
+        fetchAllMarketsData();
 
         getUserLocation();
 
@@ -169,52 +174,6 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    /**
-     * Initializes content_main which has the cards of nearby and recently viewed markets
-     */
-    public void initializeQuickLinks() {
-        ArrayList<QuickLinkCard> q = new ArrayList<>();
-        q.add(new QuickLinkCard(R.drawable.ubc, "All Markets", "9 markets"));
-        q.add(new QuickLinkCard(R.drawable.thumbnail2, "Calendar", "5 markets open now"));
-        q.add(new QuickLinkCard(R.drawable.thumbnail3, "Fruits & Vegetables", "16 in season"));
-        q.add(new QuickLinkCard(R.drawable.thumbnail4, "Your Lists", "3 saved lists"));
-
-        QuickLinkCardSection qs = new QuickLinkCardSection(q);
-        cardSectionsData.add(qs);
-    }
-
-    /**
-     * Initializes content_main which has the cards of nearby and recently viewed markets
-     */
-    public void initializeContentMain() {
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
-        MarketCardSectionAdapter adapter = new MarketCardSectionAdapter(this, cardSectionsData, currentLocation);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        recyclerView.setAdapter(adapter);
-    }
-
-    /**
-     * Creates a new adapter for the MarketCardSection and replaces the old adapter with the new one
-     */
-    public void updateContentMain(){
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        MarketCardSectionAdapter adapter = new MarketCardSectionAdapter(this, cardSectionsData, currentLocation);
-        recyclerView.swapAdapter(adapter,false);
-        Log.e(TAG, "Replaced old adapter with new adapter for recycler view due to updated location permissions");
-    }
-
-    public void initializeAWS() {
-        // Obtain a reference to the mobile client. It is created in the Application class,
-        // but in case a custom Application class is not used, we initialize it here if necessary.
-        AWSMobileClient.initializeMobileClientIfNecessary(this);
-
-        // Obtain a reference to the mobile client. It is created in the Application class.
-        final AWSMobileClient awsMobileClient = AWSMobileClient.defaultMobileClient();
-
-        // Obtain a reference to the identity manager.
-        identityManager = awsMobileClient.getIdentityManager();
-    }
 
     /**
      * Initialize the toolbar, floating action button, and the drawer
@@ -243,6 +202,93 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
+     * Initializes content_main which has card sections for quick links and nearby
+     * and recently viewed markets
+     */
+    public void initializeContentMain() {
+        initializeQuickLinksCardSection();
+        initializeMarketsCardSection();
+
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+        MarketCardSectionAdapter adapter = new MarketCardSectionAdapter(this, mCardSectionsData, mCurrentLocation);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        recyclerView.setAdapter(adapter);
+    }
+
+    /**
+     * Initializes the quick links section which includes All Markets, Calendar,
+     * Fruits & Vegetables, Your Lists
+     */
+    public void initializeQuickLinksCardSection() {
+        ArrayList<QuickLinkCard> q = new ArrayList<>();
+
+        String allMarkets = "";
+        String marketsOpen = "";
+
+        if(mAllMarketsList != null) {
+            allMarkets = mAllMarketsList.size() + " markets";
+            marketsOpen = MarketUtils.getNumberOfCurrentlyOpenMarkets(mAllMarketsList) +
+                    " markets open now";
+        }
+
+//        GroceryListDatabase g = new GroceryListDatabase(this); //TODO:
+//        int numItems = g.getGroceryItemsCount();
+
+        q.add(new QuickLinkCard(R.drawable.ubc, "All Markets", allMarkets));
+        q.add(new QuickLinkCard(R.drawable.thumbnail2, "Calendar", marketsOpen));
+        q.add(new QuickLinkCard(R.drawable.thumbnail3, "Fruits & Vegetables", "16 in season"));
+        q.add(new QuickLinkCard(R.drawable.thumbnail4, "Your Grocery List", "3 saved items"));
+
+        QuickLinkCardSection qs = new QuickLinkCardSection(q);
+        mCardSectionsData.add(qs);
+    }
+
+    /**
+     * Decide which markets to display in the sections
+     * TODO: for now we'll just add all the markets
+     */
+    public void initializeMarketsCardSection() {
+        MarketCardSection openNowSection = new MarketCardSection();
+        openNowSection.setSectionTitle("Markets Open Now");
+
+        MarketCardSection recentlyViewedSection = new MarketCardSection();
+        recentlyViewedSection.setSectionTitle("Recently Viewed");
+
+        if (mAllMarketsList != null || !mAllMarketsList.isEmpty()) {
+            openNowSection.setMarketList(mAllMarketsList);
+            recentlyViewedSection.setMarketList(mAllMarketsList);
+
+            mCardSectionsData.add(openNowSection);
+            mCardSectionsData.add(recentlyViewedSection);
+        }
+    }
+
+    /**
+     * Creates a new adapter for the MarketCardSection and replaces the old adapter with the new one
+     */
+    public void updateContentMain(){
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        MarketCardSectionAdapter adapter = new MarketCardSectionAdapter(this, mCardSectionsData, mCurrentLocation);
+        recyclerView.swapAdapter(adapter,false);
+        Log.e(TAG, "Replaced old adapter with new adapter for recycler view due to updated location permissions");
+    }
+
+
+    public void initializeAWS() {
+        // Obtain a reference to the mobile client. It is created in the Application class,
+        // but in case a custom Application class is not used, we initialize it here if necessary.
+        AWSMobileClient.initializeMobileClientIfNecessary(this);
+
+        // Obtain a reference to the mobile client. It is created in the Application class.
+        final AWSMobileClient awsMobileClient = AWSMobileClient.defaultMobileClient();
+
+        // Obtain a reference to the identity manager.
+        identityManager = awsMobileClient.getIdentityManager();
+    }
+
+
+    /**
      * Start calendar intent
      */
     public void startCalendarIntent() {
@@ -259,8 +305,10 @@ public class MainActivity extends AppCompatActivity
         if (mFragmentManager == null)
             mFragmentManager = getSupportFragmentManager();
 
-        // Replace the container with the fragment
-        mFragmentManager.beginTransaction().replace(R.id.main_activity_container, mGoogleMapsFragment).commit();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.main_activity_container, mGoogleMapsFragment);
+        ft.addToBackStack(null);
+        ft.commit();
     }
 
     /**
@@ -365,35 +413,24 @@ public class MainActivity extends AppCompatActivity
         ft.commit();
     }
 
-    private void fetchMarketData() {
-        MarketCardSection openNowSection = new MarketCardSection();
-        openNowSection.setSectionTitle("Markets Open Now");
-
-        MarketCardSection recentlyViewedSection = new MarketCardSection();
-        recentlyViewedSection.setSectionTitle("Recently Viewed");
-
+    /**
+     * Gets a list of all the markets
+     */
+    private void fetchAllMarketsData() {
         MarketPresenter presenter = new MarketPresenter(this);
+        mAllMarketsList = new ArrayList<>();
         try {
-            ArrayList<Market> marketList = new ArrayList<>(presenter.fetchMarkets());
-
-            if (marketList != null || !marketList.isEmpty()) {
-                openNowSection.setMarketList(marketList);
-                recentlyViewedSection.setMarketList(marketList);
-            }
-
+            mAllMarketsList = new ArrayList<>(presenter.fetchMarkets());
         } catch (final ExecutionException | InterruptedException e) {
             Log.e(TAG, e.getMessage());
         }
-
-        cardSectionsData.add(openNowSection);
-        cardSectionsData.add(recentlyViewedSection);
     }
 
     /**
      * Get the current user location. Need to check runtime permissions to access location data.
      */
     private void getUserLocation() {
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -411,17 +448,17 @@ public class MainActivity extends AppCompatActivity
 
         //Permission is granted and we go ahead to access the location data
         else {
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-            currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+            mCurrentLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             Log.e(TAG, "Location permissions passed, successfully got user location");
-            updateContentMain();
+          //  updateContentMain(); //TODO:
         }
     }
 
     LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
-            currentLocation = location;
+            mCurrentLocation = location;
         }
 
         @Override
@@ -451,16 +488,17 @@ public class MainActivity extends AppCompatActivity
                             ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         return;
                     }
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-                    currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                    mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+                    mCurrentLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                     Log.e(TAG, "Location permissions passed, successfully got user location");
-                    updateContentMain();
+                  //  updateContentMain(); TODO:
                 }
 
                 //Permission is denied to use location data and we explain to the user that distance to markets will not be shown
                 else {
-                    currentLocation = null;
-                    Toast.makeText(this, "Location permission denied, distances to markets will not be shown.", Toast.LENGTH_SHORT).show();
+                    mCurrentLocation = null;
+                    Toast.makeText(this, "Please turn on location services in App Settings" +
+                            " for additional functionality.", Toast.LENGTH_SHORT).show();
                 }
                 return;
         }
@@ -469,4 +507,5 @@ public class MainActivity extends AppCompatActivity
     public void setActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);
     }
+
 }

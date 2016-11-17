@@ -192,4 +192,31 @@ public class MarketUtilsUnitTest {
 
         assertEquals("",MarketUtils.getMarketUrl("This Market Does Not Exist"));
     }
+
+    @Test
+    public void testNumberOfCurrentlyOpenMarkets() {
+        // check null or empty market list
+        ArrayList<Market> list = new ArrayList<>();
+        assertEquals(0, MarketUtils.getNumberOfCurrentlyOpenMarkets(null));
+        assertEquals(0, MarketUtils.getNumberOfCurrentlyOpenMarkets(list));
+
+        MarketTest a1 = new MarketTest();
+        a1.setYearOpen(mAlwaysOpenYear);
+        a1.setDailyHours(mAlwaysClosedHours);
+
+        MarketTest a2 = new MarketTest();
+        a2.setDailyHours(mAlwaysClosedHours);
+        a2.setYearOpen(mAlwaysOpenYear);
+
+        list.add(a1);
+        list.add(a2);
+
+        assertEquals(0, MarketUtils.getNumberOfCurrentlyOpenMarkets(list));
+
+        a1.setDailyHours(mAlwaysOpenHours);
+        a2.setDailyHours(mAlwaysOpenHours);
+
+        assertEquals(2, MarketUtils.getNumberOfCurrentlyOpenMarkets(list));
+
+    }
 }
