@@ -29,17 +29,18 @@ public class MarketActivity extends AppCompatActivity{
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.content_market);
-            List<Market> markets=new ArrayList<Market>();
+            List<Market> markets;
+            ArrayList<Market> displayMarket=new ArrayList<>();
 
             Intent intent = getIntent();
-            int marketName=Integer.valueOf(intent.getExtras().getString("M_ID"));
+            int marketIndex=Integer.valueOf(intent.getExtras().getString("M_ID"));
 
             MarketPresenter helper= new MarketPresenter(this);
             try {
-                Market market = helper.fetchMarket(marketName);
-                markets.add(market);
+                markets = helper.fetchMarkets();
+                displayMarket.add(markets.get(marketIndex));
                 ListView listview = (ListView) findViewById(R.id.marketPage);
-                MarketPageAdapter marketAdapter = new MarketPageAdapter(this,new ArrayList<Market>(markets));
+                MarketPageAdapter marketAdapter = new MarketPageAdapter(this,new ArrayList<Market>(displayMarket));
                 listview.setAdapter(marketAdapter);
             } catch (ExecutionException e) {
                 Log.e(TAG,e.getMessage());
