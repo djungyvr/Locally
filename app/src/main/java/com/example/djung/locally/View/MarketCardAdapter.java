@@ -50,6 +50,7 @@ public class MarketCardAdapter extends RecyclerView.Adapter<MarketCardAdapter.Si
         } else {
             Picasso.with(mContext).setIndicatorsEnabled(true);
             Picasso.with(mContext).load(imageResource)
+                    .error(R.drawable.default_market_image)
                     //.resize()
                     //.centerCrop()
                     .into(holder.mImage);
