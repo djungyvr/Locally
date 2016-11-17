@@ -2,6 +2,7 @@ package com.example.djung.locally.Model;
 
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -56,12 +57,10 @@ public class Vendor {
     private String name;
     // Description of the vendor
     private String description;
-    // Link to vendor image
-    private String imageResource;
     // Set of items this vendor carries
-    private Set<Integer> itemIdSet;
+    private Set<String> itemSet;
 
-    @DynamoDBIndexHashKey(attributeName = "Vendor.MarketName")
+    @DynamoDBHashKey(attributeName = "Vendor.MarketName")
     public String getMarketName() {
         return marketName;
     }
@@ -70,7 +69,7 @@ public class Vendor {
         this.marketName = marketName;
     }
 
-    @DynamoDBIndexRangeKey(attributeName="Vendor.Name")
+    @DynamoDBRangeKey(attributeName="Vendor.Name")
     public String getName() {
         return name;
     }
@@ -79,12 +78,23 @@ public class Vendor {
         this.name = name;
     }
 
-    @DynamoDBAttribute(attributeName = "Vendor.ItemList")
-    public Set<Integer> getItemIdSet() {
-        return itemIdSet;
+    @DynamoDBAttribute(attributeName = "Vendor.ItemSet")
+    public Set<String> getItemSet() {
+        // Since AWS does not allow empty string sets, we keep a place holder, but we get rid of it
+        // once we try to fetch it
+        return itemSet;
     }
 
-    public void setItemIdSet(Set<Integer> itemIdSet) {
-        this.itemIdSet = itemIdSet;
+    public void setItemSet(Set<String> itemSet) {
+        this.itemSet = itemSet;
+    }
+
+    @DynamoDBAttribute(attributeName = "Vendor.Description")
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

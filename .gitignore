@@ -9,6 +9,9 @@
 /captures
 # End default
 
+# Don't save
+projectFilesBackup/
+
 # Built application files
 *.apk
 *.ap_
@@ -49,7 +52,7 @@ captures/
 
 # Keystore files
 *.jks
-
+*Constants.java
 # Ignore Constants Class
 app/src/main/java/com/example/djung/locally/AWS/AwsConfiguration.java
 *AwsConfiguration.java

@@ -1,6 +1,7 @@
 package com.example.djung.locally.View;
 
 import android.content.Context;
+import android.location.Location;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,8 +10,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.djung.locally.R;
+import com.example.djung.locally.Utils.MarketUtils;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by David Jung on 16/10/16.
@@ -19,13 +23,15 @@ public class MarketCardSectionAdapter extends RecyclerView.Adapter<MarketCardSec
 
     private ArrayList<MarketCardSection> dataList;
     private Context mContext;
+    private Location currentLocation;
 
     public MarketCardSectionAdapter() {
     }
 
-    public MarketCardSectionAdapter(Context context, ArrayList<MarketCardSection> dataList) {
+    public MarketCardSectionAdapter(Context context, ArrayList<MarketCardSection> dataList, Location currentLocation) {
         this.mContext = context;
         this.dataList = dataList;
+        this.currentLocation = currentLocation;
     }
 
     @Override
@@ -39,11 +45,15 @@ public class MarketCardSectionAdapter extends RecyclerView.Adapter<MarketCardSec
     public void onBindViewHolder(MarketCardSectionAdapter.ItemRowHolder holder, int position) {
         final String sectionName = dataList.get(position).getSectionTitle();
 
-        ArrayList singleSectionItems = dataList.get(position).getMarketCardArrayList();
+        List singleSectionItems = dataList.get(position).getMarketList();
+
+        singleSectionItems = MarketUtils.getClosestMarkets(singleSectionItems, currentLocation);
+
+        ArrayList marketList = new ArrayList(singleSectionItems);
 
         holder.mItemTitle.setText(sectionName);
 
-        MarketCardAdapter itemListDataAdapter = new MarketCardAdapter(mContext,singleSectionItems);
+        MarketCardAdapter itemListDataAdapter = new MarketCardAdapter(mContext, marketList, currentLocation);
 
         holder.mRecyclerView.setHasFixedSize(true);
         holder.mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));

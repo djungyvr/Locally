@@ -12,29 +12,12 @@
     tools:context="com.example.djung.locally.View.LoginActivity"
     tools:showIn="@layout/activity_login">
 
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="@string/app_name"
-        android:id="@+id/textView"
-        android:layout_centerHorizontal="true" />
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/nav_header_vertical_spacing"
-        android:layout_below="@+id/textView"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/space2" />
-
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text=" "
         android:id="@+id/text_view_username_label"
-        android:layout_below="@+id/space2"
         android:layout_centerHorizontal="true" />
 
     <EditText

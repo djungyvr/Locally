@@ -1,5 +1,7 @@
 package com.example.djung.locally.View;
 
+import com.example.djung.locally.Model.Market;
+
 import java.util.ArrayList;
 
 /**
@@ -8,24 +10,24 @@ import java.util.ArrayList;
 public class MarketCardSection {
 
     private String sectionTitle;
-    private ArrayList<MarketCard> marketCardArrayList;
+    private ArrayList<Market> marketList;
 
 
     public MarketCardSection() {
 
     }
 
-    public MarketCardSection(String sectionTitle, ArrayList<MarketCard> marketCardArrayList) {
+    public MarketCardSection(String sectionTitle, ArrayList<Market> marketList) {
         this.sectionTitle = sectionTitle;
-        this.marketCardArrayList = marketCardArrayList;
+        this.marketList = marketList;
     }
 
-    public ArrayList<MarketCard> getMarketCardArrayList() {
-        return marketCardArrayList;
+    public ArrayList<Market> getMarketList() {
+        return marketList;
     }
 
-    public void setMarketCardArrayList(ArrayList<MarketCard> marketCardArrayList) {
-        this.marketCardArrayList = marketCardArrayList;
+    public void setMarketList(ArrayList<Market> marketCardList) {
+        this.marketList = marketCardList;
     }
 
     public String getSectionTitle() {
