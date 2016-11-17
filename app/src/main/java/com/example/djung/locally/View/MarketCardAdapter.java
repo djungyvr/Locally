@@ -14,6 +14,7 @@ import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.LocationUtils;
 import com.example.djung.locally.Utils.MarketUtils;
+import com.squareup.picasso.Picasso;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -43,7 +44,16 @@ public class MarketCardAdapter extends RecyclerView.Adapter<MarketCardAdapter.Si
     public void onBindViewHolder(SingleItemRowHolder holder, int position) {
         Market market = marketsList.get(position);
         holder.mTitle.setText(market.getName());
-        holder.mImage.setImageResource(R.drawable.ubc);
+        String imageResource = MarketUtils.getMarketUrl(market.getName());
+        if(imageResource.isEmpty()) {
+            holder.mImage.setImageResource(R.drawable.ubc);
+        } else {
+            Picasso.with(mContext).setIndicatorsEnabled(true);
+            Picasso.with(mContext).load(imageResource)
+                    //.resize()
+                    //.centerCrop()
+                    .into(holder.mImage);
+        }
         if (currentLocation != null){
             float distance = MarketUtils.getDistanceFromMarket(market, currentLocation);
             holder.mDistance.setText(LocationUtils.formatDistanceInKm(distance));

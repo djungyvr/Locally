@@ -159,4 +159,37 @@ public class MarketUtilsUnitTest {
         assertFalse(result3);
     }
 
+    @Test
+    public void testGetMarketUrl() {
+        // Should not be used in productions, simply for beta, reflects the market names in the db
+        final String[] marketNames = {
+                "Trout Lake Farmers Market",
+                "West End Farmers Market",
+                "Hastings Park Winter Farmers Market",
+                "Downtown Farmers Market",
+                "Nat Bailey Stadium Winter Market",
+                "Mount Pleasant Farmers Market",
+                "UBC Farmers Market",
+                "Kitsilano Farmers Market",
+                "Main St Station Farmers Market"
+        };
+
+        final String[] marketUrls = {
+                "https://s3-us-west-2.amazonaws.com/locally-market-images/trout_lake.jpg",
+                "https://s3-us-west-2.amazonaws.com/locally-market-images/west_end.jpg",
+                "https://s3-us-west-2.amazonaws.com/locally-market-images/hastings_park.jpg",
+                "https://s3-us-west-2.amazonaws.com/locally-market-images/downtown.jpg",
+                "https://s3-us-west-2.amazonaws.com/locally-market-images/nat_bailey.jpg",
+                "https://s3-us-west-2.amazonaws.com/locally-market-images/mount_pleasant.jpeg",
+                "https://s3-us-west-2.amazonaws.com/locally-market-images/ubc.jpg",
+                "https://s3-us-west-2.amazonaws.com/locally-market-images/kitsilano.jpeg",
+                "https://s3-us-west-2.amazonaws.com/locally-market-images/main_st.jpg"
+        };
+
+        for(int i = 0 ; i < marketNames.length; i++){
+            assertEquals(marketUrls[i],MarketUtils.getMarketUrl(marketNames[i]));
+        }
+
+        assertEquals("",MarketUtils.getMarketUrl("This Market Does Not Exist"));
+    }
 }

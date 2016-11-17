@@ -49,4 +49,5 @@ dependencies {
     compile 'com.google.android.gms:play-services-maps:9.6.1'
     compile 'com.google.android.gms:play-services-location:9.6.1'
     compile 'com.android.support.test.espresso:espresso-idling-resource:2.2.2'
+    compile 'com.squareup.picasso:picasso:2.5.2'
 }

@@ -348,9 +348,7 @@ public class MainActivity extends AppCompatActivity
                 recentlyViewedSection.setMarketList(marketList);
             }
 
-        } catch (final ExecutionException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (final InterruptedException e) {
+        } catch (final ExecutionException | InterruptedException e) {
             Log.e(TAG, e.getMessage());
         }
 
