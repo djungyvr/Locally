@@ -34,6 +34,7 @@ import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.DateUtils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -130,6 +131,9 @@ public class MainActivity extends AppCompatActivity
                     if (mVendorDetailsFragment != null) {
                         mFragmentManager.beginTransaction().remove(mVendorDetailsFragment).commit();
                     }
+                    if (mSettingsFragment != null) {
+                        mFragmentManager.beginTransaction().remove(mSettingsFragment).commit();
+                    }
                     for (int i = 0; i < mFragmentManager.getBackStackEntryCount(); i++) {
                         mFragmentManager.popBackStack();
                     }
@@ -146,10 +150,9 @@ public class MainActivity extends AppCompatActivity
             case R.id.market_list:
                 launchMarketFragment();
                 break;
-
             case R.id.nav_manage:
-                if (mSettingsFragment == null)
-                    break;
+                launchSettingsFragment();
+                break;
             case R.id.nav_use_as_vendor:
                 Intent loginActivity = new Intent(this, LoginActivity.class);
                 startActivity(loginActivity);
@@ -239,6 +242,38 @@ public class MainActivity extends AppCompatActivity
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.main_activity_container, mMarketListFragment);
+        ft.addToBackStack(null);
+        ft.commit();
+    }
+
+    /**
+     * Launches the settings fragment
+     */
+    private void launchSettingsFragment() {
+        if(mSettingsFragment == null)
+            mSettingsFragment = new SyncCalendarFragment();
+        if(mFragmentManager == null)
+            mFragmentManager = getSupportFragmentManager();
+
+        List<Market> markets;
+
+        try {
+            markets = new MarketPresenter(this).fetchMarkets();
+        } catch (ExecutionException | InterruptedException e) {
+            Log.e(TAG,e.getMessage());
+            return;
+        }
+
+        if(markets == null || markets.isEmpty())
+            return;
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("list_markets", markets.toArray());
+        mSettingsFragment.setArguments(bundle);
+
+        // Replace the container with the fragment
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.main_activity_container, mSettingsFragment);
         ft.addToBackStack(null);
         ft.commit();
     }
