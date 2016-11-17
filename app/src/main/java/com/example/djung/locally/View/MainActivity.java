@@ -8,7 +8,9 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -22,20 +24,18 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.djung.locally.AWS.AWSMobileClient;
 import com.example.djung.locally.AWS.AppHelper;
 import com.example.djung.locally.AWS.IdentityManager;
 import com.example.djung.locally.Model.Market;
-import com.example.djung.locally.Model.Vendor;
 import com.example.djung.locally.Presenter.MarketPresenter;
-import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.DateUtils;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity
@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity
 
     private final String TAG = "MainActivity";
 
-    private ArrayList<MarketCardSection> marketData;
+    private ArrayList<Object> cardSectionsData;
     private Location currentLocation;
     private LocationManager locationManager;
 
@@ -79,6 +79,10 @@ public class MainActivity extends AppCompatActivity
         initializeAWS();
 
         initializeBaseViews();
+
+        cardSectionsData = new ArrayList<>();
+
+        initializeQuickLinks();
 
         fetchMarketData();
 
@@ -168,10 +172,24 @@ public class MainActivity extends AppCompatActivity
     /**
      * Initializes content_main which has the cards of nearby and recently viewed markets
      */
+    public void initializeQuickLinks() {
+        ArrayList<QuickLinkCard> q = new ArrayList<>();
+        q.add(new QuickLinkCard(R.drawable.ubc, "All Markets", "9 markets"));
+        q.add(new QuickLinkCard(R.drawable.thumbnail2, "Calendar", "5 markets open now"));
+        q.add(new QuickLinkCard(R.drawable.thumbnail3, "Fruits & Vegetables", "16 in season"));
+        q.add(new QuickLinkCard(R.drawable.thumbnail4, "Your Lists", "3 saved lists"));
+
+        QuickLinkCardSection qs = new QuickLinkCardSection(q);
+        cardSectionsData.add(qs);
+    }
+
+    /**
+     * Initializes content_main which has the cards of nearby and recently viewed markets
+     */
     public void initializeContentMain() {
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
-        MarketCardSectionAdapter adapter = new MarketCardSectionAdapter(this, marketData, currentLocation);
+        MarketCardSectionAdapter adapter = new MarketCardSectionAdapter(this, cardSectionsData, currentLocation);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(adapter);
     }
@@ -181,7 +199,7 @@ public class MainActivity extends AppCompatActivity
      */
     public void updateContentMain(){
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        MarketCardSectionAdapter adapter = new MarketCardSectionAdapter(this, marketData, currentLocation);
+        MarketCardSectionAdapter adapter = new MarketCardSectionAdapter(this, cardSectionsData, currentLocation);
         recyclerView.swapAdapter(adapter,false);
         Log.e(TAG, "Replaced old adapter with new adapter for recycler view due to updated location permissions");
     }
@@ -213,6 +231,23 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.search_floating_action);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with search functionality", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+    }
+
+    /**
+     * Start calendar intent
+     */
+    public void startCalendarIntent() {
+        Intent calendarActivity = new Intent(this, CalendarActivity.class);
+        startActivity(calendarActivity);
     }
 
     /**
@@ -331,8 +366,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void fetchMarketData() {
-        marketData = new ArrayList<>();
-
         MarketCardSection openNowSection = new MarketCardSection();
         openNowSection.setSectionTitle("Markets Open Now");
 
@@ -352,8 +385,8 @@ public class MainActivity extends AppCompatActivity
             Log.e(TAG, e.getMessage());
         }
 
-        marketData.add(openNowSection);
-        marketData.add(recentlyViewedSection);
+        cardSectionsData.add(openNowSection);
+        cardSectionsData.add(recentlyViewedSection);
     }
 
     /**
@@ -431,5 +464,9 @@ public class MainActivity extends AppCompatActivity
                 }
                 return;
         }
+    }
+
+    public void setActionBarTitle(String title) {
+        getSupportActionBar().setTitle(title);
     }
 }

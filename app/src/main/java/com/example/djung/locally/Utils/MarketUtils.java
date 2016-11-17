@@ -122,11 +122,12 @@ public class MarketUtils {
      * @param latitude
      * @param longitude
      * @return a lit of the markets in closest->farthest order, empty list if no markets provided
+     *          or markets list null
      */
     public static List<Market> getClosestMarkets(List<Market> markets, double latitude, double longitude) {
         List<Market> resultsList = new ArrayList<>();
 
-        if (markets.isEmpty())
+        if (markets == null || markets.isEmpty())
             return resultsList;
 
         List<Object[]> tempList = new ArrayList<>();

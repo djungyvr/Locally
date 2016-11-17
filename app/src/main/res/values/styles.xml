@@ -24,9 +24,9 @@
 
     <!-- ToolBar -->
     <style name="ToolBarStyle" parent="Theme.AppCompat">
-        <item name="android:textColorPrimary">@android:color/white</item>
-        <item name="android:textColorSecondary">@android:color/white</item>
-        <item name="actionMenuTextColor">@android:color/white</item>
+        <item name="android:textColorPrimary">@color/grey_800</item>
+        <item name="android:textColorSecondary">@color/grey_800</item>
+        <item name="actionMenuTextColor">@color/grey_800</item>
         <item name="android:dropDownItemStyle">@style/SearchViewSuggestion</item>
         <item name="android:dropDownListViewStyle">@style/SearchViewSuggestionList</item>
     </style>

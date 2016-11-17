@@ -1,10 +1,12 @@
 package com.example.djung.locally.View;
 
+import android.animation.StateListAnimator;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -69,6 +71,8 @@ public class GroceryListFragment extends Fragment implements View.OnClickListene
         initializeSearch(view);
         initializeAdapter(view);
 
+        ((MainActivity) getActivity()).setActionBarTitle("Your Grocery List");
+
         return view;
     }
 
@@ -86,6 +90,7 @@ public class GroceryListFragment extends Fragment implements View.OnClickListene
                 }
             }).start();
         }
+        ((MainActivity) getActivity()).setActionBarTitle("Locally");
         super.onPause();
     }
 

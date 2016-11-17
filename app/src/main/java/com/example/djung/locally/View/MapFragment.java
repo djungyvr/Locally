@@ -66,6 +66,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
         // Needed to get the map to display immediately
         mMapView.onResume();
 
+        ((MainActivity) getActivity()).setActionBarTitle("Map");
+
         try {
             MapsInitializer.initialize(getActivity().getApplicationContext());
         } catch (Exception e) {
@@ -359,6 +361,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
     @Override
     public void onLocationChanged(Location location) {
         mLastLocation = location;
+    }
+
+    @Override
+    public void onPause() {
+        ((MainActivity) getActivity()).setActionBarTitle("Locally");
+        super.onPause();
     }
 }
 

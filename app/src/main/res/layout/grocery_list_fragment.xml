@@ -10,29 +10,34 @@
         android:background="@color/white"
         android:orientation="vertical">
 
-        <android.support.v7.widget.SearchView
-            android:id="@+id/search_view_grocery_list_items"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
-            android:gravity="end"
-            android:iconifiedByDefault="true"
-            android:queryHint="Search"
-            android:theme="@style/ToolBarStyle"/>
+            android:background="@color/colorPrimary">
+
+            <android.support.v7.widget.SearchView
+                android:id="@+id/search_view_grocery_list_items"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:gravity="end"
+                android:iconifiedByDefault="true"
+                android:queryHint="Search"
+                android:theme="@style/ToolBarStyle"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginLeft="8dp"
+                android:elevation="8dp"
+                />
+
+        </LinearLayout>
+
 
         <android.support.v7.widget.AppCompatSpinner
             android:layout_width="match_parent"
             android:layout_height="@dimen/activity_text_height"
             android:id="@+id/spinner_market_name"
-            android:layout_margin="16dp"/>
-
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/activity_text_height"
-            android:gravity="center_vertical"
-            android:text="Your Grocery List"
-            android:textSize="@dimen/nav_text_header_size"
             android:layout_margin="16dp"/>
 
         <android.support.v7.widget.RecyclerView
