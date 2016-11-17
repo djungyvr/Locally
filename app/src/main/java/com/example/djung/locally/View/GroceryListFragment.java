@@ -71,7 +71,7 @@ public class GroceryListFragment extends Fragment implements View.OnClickListene
         initializeSearch(view);
         initializeAdapter(view);
 
-        ((MainActivity) getActivity()).setActionBarTitle("Your Grocery List");
+        ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.title_fragment_grocery_list));
 
         return view;
     }
@@ -90,7 +90,6 @@ public class GroceryListFragment extends Fragment implements View.OnClickListene
                 }
             }).start();
         }
-        ((MainActivity) getActivity()).setActionBarTitle("Locally");
         super.onPause();
     }
 

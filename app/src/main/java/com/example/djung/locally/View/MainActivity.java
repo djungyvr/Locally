@@ -113,7 +113,17 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
+        } else if (mFragmentManager != null) {
+            int stackCount = mFragmentManager.getBackStackEntryCount();
+            if(stackCount > 1) {
+                setActionBarTitle(mFragmentManager.getBackStackEntryAt(stackCount - 2).getName());
+            }
+            else {
+                setActionBarTitle("Locally");
+            }
+            super.onBackPressed();
+        }
+        else {
             super.onBackPressed();
         }
     }
@@ -307,7 +317,7 @@ public class MainActivity extends AppCompatActivity
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.main_activity_container, mGoogleMapsFragment);
-        ft.addToBackStack(null);
+        ft.addToBackStack(getString(R.string.title_fragment_maps));
         ft.commit();
     }
 
@@ -322,7 +332,7 @@ public class MainActivity extends AppCompatActivity
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.main_activity_container, mMarketListFragment);
-        ft.addToBackStack(null);
+        ft.addToBackStack(getString(R.string.title_fragment_market_list));
         ft.commit();
     }
 
@@ -337,7 +347,7 @@ public class MainActivity extends AppCompatActivity
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.main_activity_container, mGroceryListFragment);
-        ft.addToBackStack(null);
+        ft.addToBackStack(getString(R.string.title_fragment_grocery_list));
         ft.commit();
     }
 
@@ -373,7 +383,7 @@ public class MainActivity extends AppCompatActivity
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.main_activity_container, mVendorListFragment);
-        ft.addToBackStack(null);
+        ft.addToBackStack(market.getName());
         ft.commit();
     }
 

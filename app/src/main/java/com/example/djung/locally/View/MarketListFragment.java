@@ -41,7 +41,7 @@ public class MarketListFragment extends android.support.v4.app.Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.market_list, container, false);
-        ((MainActivity) getActivity()).setActionBarTitle("Markets List");
+        ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.title_fragment_market_list));
         return view;
     }
 
@@ -95,13 +95,6 @@ public class MarketListFragment extends android.support.v4.app.Fragment {
         super.onDetach();
         mCallback = null;
     }
-
-    @Override
-    public void onPause() {
-        ((MainActivity) getActivity()).setActionBarTitle("Locally");
-        super.onPause();
-    }
-
 
     public void populateMarketList(){
         List<Market> marketListItems = new ArrayList<Market>();

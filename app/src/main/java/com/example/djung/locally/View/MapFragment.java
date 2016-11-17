@@ -48,7 +48,9 @@ import static com.google.android.gms.location.LocationSettingsStatusCodes.*;
 
 //TODO: FIX SO THAT LOCATION IS ADDED UPON PRESSING YES
 
-public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class MapFragment extends Fragment
+        implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, LocationListener {
     private MapView mMapView;
     private GoogleMap mGoogleMap;
     private GoogleApiClient mGoogleApiClient;
@@ -66,7 +68,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
         // Needed to get the map to display immediately
         mMapView.onResume();
 
-        ((MainActivity) getActivity()).setActionBarTitle("Map");
+        ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.title_fragment_maps));
 
         try {
             MapsInitializer.initialize(getActivity().getApplicationContext());
@@ -363,11 +365,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
         mLastLocation = location;
     }
 
-    @Override
-    public void onPause() {
-        ((MainActivity) getActivity()).setActionBarTitle("Locally");
-        super.onPause();
-    }
 }
 
 
