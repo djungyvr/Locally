@@ -77,6 +77,8 @@ public class MainActivity extends AppCompatActivity
 
     private IdentityManager identityManager;
 
+    private NavigationView mNavigationView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme_NoActionBar);
@@ -116,9 +118,20 @@ public class MainActivity extends AppCompatActivity
         } else if (mFragmentManager != null) {
             int stackCount = mFragmentManager.getBackStackEntryCount();
             if(stackCount > 1) {
-                setActionBarTitle(mFragmentManager.getBackStackEntryAt(stackCount - 2).getName());
+                String fragmentName = mFragmentManager.getBackStackEntryAt(stackCount - 2).getName();
+                setActionBarTitle(fragmentName);
+                if (fragmentName.equals(getString(R.string.title_fragment_grocery_list))) {
+                    mNavigationView.setCheckedItem(R.id.nav_grocery_list);
+                } else if (fragmentName.equals(getString(R.string.title_fragment_calendar))) {
+                    mNavigationView.setCheckedItem(R.id.nav_calendar);
+                } else if (fragmentName.equals(getString(R.string.title_activity_maps))) {
+                    mNavigationView.setCheckedItem(R.id.nav_map);
+                } else {
+                    mNavigationView.setCheckedItem(R.id.market_list);
+                }
             }
             else {
+                mNavigationView.setCheckedItem(R.id.nav_home);
                 setActionBarTitle("Locally");
             }
             super.onBackPressed();
@@ -198,8 +211,8 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        mNavigationView = (NavigationView) findViewById(R.id.nav_view);
+        mNavigationView.setNavigationItemSelectedListener(this);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.search_floating_action);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -461,7 +474,7 @@ public class MainActivity extends AppCompatActivity
             mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
             mCurrentLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             Log.e(TAG, "Location permissions passed, successfully got user location");
-          //  updateContentMain(); //TODO:
+            updateContentMain(); //TODO:
         }
     }
 
@@ -501,7 +514,7 @@ public class MainActivity extends AppCompatActivity
                     mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
                     mCurrentLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                     Log.e(TAG, "Location permissions passed, successfully got user location");
-                  //  updateContentMain(); TODO:
+                    updateContentMain();
                 }
 
                 //Permission is denied to use location data and we explain to the user that distance to markets will not be shown
@@ -516,6 +529,11 @@ public class MainActivity extends AppCompatActivity
 
     public void setActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);
+    }
+
+    public void selectNavigationDrawer(int resId) {
+        mNavigationView.setCheckedItem(resId);
+        onNavigationItemSelected(mNavigationView.getMenu().findItem(resId));
     }
 
 }

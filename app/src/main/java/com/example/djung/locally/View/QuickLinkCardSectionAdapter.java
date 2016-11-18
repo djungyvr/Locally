@@ -81,12 +81,12 @@ public class QuickLinkCardSectionAdapter extends
             if(mContext instanceof MainActivity){
                 int position = getAdapterPosition();
                 switch(position) {
-                    case 0: ((MainActivity)mContext).launchMarketFragment();
+                    case 0: ((MainActivity) mContext).selectNavigationDrawer(R.id.market_list);
                         break;
-                    case 1: ((MainActivity) mContext).startCalendarIntent();
+                    case 1: ((MainActivity) mContext).selectNavigationDrawer(R.id.nav_calendar);
                         break;
                     case 2: break;
-                    case 3: ((MainActivity) mContext).launchGroceryList();
+                    case 3: ((MainActivity) mContext).selectNavigationDrawer(R.id.nav_grocery_list);
                     default:
                         break;
                 }
