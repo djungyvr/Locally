@@ -1,72 +1,224 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#ECEFF1"
     android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/white"
-    android:padding="15dp">
+    android:id="@+id/market_list_item">
 
-    <LinearLayout
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        app:cardCornerRadius="3dp"
+        app:cardElevation="8dp"
+        app:cardUseCompatPadding="true">
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:lines="1"
-            android:text="Market Name"
-            android:id="@+id/market_list_item_name"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:scrollHorizontally="true"
-            android:textSize="20dp"
-            android:textColor="#000"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:lines="1"
-            android:gravity="end"
-            android:text="Market Distance"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:scrollHorizontally="true"
-            android:textColor="#000"
-            android:id="@+id/market_list_item_distance"/>
-    </LinearLayout>
+            <ImageView
+                android:id="@+id/market_list_item_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"
+                android:src="@drawable/ubc" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/market_list_item_open_status"
-        android:text="Market Open Status"
-        android:textColor="#000"/>
+            <TextView
+                android:id="@+id/market_list_item_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="20dp"
+                android:scrollHorizontally="true"
+                android:text="Market Name"
+                android:textColor="#000"
+                android:textSize="20sp" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/market_list_item_open_dates"
-        android:text="Market Dates Open"
-        android:textColor="#000"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp">
 
-    <TextView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:id="@+id/market_list_item_hours"
-    android:text="Market Hours"
-    android:textColor="#000"/>
+                <TextView
+                    android:id="@+id/market_list_item_open_status"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Market Open Status"
+                    android:textColor="#000"
+                    android:textSize="14sp" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/market_list_item_location"
-        android:text="Market Location"
-        android:textColor="#000"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:scrollHorizontally="true"/>
+                <TextView
+                    android:id="@+id/market_list_item_distance"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:gravity="end"
+                    android:lines="1"
+                    android:maxLines="1"
+                    android:scrollHorizontally="true"
+                    android:text="Market Distance"
+                    android:textColor="#000"
+                    android:textSize="14sp" />
+            </LinearLayout>
 
+            <TextView
+                android:id="@+id/market_list_item_location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:paddingBottom="5dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:scrollHorizontally="true"
+                android:text="Market Location"
+                android:textColor="#000"
+                android:textSize="14sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:text="Notififications"
+                    android:textColor="#03A9F4" />
+
+                <Button
+                    android:id="@+id/market_list_item_details_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:drawableEnd="@drawable/ic_expand_more"
+                    android:drawableRight="@drawable/ic_expand_more"
+                    android:text="More Details" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/market_list_item_support_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="24dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="16dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Dates Open: "
+                    android:textColor="#000"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/market_list_item_open_dates"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Market Dates Open"
+                    android:textColor="#000"
+                    android:textSize="14sp" />
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="15dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Daily Hours: "
+                    android:textColor="#000"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/market_list_item_hours"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Market Hours"
+                    android:textColor="#000"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="horizontal">-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/market_list_item_name"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="3"-->
+            <!--android:ellipsize="end"-->
+            <!--android:lines="1"-->
+            <!--android:maxLines="1"-->
+            <!--android:scrollHorizontally="true"-->
+            <!--android:text="Market Name"-->
+            <!--android:textColor="#000"-->
+            <!--android:textSize="20dp" />-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/market_list_item_distance"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:ellipsize="end"-->
+            <!--android:gravity="end"-->
+            <!--android:lines="1"-->
+            <!--android:maxLines="1"-->
+            <!--android:scrollHorizontally="true"-->
+            <!--android:text="Market Distance"-->
+            <!--android:textColor="#000" />-->
+    <!--</LinearLayout>-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/market_list_item_open_status"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Market Open Status"-->
+        <!--android:textColor="#000" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/market_list_item_open_dates"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Market Dates Open"-->
+        <!--android:textColor="#000" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/market_list_item_hours"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Market Hours"-->
+        <!--android:textColor="#000" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/market_list_item_location"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:ellipsize="end"-->
+        <!--android:maxLines="1"-->
+        <!--android:scrollHorizontally="true"-->
+        <!--android:text="Market Location"-->
+        <!--android:textColor="#000" />-->
 </LinearLayout>

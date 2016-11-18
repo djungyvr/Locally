@@ -65,7 +65,7 @@ public class VendorListAdapter extends RecyclerView.Adapter<VendorListAdapter.Vi
             holder.vendorListItemVendorStatus.setText("Open Now!");
         }
         else {
-            holder.vendorListItemVendorStatus.setText("Closed Now!");
+            holder.vendorListItemVendorStatus.setText("Closed Now");
         }
 
         if (currentLocation != null){

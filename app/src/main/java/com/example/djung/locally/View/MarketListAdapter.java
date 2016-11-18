@@ -6,6 +6,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.djung.locally.Model.Market;
@@ -13,8 +16,7 @@ import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.DateUtils;
 import com.example.djung.locally.Utils.LocationUtils;
 import com.example.djung.locally.Utils.MarketUtils;
-
-import org.w3c.dom.Text;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -54,7 +56,7 @@ public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.Vi
             holder.marketListItemMarketStatus.setText("Open Now!");
         }
         else {
-            holder.marketListItemMarketStatus.setText("Closed Now!");
+            holder.marketListItemMarketStatus.setText("Closed Now");
         }
 
         if (currentLocation != null){
@@ -63,6 +65,14 @@ public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.Vi
         }
         else {
             holder.marketListItemMarketDistance.setText("");
+        }
+
+        String imageResource = MarketUtils.getMarketUrl(item.getName());
+        if(imageResource.isEmpty()) {
+            holder.marketListItemImage.setImageResource(R.drawable.ubc);
+        } else {
+            Picasso.with(context).setIndicatorsEnabled(true);
+            Picasso.with(context).load(imageResource).into(holder.marketListItemImage);
         }
     }
 
@@ -77,12 +87,15 @@ public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.Vi
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+        public ImageView marketListItemImage;
         public TextView marketListItemMarketName;
         public TextView marketListItemMarketLocation;
         public TextView marketListItemMarketHours;
         public TextView marketListItemMarketDistance;
         public TextView marketListItemMarketDates;
         public TextView marketListItemMarketStatus;
+        public Button marketListItemSupportTextButton;
+        public LinearLayout marketListItemSupportText;
         public Context context;
         public List<Market> items;
 
@@ -96,14 +109,39 @@ public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.Vi
             this.marketListItemMarketDistance = (TextView) itemView.findViewById(R.id.market_list_item_distance);
             this.marketListItemMarketDates = (TextView) itemView.findViewById(R.id.market_list_item_open_dates);
             this.marketListItemMarketStatus = (TextView) itemView.findViewById(R.id.market_list_item_open_status);
+            this.marketListItemImage = (ImageView) itemView.findViewById(R.id.market_list_item_image);
+            this.marketListItemSupportTextButton = (Button) itemView.findViewById(R.id.market_list_item_details_button);
+            this.marketListItemSupportText = (LinearLayout) itemView.findViewById(R.id.market_list_item_support_text);
+            this.marketListItemSupportTextButton.setOnClickListener(this);
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            int position = getAdapterPosition();
-            Market market = marketListItems.get(position);
-            mCallBack.onMarketListItemClick(market);
+            switch (v.getId()) {
+                case R.id.market_list_item_details_button:
+                    toggleSupportText();
+                    break;
+                case R.id.market_list_item:
+                    int position = getAdapterPosition();
+                    Market market = marketListItems.get(position);
+                    mCallBack.onMarketListItemClick(market);
+                    break;
+            }
+        }
+
+        /**
+         * Toggle the visibility of the support text
+         */
+        public void toggleSupportText(){
+            if (marketListItemSupportText.getVisibility() == View.VISIBLE){
+                marketListItemSupportText.setVisibility(View.GONE);
+                marketListItemSupportTextButton.setText("More Details");
+            }
+            else {
+                marketListItemSupportText.setVisibility(View.VISIBLE);
+                marketListItemSupportTextButton.setText("Less Details");
+            }
         }
     }
 }
