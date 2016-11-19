@@ -43,15 +43,5 @@ public class CalendarActivity extends AppCompatActivity {
 
         }
 
-        public void displayMarket(View view) {
-            Intent intent = new Intent(this, MarketActivity.class);
-            TextView marketName = (TextView)findViewById(R.id.market_id);
-            String name = marketName.getText().toString();
-
-            intent.putExtra("M_ID",name);
-            startActivity(intent);
-
-        }
-
     }
 
