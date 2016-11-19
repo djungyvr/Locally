@@ -16,8 +16,6 @@ import java.io.Serializable;
 
 @DynamoDBTable(tableName = "Market")
 public class Market  implements Serializable {
-    // Primary Key
-    private int id;
     // Name of the market
     private String name;
     // Latitude of market
@@ -30,20 +28,10 @@ public class Market  implements Serializable {
     private String description;
     // Set of days and hours this market is open
     private String dailyHours;
-
     // Time of year open
     private String yearOpen;
 
-    @DynamoDBHashKey(attributeName="Market.Id")
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    @DynamoDBAttribute(attributeName="Market.Name")
+    @DynamoDBHashKey(attributeName = "Market.Name")
     public String getName() {
         return name;
     }

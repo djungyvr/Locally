@@ -10,9 +10,6 @@ import com.example.djung.locally.Model.Market;
  */
 
 public class MarketTest extends Market {
-
-    // Primary Key
-    private int id;
     // Name of the market
     private String name;
     // Latitude of market
@@ -25,18 +22,8 @@ public class MarketTest extends Market {
     private String description;
     // Set of days and hours this market is open
     private String dailyHours;
-
     // Time of year open
     private String yearOpen;
-
-    @Override
-    public int getId() {
-        return id;
-    }
-    @Override
-    public void setId(int id) {
-        this.id = id;
-    }
 
     @Override
     public String getName() {

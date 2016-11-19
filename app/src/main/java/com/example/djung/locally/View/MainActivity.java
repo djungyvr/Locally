@@ -321,7 +321,7 @@ public class MainActivity extends AppCompatActivity
         ft.commit();
     }
 
-    void fetchMarketData() {
+    private void fetchMarketData() {
         marketData = new ArrayList<>();
 
         MarketCardSection openNowSection = new MarketCardSection();
@@ -339,12 +339,9 @@ public class MainActivity extends AppCompatActivity
                 recentlyViewedSection.setMarketList(marketList);
             }
 
-        } catch (final ExecutionException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (final InterruptedException e) {
+        } catch (final ExecutionException | InterruptedException e) {
             Log.e(TAG, e.getMessage());
         }
-
         marketData.add(openNowSection);
         marketData.add(recentlyViewedSection);
     }
@@ -382,54 +379,6 @@ public class MainActivity extends AppCompatActivity
                     currentLocation = null;
                 }
                 return;
-        }
-    }
-
-    void fetchMarket() {
-        MarketPresenter marketPresenter = new MarketPresenter(this);
-        try {
-            Log.e(TAG, "Market Fetched: " + marketPresenter.fetchMarket(0).getName());
-        } catch (ExecutionException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (InterruptedException e) {
-            Log.e(TAG, e.getMessage());
-        }
-    }
-
-    /**
-     * Used for testing, tries to fetch from Vendor table using Vendor presenter
-     */
-    void fetchVendorData() {
-        VendorPresenter vendorPresenter = new VendorPresenter(this);
-
-        try {
-            List<Vendor> vendorList = vendorPresenter.fetchVendors("TestMarket");
-
-            for (Vendor v : vendorList) {
-                Log.e(TAG, "Fetch Vendors Result: " + v.getName());
-            }
-        } catch (ExecutionException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (InterruptedException e) {
-            Log.e(TAG, e.getMessage());
-        }
-
-        try {
-            Vendor vendor = vendorPresenter.fetchVendor("TestMarket", "Vendor1");
-            Log.e(TAG, "Fetch Single Vendor Result: " + vendor.getName());
-        } catch (ExecutionException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (InterruptedException e) {
-            Log.e(TAG, e.getMessage());
-        }
-
-        try {
-            Vendor vendor = vendorPresenter.fetchVendor("TestMarket", "Vendor3");
-            Log.e(TAG, "Fetch Single Vendor Result: " + vendor.getName());
-        } catch (ExecutionException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (InterruptedException e) {
-            Log.e(TAG, e.getMessage());
         }
     }
 }
