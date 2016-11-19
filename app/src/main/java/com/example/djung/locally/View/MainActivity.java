@@ -1,8 +1,6 @@
 package com.example.djung.locally.View;
 
 import android.Manifest;
-import android.animation.ObjectAnimator;
-import android.animation.StateListAnimator;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -31,7 +29,6 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.djung.locally.AWS.AWSMobileClient;
-import com.example.djung.locally.AWS.AppHelper;
 import com.example.djung.locally.AWS.IdentityManager;
 import com.example.djung.locally.DB.VendorItemDatabase;
 import com.example.djung.locally.DB.VendorItemsProvider;
@@ -55,7 +52,7 @@ public class MainActivity extends AppCompatActivity
 
     private ArrayList<Market> mAllMarketsList;
 
-    private Location mCurrentLocation;
+    private Location currentLocation;
     private LocationManager mLocationManager;
 
     // Fragment for displaying maps
@@ -191,11 +188,6 @@ public class MainActivity extends AppCompatActivity
                 launchMapFragment();
                 break;
 
-            case R.id.nav_grocery_list:
-                setAppBarElevation(0);
-                launchGroceryList();
-                break;
-
             case R.id.market_list:
                 launchMarketFragment();
                 break;
@@ -218,6 +210,33 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     * Initializes content_main which has card sections for quick links and nearby
+     * and recently viewed markets
+     */
+    public void initializeContentMain() {
+        initializeSearchView();
+        initializeQuickLinksCardSection();
+        initializeMarketsCardSection();
+
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+        MarketCardSectionAdapter adapter = new MarketCardSectionAdapter(this, mCardSectionsData, currentLocation);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        recyclerView.setAdapter(adapter);
+    }
+
+    public void initializeAWS() {
+        // Obtain a reference to the mobile client. It is created in the Application class,
+        // but in case a custom Application class is not used, we initialize it here if necessary.
+        AWSMobileClient.initializeMobileClientIfNecessary(this);
+
+        // Obtain a reference to the mobile client. It is created in the Application class.
+        final AWSMobileClient awsMobileClient = AWSMobileClient.defaultMobileClient();
+
+        // Obtain a reference to the identity manager.
+        identityManager = awsMobileClient.getIdentityManager();
+    }
 
     /**
      * Initialize the toolbar, floating action button, and the drawer
@@ -234,99 +253,6 @@ public class MainActivity extends AppCompatActivity
 
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
-    }
-
-    /**
-     * Initializes content_main which has card sections for quick links and nearby
-     * and recently viewed markets
-     */
-    public void initializeContentMain() {
-        initializeSearchView();
-        initializeQuickLinksCardSection();
-        initializeMarketsCardSection();
-
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
-        MarketCardSectionAdapter adapter = new MarketCardSectionAdapter(this, mCardSectionsData, mCurrentLocation);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        recyclerView.setAdapter(adapter);
-    }
-
-    /**
-     * Initializes the quick links section which includes All Markets, Calendar,
-     * Fruits & Vegetables, Your Lists
-     */
-    public void initializeQuickLinksCardSection() {
-        ArrayList<QuickLinkCard> q = new ArrayList<>();
-
-        String allMarkets = "";
-        String marketsOpen = "";
-
-        if(mAllMarketsList != null) {
-            allMarkets = mAllMarketsList.size() + " market";
-            if(mAllMarketsList.size() != 1) {
-                allMarkets = allMarkets + "s";
-            }
-            int numOpen = MarketUtils.getNumberOfCurrentlyOpenMarkets(mAllMarketsList);
-            if(numOpen != 1) {
-                marketsOpen = numOpen + " markets open now";
-            } else {
-                marketsOpen = numOpen + " market open now";
-            }
-        }
-
-//       TODO: get number of items on the user's grocery list
-
-        q.add(new QuickLinkCard(R.drawable.ubc, "All Markets", allMarkets));
-        q.add(new QuickLinkCard(R.drawable.thumbnail2, "Calendar", marketsOpen));
-        q.add(new QuickLinkCard(R.drawable.thumbnail3, "In Season Produce", "16 items"));
-        q.add(new QuickLinkCard(R.drawable.thumbnail4, "Your Grocery List", "3 saved items"));
-
-        QuickLinkCardSection qs = new QuickLinkCardSection(q);
-        mCardSectionsData.add(qs);
-    }
-
-    /**
-     * Decide which markets to display in the sections
-     * TODO: for now we'll just add all the markets
-     */
-    public void initializeMarketsCardSection() {
-        MarketCardSection openNowSection = new MarketCardSection();
-        openNowSection.setSectionTitle("Markets Nearby");
-
-        MarketCardSection recentlyViewedSection = new MarketCardSection();
-        recentlyViewedSection.setSectionTitle("Recently Viewed");
-
-        if (mAllMarketsList != null && !mAllMarketsList.isEmpty()) {
-            openNowSection.setMarketList(mAllMarketsList);
-            recentlyViewedSection.setMarketList(mAllMarketsList);
-
-            mCardSectionsData.add(openNowSection);
-            mCardSectionsData.add(recentlyViewedSection);
-        }
-    }
-
-    /**
-     * Creates a new adapter for the MarketCardSection and replaces the old adapter with the new one
-     */
-    public void updateContentMain(){
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        MarketCardSectionAdapter adapter = new MarketCardSectionAdapter(this, mCardSectionsData, mCurrentLocation);
-        recyclerView.swapAdapter(adapter,false);
-        Log.e(TAG, "Replaced old adapter with new adapter for recycler view due to updated location permissions");
-    }
-
-
-    public void initializeAWS() {
-        // Obtain a reference to the mobile client. It is created in the Application class,
-        // but in case a custom Application class is not used, we initialize it here if necessary.
-        AWSMobileClient.initializeMobileClientIfNecessary(this);
-
-        // Obtain a reference to the mobile client. It is created in the Application class.
-        final AWSMobileClient awsMobileClient = AWSMobileClient.defaultMobileClient();
-
-        // Obtain a reference to the identity manager.
-        identityManager = awsMobileClient.getIdentityManager();
     }
 
     /**
@@ -356,21 +282,6 @@ public class MainActivity extends AppCompatActivity
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.main_activity_container, mMarketListFragment);
         ft.addToBackStack(getString(R.string.title_fragment_market_list));
-        ft.commit();
-    }
-
-    /**
-     * Launches the grocery fragment
-     */
-    void launchGroceryList() {
-        if (mGroceryListFragment == null)
-            mGroceryListFragment = new GroceryListFragment();
-        if (mFragmentManager == null)
-            mFragmentManager = getSupportFragmentManager();
-
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.main_activity_container, mGroceryListFragment);
-        ft.addToBackStack(getString(R.string.title_fragment_grocery_list));
         ft.commit();
     }
 
@@ -446,18 +357,7 @@ public class MainActivity extends AppCompatActivity
         ft.commit();
     }
 
-    /**
-     * Gets a list of all the markets
-     */
-    private void fetchAllMarketsData() {
-        MarketPresenter presenter = new MarketPresenter(this);
-        mAllMarketsList = new ArrayList<>();
-        try {
-            mAllMarketsList = new ArrayList<>(presenter.fetchMarkets());
-        } catch (final ExecutionException | InterruptedException e) {
-            Log.e(TAG, e.getMessage());
-        }
-    }
+
 
     /**
      * Get the current user location. Need to check runtime permissions to access location data.
@@ -482,16 +382,15 @@ public class MainActivity extends AppCompatActivity
         //Permission is granted and we go ahead to access the location data
         else {
             mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-            mCurrentLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            currentLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             Log.e(TAG, "Location permissions passed, successfully got user location");
-            updateContentMain(); //TODO:
         }
     }
 
     LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
-            mCurrentLocation = location;
+            currentLocation = location;
         }
 
         @Override
@@ -522,18 +421,82 @@ public class MainActivity extends AppCompatActivity
                         return;
                     }
                     mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-                    mCurrentLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                    currentLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                     Log.e(TAG, "Location permissions passed, successfully got user location");
-                    updateContentMain();
                 }
 
                 //Permission is denied to use location data and we explain to the user that distance to markets will not be shown
                 else {
-                    mCurrentLocation = null;
-                    Toast.makeText(this, "Please turn on location services in App Settings" +
-                            " for additional functionality.", Toast.LENGTH_SHORT).show();
+                    currentLocation = null;
                 }
                 return;
+        }
+    }
+
+    /**
+     * Initializes the quick links section which includes All Markets, Calendar,
+     * Fruits & Vegetables, Your Lists
+     */
+    public void initializeQuickLinksCardSection() {
+        ArrayList<QuickLinkCard> q = new ArrayList<>();
+
+        String allMarkets = "";
+        String marketsOpen = "";
+
+        if(mAllMarketsList != null) {
+            allMarkets = mAllMarketsList.size() + " market";
+            if(mAllMarketsList.size() != 1) {
+                allMarkets = allMarkets + "s";
+            }
+            int numOpen = MarketUtils.getNumberOfCurrentlyOpenMarkets(mAllMarketsList);
+            if(numOpen != 1) {
+                marketsOpen = numOpen + " markets open now";
+            } else {
+                marketsOpen = numOpen + " market open now";
+            }
+        }
+
+//       TODO: get number of items on the user's grocery list
+
+        q.add(new QuickLinkCard(R.drawable.ubc, "All Markets", allMarkets));
+        q.add(new QuickLinkCard(R.drawable.thumbnail2, "Calendar", marketsOpen));
+        q.add(new QuickLinkCard(R.drawable.thumbnail3, "In Season Produce", "16 items"));
+        q.add(new QuickLinkCard(R.drawable.thumbnail4, "Your Grocery List", "3 saved items"));
+
+        QuickLinkCardSection qs = new QuickLinkCardSection(q);
+        mCardSectionsData.add(qs);
+    }
+
+    /**
+     * Decide which markets to display in the sections
+     * TODO: for now we'll just add all the markets
+     */
+    public void initializeMarketsCardSection() {
+        MarketCardSection openNowSection = new MarketCardSection();
+        openNowSection.setSectionTitle("Markets Nearby");
+
+        MarketCardSection recentlyViewedSection = new MarketCardSection();
+        recentlyViewedSection.setSectionTitle("Recently Viewed");
+
+        if (mAllMarketsList != null && !mAllMarketsList.isEmpty()) {
+            openNowSection.setMarketList(mAllMarketsList);
+            recentlyViewedSection.setMarketList(mAllMarketsList);
+
+            mCardSectionsData.add(openNowSection);
+            mCardSectionsData.add(recentlyViewedSection);
+        }
+    }
+
+    /**
+     * Gets a list of all the markets
+     */
+    private void fetchAllMarketsData() {
+        MarketPresenter presenter = new MarketPresenter(this);
+        mAllMarketsList = new ArrayList<>();
+        try {
+            mAllMarketsList = new ArrayList<>(presenter.fetchMarkets());
+        } catch (final ExecutionException | InterruptedException e) {
+            Log.e(TAG, e.getMessage());
         }
     }
 
