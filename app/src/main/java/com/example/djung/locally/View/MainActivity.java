@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -26,7 +25,6 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.example.djung.locally.AWS.AWSMobileClient;
 import com.example.djung.locally.AWS.IdentityManager;
@@ -38,7 +36,9 @@ import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.DateUtils;
 import com.example.djung.locally.Utils.MarketUtils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity
@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity
     private ArrayList<Market> mAllMarketsList;
 
     private Location currentLocation;
-    private LocationManager mLocationManager;
 
     // Fragment for displaying maps
     private Fragment mGoogleMapsFragment;
@@ -67,11 +66,14 @@ public class MainActivity extends AppCompatActivity
     // Fragment for displaying vendor detail
     private Fragment mVendorDetailsFragment;
 
+    // Fragment for displaying calendar
+    private Fragment mCalendarFragment;
+
     // Fragment for displaying settings
     private Fragment mSettingsFragment;
 
-    // Fragment for displaying grocery list
-    private Fragment mGroceryListFragment;
+    // Fragment for displaying the grocery list
+    private Fragment mGroceryFragment;
 
     // Fragment for display vendor item search result
     private Fragment mVendorSearchItemFragment;
@@ -177,31 +179,42 @@ public class MainActivity extends AppCompatActivity
                     if (mVendorDetailsFragment != null) {
                         mFragmentManager.beginTransaction().remove(mVendorDetailsFragment).commit();
                     }
+                    if (mSettingsFragment != null) {
+                        mFragmentManager.beginTransaction().remove(mSettingsFragment).commit();
+                    }
+                    if (mCalendarFragment != null) {
+                        mFragmentManager.beginTransaction().remove(mCalendarFragment).commit();
+                    }
+                    if (mGroceryFragment != null) {
+                        mFragmentManager.beginTransaction().remove(mGroceryFragment).commit();
+                    }
                     for (int i = 0; i < mFragmentManager.getBackStackEntryCount(); i++) {
-                        mFragmentManager.popBackStack();
+                            mFragmentManager.popBackStack();
                     }
                     setAppBarElevation(0);
                     setActionBarTitle("Locally");
                 }
                 break;
+            case R.id.nav_grocery_list:
+                launchGroceryFragment();
+                break;
             case R.id.nav_map:
                 launchMapFragment();
                 break;
-
             case R.id.market_list:
                 launchMarketFragment();
                 break;
-
             case R.id.nav_manage:
-                if (mSettingsFragment == null)
-                    break;
+                launchSettingsFragment();
+                break;
             case R.id.nav_use_as_vendor:
                 Intent loginActivity = new Intent(this, LoginActivity.class);
                 startActivity(loginActivity);
                 break;
             case R.id.nav_calendar:
-                Intent calendarActivity = new Intent(this, CalendarActivity.class);
-                startActivity(calendarActivity);
+                launchCalendarFragment();
+                //Intent calendarActivity = new Intent(this, CalendarActivity.class);
+                //startActivity(calendarActivity);
                 break;
         }
 
@@ -220,6 +233,7 @@ public class MainActivity extends AppCompatActivity
         initializeMarketsCardSection();
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+
         recyclerView.setHasFixedSize(true);
         MarketCardSectionAdapter adapter = new MarketCardSectionAdapter(this, mCardSectionsData, currentLocation);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -285,6 +299,68 @@ public class MainActivity extends AppCompatActivity
         ft.commit();
     }
 
+
+    /**
+     * Launches the Settings fragment
+     */
+    private void launchSettingsFragment() {
+        if (mSettingsFragment == null)
+            mSettingsFragment = new SyncCalendarFragment();
+        if (mFragmentManager == null)
+            mFragmentManager = getSupportFragmentManager();
+
+        List<Market> markets;
+
+        try {
+            markets = new MarketPresenter(this).fetchMarkets();
+        } catch (ExecutionException | InterruptedException e) {
+            Log.e(TAG, e.getMessage());
+            return;
+        }
+
+        if (markets == null || markets.isEmpty())
+            return;
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("list_markets", markets.toArray());
+        mSettingsFragment.setArguments(bundle);
+
+        // Replace the container with the fragment
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.main_activity_container, mSettingsFragment);
+        ft.addToBackStack(getString(R.string.title_fragment_settings));
+        ft.commit();
+    }
+
+    /**
+     * Launches the Grocery fragment
+     */
+    private void launchGroceryFragment() {
+        if (mGroceryFragment == null)
+            mGroceryFragment = new GroceryListFragment();
+        if (mFragmentManager == null)
+            mFragmentManager = getSupportFragmentManager();
+
+        // Replace the container with the fragment
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.main_activity_container, mGroceryFragment);
+        ft.addToBackStack(null);
+        ft.commit();
+    }
+
+    /**
+     * Launches the Calendar fragment
+     */
+    void launchCalendarFragment() {
+        if (mCalendarFragment == null)
+            mCalendarFragment = new CalendarFragment();
+        if (mFragmentManager == null)
+            mFragmentManager = getSupportFragmentManager();
+
+        // Replace the container with the fragment
+        mFragmentManager.beginTransaction().replace(R.id.main_activity_container, mCalendarFragment).commit();
+    }
+
     @Override
     public void onMarketListItemClick(Market market) {
         launchVendorListFragment(market);
@@ -325,7 +401,7 @@ public class MainActivity extends AppCompatActivity
      * Launches the vendor details fragment on click from the vendor list fragment
      *
      * @param vendorName Name of the vendor that was selected
-     * @param market The market that the vendor belongs to
+     * @param market     The market that the vendor belongs to
      */
     @Override
     public void onVendorListItemClick(String vendorName, Market market) {
@@ -353,80 +429,45 @@ public class MainActivity extends AppCompatActivity
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.main_activity_container, mVendorDetailsFragment);
-        ft.addToBackStack(null);
+        ft.addToBackStack(market.getName());
         ft.commit();
     }
-
 
 
     /**
      * Get the current user location. Need to check runtime permissions to access location data.
      */
     private void getUserLocation() {
-        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
+        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Should we show an explanation
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION)) {
 
-            //We should show an explanation to the user about why we need location data
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                Toast.makeText(this, "Location permission is needed to show distances to markets.", Toast.LENGTH_SHORT).show();
-            }
-
-            // No explanation needed, we can request the permission.
-            else {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, Permissions.REQUEST_COURSE_PERMISSION);
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                        Permissions.REQUEST_COURSE_PERMISSION);
             }
         }
-
-        //Permission is granted and we go ahead to access the location data
-        else {
-            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-            currentLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            Log.e(TAG, "Location permissions passed, successfully got user location");
-        }
+        currentLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
     }
 
-    LocationListener locationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(Location location) {
-            currentLocation = location;
-        }
-
-        @Override
-        public void onStatusChanged(String s, int i, Bundle bundle) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String s) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String s) {
-
-        }
-    };
-
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
         switch (requestCode) {
             case Permissions.REQUEST_COURSE_PERMISSION:
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //Permission is granted to use location data
 
-                //Permission is granted to use location data
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        return;
-                    }
-                    mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-                    currentLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                    Log.e(TAG, "Location permissions passed, successfully got user location");
-                }
 
-                //Permission is denied to use location data and we explain to the user that distance to markets will not be shown
-                else {
+                } else {
+                    //Permission is denied to use location data
                     currentLocation = null;
                 }
                 return;

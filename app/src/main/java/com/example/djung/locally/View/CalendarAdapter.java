@@ -54,9 +54,7 @@ public class CalendarAdapter extends BaseAdapter {
         TextView location = (TextView) convertView.findViewById(R.id.market_location);
         TextView dates = (TextView) convertView.findViewById(R.id.market_dates);
         TextView days = (TextView) convertView.findViewById(R.id.market_days);
-        TextView id = (TextView) convertView.findViewById(R.id.market_id);
 
-        id.setText(String.valueOf(marketItem.getId()));
         name.setText(marketItem.getName());
         location.setText(marketItem.getAddress());
         dates.setText(parseYear(marketItem.getYearOpen()));

@@ -99,7 +99,7 @@ public class VendorSearchItemAdapter extends RecyclerView.Adapter<VendorSearchIt
         Market currentMarket = null;
         try{
             Log.e("VendorSearchItem", item.getMarketName());
-            currentMarket = presenter.fetchMarket(marketIds.get(item.getMarketName()));
+            currentMarket = presenter.fetchMarket(item.getMarketName());
         } catch (final ExecutionException | InterruptedException e) {
             Log.e("VendorSearchAdapter", e.getMessage());
         }

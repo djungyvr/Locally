@@ -13,11 +13,8 @@
         android:textStyle="bold"
         android:textColor="#0091ea"
         android:gravity="center"
-        android:textSize="18sp"
-        android:clickable="true"
-        android:onClick="displayMarket"
-        android:padding="5dip"
-        android:layout_marginTop="5dip"/>
+        android:textSize="17sp"
+        android:padding="5dip" />
 
     <TextView
         android:id="@+id/market_location"
@@ -25,35 +22,32 @@
         android:layout_width="190dp"
         android:layout_height="wrap_content"
         android:textColor="#546e7a"
+        android:layout_marginLeft="5dip"
+        android:layout_marginRight="5dip"
         android:gravity="center"
-        android:textSize="16sp" />
+        android:textSize="15sp" />
 
     <TextView
         android:id="@+id/market_dates"
         android:text="@string/market_dates"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="5dip"
+        android:layout_marginRight="5dip"
         android:textColor="#546e7a"
         android:gravity="center"
-        android:textSize="16sp" />
+        android:textSize="15sp" />
 
     <TextView
         android:id="@+id/market_days"
         android:text="@string/market_days"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="5dip"
+        android:layout_marginRight="5dip"
         android:textColor="#546e7a"
         android:gravity="center"
-        android:textSize="16sp"
+        android:textSize="15sp"
         android:layout_marginBottom="5dip" />
-
-    <TextView
-        android:id="@+id/market_id"
-        android:text="@string/market_id"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:gravity="center"
-        android:layout_marginBottom="5dip" />
-
 
 </TableLayout>
