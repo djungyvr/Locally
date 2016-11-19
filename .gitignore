@@ -60,3 +60,19 @@ app/src/main/java/com/example/djung/locally/AWS/AwsConfiguration.java
 web-browsers.xml
 windows/
 gradle.run.settings.xml
+
+# Ignore random files
+IntelliLang.xml
+_windows/git.xml
+_windows/keymap.xml
+_windows/laf.xml
+debugger.renderers.xml
+debugger.xml
+diff.xml
+find.xml
+gradle.run.settings.xml
+ide.general.xml
+inspection/Default.xml
+ui.lnf.xml
+web-browsers.xml
+
