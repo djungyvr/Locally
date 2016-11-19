@@ -33,6 +33,7 @@ import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.DateUtils;
 import com.example.djung.locally.Utils.MarketUtils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -63,6 +64,9 @@ public class MainActivity extends AppCompatActivity
 
     // Fragment for displaying settings
     private Fragment mSettingsFragment;
+
+    // Fragment for displaying the grocery list
+    private Fragment mGroceryFragment;
 
     private FragmentManager mFragmentManager;
 
@@ -128,25 +132,32 @@ public class MainActivity extends AppCompatActivity
                     if (mVendorDetailsFragment != null) {
                         mFragmentManager.beginTransaction().remove(mVendorDetailsFragment).commit();
                     }
+                    if (mSettingsFragment != null) {
+                        mFragmentManager.beginTransaction().remove(mSettingsFragment).commit();
+                    }
                     if (mCalendarFragment != null) {
                         mFragmentManager.beginTransaction().remove(mCalendarFragment).commit();
                     }
+                    if (mGroceryFragment != null) {
+                        mFragmentManager.beginTransaction().remove(mGroceryFragment).commit();
+                    }
                     for (int i = 0; i < mFragmentManager.getBackStackEntryCount(); i++) {
-                        mFragmentManager.popBackStack();
+                            mFragmentManager.popBackStack();
                     }
                 }
+                break;
+            case R.id.nav_grocery_list:
+                launchGroceryFragment();
                 break;
             case R.id.nav_map:
                 launchMapFragment();
                 break;
-
             case R.id.market_list:
                 launchMarketFragment();
                 break;
-
             case R.id.nav_manage:
-                if (mSettingsFragment == null)
-                    break;
+                launchSettingsFragment();
+                break;
             case R.id.nav_use_as_vendor:
                 Intent loginActivity = new Intent(this, LoginActivity.class);
                 startActivity(loginActivity);
@@ -237,6 +248,54 @@ public class MainActivity extends AppCompatActivity
 
 
     /**
+     * Launches the Settings fragment
+     */
+    private void launchSettingsFragment() {
+        if (mSettingsFragment == null)
+            mSettingsFragment = new SyncCalendarFragment();
+        if (mFragmentManager == null)
+            mFragmentManager = getSupportFragmentManager();
+
+        List<Market> markets;
+
+        try {
+            markets = new MarketPresenter(this).fetchMarkets();
+        } catch (ExecutionException | InterruptedException e) {
+            Log.e(TAG, e.getMessage());
+            return;
+        }
+
+        if (markets == null || markets.isEmpty())
+            return;
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("list_markets", markets.toArray());
+        mSettingsFragment.setArguments(bundle);
+
+        // Replace the container with the fragment
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.main_activity_container, mSettingsFragment);
+        ft.addToBackStack(null);
+        ft.commit();
+    }
+
+    /**
+     * Launches the Grocery fragment
+     */
+    private void launchGroceryFragment() {
+        if (mGroceryFragment == null)
+            mGroceryFragment = new GroceryListFragment();
+        if (mFragmentManager == null)
+            mFragmentManager = getSupportFragmentManager();
+
+        // Replace the container with the fragment
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.main_activity_container, mGroceryFragment);
+        ft.addToBackStack(null);
+        ft.commit();
+    }
+
+    /**
      * Launches the Calendar fragment
      */
     void launchCalendarFragment() {
@@ -289,7 +348,7 @@ public class MainActivity extends AppCompatActivity
      * Launches the vendor details fragment on click from the vendor list fragment
      *
      * @param vendorName Name of the vendor that was selected
-     * @param market The market that the vendor belongs to
+     * @param market     The market that the vendor belongs to
      */
     @Override
     public void onVendorListItemClick(String vendorName, Market market) {
@@ -346,7 +405,7 @@ public class MainActivity extends AppCompatActivity
         marketData.add(recentlyViewedSection);
     }
 
-    void getUserLocation(){
+    void getUserLocation() {
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
