@@ -1,16 +1,19 @@
 package com.example.djung.locally.View;
 
 import android.Manifest;
+import android.animation.ObjectAnimator;
+import android.animation.StateListAnimator;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -21,18 +24,17 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import com.example.djung.locally.AWS.AWSMobileClient;
 import com.example.djung.locally.AWS.AppHelper;
 import com.example.djung.locally.AWS.IdentityManager;
-import com.example.djung.locally.DB.GroceryListDatabase;
+import com.example.djung.locally.DB.VendorItemDatabase;
+import com.example.djung.locally.DB.VendorItemsProvider;
 import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.Presenter.MarketPresenter;
 import com.example.djung.locally.R;
@@ -44,7 +46,8 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, VendorListFragment.OnVendorListItemClickListener,
-        MarketListFragment.onMarketListItemClick {
+        MarketListFragment.onMarketListItemClick, SearchView.OnQueryTextListener, SearchView.OnSuggestionListener,
+        VendorSearchItemFragment.OnVendorListItemClickListener{
 
     private final String TAG = "MainActivity";
 
@@ -73,11 +76,20 @@ public class MainActivity extends AppCompatActivity
     // Fragment for displaying grocery list
     private Fragment mGroceryListFragment;
 
+    // Fragment for display vendor item search result
+    private Fragment mVendorSearchItemFragment;
+
     private FragmentManager mFragmentManager;
 
     private IdentityManager identityManager;
 
     private NavigationView mNavigationView;
+
+    private SearchView mSearchView;
+
+    private SuggestionAdapter mVendorItemsSuggestionAdapter;
+
+    private AppBarLayout mAppBarLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,17 +109,20 @@ public class MainActivity extends AppCompatActivity
 
         initializeContentMain();
 
-        // Initialize application
-        AppHelper.initialize(getApplicationContext());
-
-        //fetchMarket();
+        setAppBarElevation(0);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
+        setAppBarElevation(0);
         final AWSMobileClient awsMobileClient = AWSMobileClient.defaultMobileClient();
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        setAppBarElevation(8);
     }
 
     @Override
@@ -120,7 +135,9 @@ public class MainActivity extends AppCompatActivity
             if(stackCount > 1) {
                 String fragmentName = mFragmentManager.getBackStackEntryAt(stackCount - 2).getName();
                 setActionBarTitle(fragmentName);
+                setAppBarElevation(8);
                 if (fragmentName.equals(getString(R.string.title_fragment_grocery_list))) {
+                    setAppBarElevation(0);
                     mNavigationView.setCheckedItem(R.id.nav_grocery_list);
                 } else if (fragmentName.equals(getString(R.string.title_fragment_calendar))) {
                     mNavigationView.setCheckedItem(R.id.nav_calendar);
@@ -132,6 +149,7 @@ public class MainActivity extends AppCompatActivity
             }
             else {
                 mNavigationView.setCheckedItem(R.id.nav_home);
+                setAppBarElevation(0);
                 setActionBarTitle("Locally");
             }
             super.onBackPressed();
@@ -146,7 +164,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
+        setAppBarElevation(8);
         switch (id) {
             case R.id.nav_home:
                 if (mFragmentManager != null) {
@@ -165,6 +183,8 @@ public class MainActivity extends AppCompatActivity
                     for (int i = 0; i < mFragmentManager.getBackStackEntryCount(); i++) {
                         mFragmentManager.popBackStack();
                     }
+                    setAppBarElevation(0);
+                    setActionBarTitle("Locally");
                 }
                 break;
             case R.id.nav_map:
@@ -172,6 +192,7 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             case R.id.nav_grocery_list:
+                setAppBarElevation(0);
                 launchGroceryList();
                 break;
 
@@ -213,15 +234,6 @@ public class MainActivity extends AppCompatActivity
 
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.search_floating_action);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with search functionality", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
     }
 
     /**
@@ -229,6 +241,7 @@ public class MainActivity extends AppCompatActivity
      * and recently viewed markets
      */
     public void initializeContentMain() {
+        initializeSearchView();
         initializeQuickLinksCardSection();
         initializeMarketsCardSection();
 
@@ -250,17 +263,23 @@ public class MainActivity extends AppCompatActivity
         String marketsOpen = "";
 
         if(mAllMarketsList != null) {
-            allMarkets = mAllMarketsList.size() + " markets";
-            marketsOpen = MarketUtils.getNumberOfCurrentlyOpenMarkets(mAllMarketsList) +
-                    " markets open now";
+            allMarkets = mAllMarketsList.size() + " market";
+            if(mAllMarketsList.size() != 1) {
+                allMarkets = allMarkets + "s";
+            }
+            int numOpen = MarketUtils.getNumberOfCurrentlyOpenMarkets(mAllMarketsList);
+            if(numOpen != 1) {
+                marketsOpen = numOpen + " markets open now";
+            } else {
+                marketsOpen = numOpen + " market open now";
+            }
         }
 
-//        GroceryListDatabase g = new GroceryListDatabase(this); //TODO:
-//        int numItems = g.getGroceryItemsCount();
+//       TODO: get number of items on the user's grocery list
 
         q.add(new QuickLinkCard(R.drawable.ubc, "All Markets", allMarkets));
         q.add(new QuickLinkCard(R.drawable.thumbnail2, "Calendar", marketsOpen));
-        q.add(new QuickLinkCard(R.drawable.thumbnail3, "Fruits & Vegetables", "16 in season"));
+        q.add(new QuickLinkCard(R.drawable.thumbnail3, "In Season Produce", "16 items"));
         q.add(new QuickLinkCard(R.drawable.thumbnail4, "Your Grocery List", "3 saved items"));
 
         QuickLinkCardSection qs = new QuickLinkCardSection(q);
@@ -273,12 +292,12 @@ public class MainActivity extends AppCompatActivity
      */
     public void initializeMarketsCardSection() {
         MarketCardSection openNowSection = new MarketCardSection();
-        openNowSection.setSectionTitle("Markets Open Now");
+        openNowSection.setSectionTitle("Markets Nearby");
 
         MarketCardSection recentlyViewedSection = new MarketCardSection();
         recentlyViewedSection.setSectionTitle("Recently Viewed");
 
-        if (mAllMarketsList != null || !mAllMarketsList.isEmpty()) {
+        if (mAllMarketsList != null && !mAllMarketsList.isEmpty()) {
             openNowSection.setMarketList(mAllMarketsList);
             recentlyViewedSection.setMarketList(mAllMarketsList);
 
@@ -308,15 +327,6 @@ public class MainActivity extends AppCompatActivity
 
         // Obtain a reference to the identity manager.
         identityManager = awsMobileClient.getIdentityManager();
-    }
-
-
-    /**
-     * Start calendar intent
-     */
-    public void startCalendarIntent() {
-        Intent calendarActivity = new Intent(this, CalendarActivity.class);
-        startActivity(calendarActivity);
     }
 
     /**
@@ -527,13 +537,135 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Sets the action bar title as the given string
+     * @param title
+     */
     public void setActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);
     }
 
+    /**
+     * Simulates selecting an item from the navigation bar
+     * @param resId menu item id for the navigation bar
+     */
     public void selectNavigationDrawer(int resId) {
         mNavigationView.setCheckedItem(resId);
         onNavigationItemSelected(mNavigationView.getMenu().findItem(resId));
+    }
+
+    private void initializeSearchView() {
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        mSearchView = (SearchView) findViewById(R.id.search_view);
+        mSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        mSearchView.setIconifiedByDefault(false);
+        mSearchView.setOnQueryTextListener(this);
+        mSearchView.setOnSuggestionListener(this);
+        mSearchView.setQueryHint("Search locally for:");
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        // Because this activity has set launchMode="singleTop", the system calls this method
+        // to deliver the intent if this activity is currently the foreground activity when
+        // invoked again (when the user executes a search from this activity, we don't create
+        // a new instance of this activity, so the system delivers the search intent here)
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+        } else if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            // handles a search query
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            showResults(query);
+        }
+    }
+
+    /**
+     * Searches the vendor items and displays results for the given query.
+     * @param query The search query
+     */
+    private void showResults(String query) {
+        Cursor cursor = managedQuery(VendorItemsProvider.CONTENT_URI, null, null,
+                new String[] {query}, null);
+
+        if (cursor == null) {
+        } else {
+            // Specify the columns we want to display in the result
+            String[] from = new String[] {VendorItemDatabase.KEY_VENDOR_ITEM_NAME,
+                    VendorItemDatabase.KEY_VENDOR_ITEM_INFO};
+
+            // Specify the corresponding layout elements where we want the columns to go
+            int[] to = new int[] { R.id.vendor_item_name_search_result,
+                    R.id.vendor_item_info_search_result };
+
+            // Create a simple cursor adapter for vendor
+            mVendorItemsSuggestionAdapter = new SuggestionAdapter(this,cursor);
+
+            mSearchView.setSuggestionsAdapter(mVendorItemsSuggestionAdapter);
+        }
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        showResults(query);
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        showResults(newText);
+        return false;
+    }
+
+    @Override
+    public boolean onSuggestionSelect(int position) {
+        return true;
+    }
+
+    @Override
+    public boolean onSuggestionClick(int position) {
+        String vendorItem = mVendorItemsSuggestionAdapter.getSuggestion(position);
+        launchVendorSearchItemFragment(vendorItem);
+        return true;
+    }
+
+
+    /**
+     * Launches fragment for showing Vendors search result
+     */
+    void launchVendorSearchItemFragment(String item) {
+        if (mVendorSearchItemFragment == null) {
+            mVendorSearchItemFragment = new VendorSearchItemFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("searchItem", item);
+            mVendorSearchItemFragment.setArguments(bundle);
+        } else {
+            Bundle b = mVendorSearchItemFragment.getArguments();
+            b.putString("searchItem", item);
+        }
+
+        if (mFragmentManager == null)
+            mFragmentManager = getSupportFragmentManager();
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.main_activity_container, mVendorSearchItemFragment);
+        ft.addToBackStack("Search Results");
+        ft.commit();
+    }
+
+    public void setAppBarElevation(float elevation){
+        if(mAppBarLayout == null) {
+            mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
+        }
+        if(android.os.Build.VERSION.SDK_INT >= 21) {
+//            Log.e(TAG, "Setting app bar elevation=" + elevation);
+            mAppBarLayout.setStateListAnimator(null);
+            mAppBarLayout.setElevation(elevation);
+        } else {
+            mAppBarLayout.setTargetElevation(0);
+        }
     }
 
 }

@@ -24,11 +24,12 @@
 
     <!-- ToolBar -->
     <style name="ToolBarStyle" parent="Theme.AppCompat">
-        <item name="android:textColorPrimary">@color/grey_800</item>
-        <item name="android:textColorSecondary">@color/grey_800</item>
-        <item name="actionMenuTextColor">@color/grey_800</item>
+        <item name="android:textColorPrimary">@color/grey_700</item>
+        <item name="android:textColorSecondary">@color/grey_700</item>
+        <item name="actionMenuTextColor">@color/grey_700</item>
         <item name="android:dropDownItemStyle">@style/SearchViewSuggestion</item>
         <item name="android:dropDownListViewStyle">@style/SearchViewSuggestionList</item>
+        <item name="android:textColorHint">@color/grey_700</item>
     </style>
 
     <!-- Suggestion styling -->

@@ -165,11 +165,12 @@ public class GroceryListFragment extends Fragment implements View.OnClickListene
 
     private void initializeSearch(View view) {
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-        mSearchView = (SearchView) view.findViewById(R.id.search_view_grocery_list_items);
+        mSearchView = (SearchView) view.findViewById(R.id.search_view);
         mSearchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
         mSearchView.setIconifiedByDefault(false);
         mSearchView.setOnQueryTextListener(this);
         mSearchView.setOnSuggestionListener(this);
+        mSearchView.setQueryHint("Search for items");
     }
 
     private void initializeAdapter(View view) {
