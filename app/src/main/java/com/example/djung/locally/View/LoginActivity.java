@@ -38,8 +38,6 @@ import java.util.Locale;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     private final String TAG = "LoginActivity";
 
-
-
     // The Idling Resource which will be null in production.
     @Nullable
     private CountingIdlingResource mIdlingResource = new CountingIdlingResource("LOGIN IDLING RESOURCE");
@@ -117,7 +115,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
      * Launch vendor sign
      */
     private void signinVendor() {
-        String username = mEditTextUsername.getText().toString();
+        username = mEditTextUsername.getText().toString();
 
         if(username == null || username.length() < 1) {
             TextView label = (TextView) findViewById(R.id.text_view_username_message);
@@ -128,7 +126,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         AppHelper.setUser(username);
 
-        String password = mEditTextPassword.getText().toString();
+        password = mEditTextPassword.getText().toString();
 
         if(password == null || password.length() < 1) {
             TextView label = (TextView) findViewById(R.id.text_view_password_message);
@@ -336,7 +334,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 return;
             }
         }
-        AuthenticationDetails authenticationDetails = new AuthenticationDetails(this.username, password, null);
+        AuthenticationDetails authenticationDetails = new AuthenticationDetails(this.username, this.password, null);
         continuation.setAuthenticationDetails(authenticationDetails);
         continuation.continueTask();
     }
