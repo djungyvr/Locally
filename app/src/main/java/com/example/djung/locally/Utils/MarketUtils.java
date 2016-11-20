@@ -1,6 +1,7 @@
 package com.example.djung.locally.Utils;
 
 import android.location.Location;
+import android.util.Log;
 
 import com.example.djung.locally.Model.Market;
 
@@ -17,6 +18,7 @@ import java.util.List;
  */
 
 public class MarketUtils {
+    private static final String TAG = "MarketUtils";
 
     /**
      * Check if market is currently open at this date and time (Vancouver time zone)
@@ -25,7 +27,7 @@ public class MarketUtils {
      * @return whether or not market is currently open
      */
     public static boolean isMarketCurrentlyOpen(Market market) {
-        String currDate = DateUtils.getCurrentDateAndTime("MMdd HHmm");
+        String currDate = DateUtils.getCurrentDateAndTime("E MMdd HHmm");
         return isMarketOpenAtThisTime(market, currDate);
     }
 
@@ -40,7 +42,7 @@ public class MarketUtils {
      * @return
      */
     public static boolean isMarketCurrentlyOpen(String datesOpen, String dailyHours) {
-        String currDate = DateUtils.getCurrentDateAndTime("MMdd HHmm");
+        String currDate = DateUtils.getCurrentDateAndTime("E MMdd HHmm");
         return isMarketOpenAtThisTime(datesOpen, dailyHours, currDate);
     }
 
@@ -49,7 +51,7 @@ public class MarketUtils {
      *
      * @param market
      * @param weekdayDateTime date and time pattern string of the form "u MMdd HHmm" where
-     *                        u = weekday (Monday = 1, ..., Sunday = 7)
+     *                        E = weekday (Mon, ..., Sun)
      *                        MMdd = Monday(1-12) and day(1-31)
      *                        HHmm = hour(0-23) and minute (0-59)
      * @return
@@ -83,9 +85,15 @@ public class MarketUtils {
         int dayOpen = Integer.parseInt(daysOpen[1]) * 100 + Integer.parseInt(daysOpen[0]);
         int dayClosed = Integer.parseInt(daysOpen[3]) * 100 + Integer.parseInt(daysOpen[2]);
         // if not open this time of year, no need to check daily hours
-        if (dayInYear < dayOpen || dayInYear > dayClosed) return false;
+        if((dayOpen == dayClosed) && dayInYear != dayOpen) return false;
+        else if(dayClosed > dayOpen) {
+            if (dayInYear < dayOpen || dayInYear > dayClosed) return false;
+        } else {
+            if(dayInYear > dayClosed && dayInYear < dayOpen) return false;
+        }
 
-        int dayOfWeek = Integer.parseInt(dates[0]);
+
+        int dayOfWeek = getNumberDayOfWeek(dates[0]);
         int time = Integer.parseInt(dates[2]);
 
         String[] hoursDays = (dailyHours.replace(":", "")).split("[,-]");
@@ -96,6 +104,21 @@ public class MarketUtils {
 
         if (open == 0 && close == 0) return false;    // market not open today
         return (time >= open && time <= close);
+    }
+
+    /**
+     * Gets the number representing the weekday (e.g. Monday=1,... Sunday=7)
+     * @param weekday Mon, Tue, Wed, Thu, Fri, Sat, or Sun
+     * @return
+     */
+    private static int getNumberDayOfWeek(String weekday){
+        if(weekday.equals("Mon")) return 1;
+        if(weekday.equals("Tue")) return 2;
+        if(weekday.equals("Wed")) return 3;
+        if(weekday.equals("Thu")) return 4;
+        if(weekday.equals("Fri")) return 5;
+        if(weekday.equals("Sat")) return 6;
+        return 7;
     }
 
     /**
@@ -123,11 +146,12 @@ public class MarketUtils {
      * @param latitude
      * @param longitude
      * @return a lit of the markets in closest->farthest order, empty list if no markets provided
+     *          or markets list null
      */
     public static List<Market> getClosestMarkets(List<Market> markets, double latitude, double longitude) {
         List<Market> resultsList = new ArrayList<>();
 
-        if (markets.isEmpty())
+        if (markets == null || markets.isEmpty())
             return resultsList;
 
         List<Object[]> tempList = new ArrayList<>();
@@ -210,5 +234,24 @@ public class MarketUtils {
                 return "https://s3-us-west-2.amazonaws.com/locally-market-images/main_st.jpg";
         }
         return "";
+    }
+
+    /**
+     * Returns the number of markets currently open
+     * @param markets list of markets
+     * @return number of markets currently open, 0 if empty or null list input
+     */
+    public static int getNumberOfCurrentlyOpenMarkets(List<Market> markets) {
+        if(markets == null || markets.isEmpty()) {
+            return 0;
+        }
+        int count = 0;
+
+        for(int i=0; i<markets.size(); ++i) {
+            if(isMarketCurrentlyOpen(markets.get(i))) {
+                ++count;
+            }
+        }
+        return count;
     }
 }

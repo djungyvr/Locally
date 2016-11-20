@@ -1,6 +1,7 @@
 package com.example.djung.locally.View;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.location.Location;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.R;
@@ -16,7 +16,6 @@ import com.example.djung.locally.Utils.LocationUtils;
 import com.example.djung.locally.Utils.MarketUtils;
 import com.squareup.picasso.Picasso;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -35,7 +34,7 @@ public class MarketCardAdapter extends RecyclerView.Adapter<MarketCardAdapter.Si
 
     @Override
     public SingleItemRowHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.market_card,null);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_market,null);
         SingleItemRowHolder rowHolder = new SingleItemRowHolder(view, marketsList);
         return rowHolder;
     }
@@ -55,6 +54,7 @@ public class MarketCardAdapter extends RecyclerView.Adapter<MarketCardAdapter.Si
                     //.centerCrop()
                     .into(holder.mImage);
         }
+        holder.mImage.setColorFilter(Color.rgb(123, 123, 123), android.graphics.PorterDuff.Mode.MULTIPLY);
         if (currentLocation != null){
             float distance = MarketUtils.getDistanceFromMarket(market, currentLocation);
             holder.mDistance.setText(LocationUtils.formatDistanceInKm(distance));

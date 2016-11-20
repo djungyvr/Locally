@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:opacity="opaque">
     <item
-        android:drawable="@color/app_logo_green"
+        android:drawable="@color/colorPrimary"
         />
     <item
         android:bottom="40dp"

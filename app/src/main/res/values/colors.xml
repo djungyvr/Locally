@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#00b0d4</color>
+    <color name="colorPrimaryDark">#0288D1</color>
+    <color name="colorAccent">#FF9100</color>
 
     <color name="toolbar_background">#404142</color>
     <color name="toolbar_items">#CBCBCB</color>
@@ -16,11 +16,12 @@
     <color name="black">#000000</color>
     <color name="warning">#E94700</color>
     <color name="white">#FFFFFF</color>
-    <color name="grey_100">#F5F7F7</color>
-    <color name="grey_300">#8D9496</color>
-    <color name="grey_400">#5A5D5E</color>
-    <color name="grey_500">#404142</color>
-    <color name="grey_600">#303232</color>
-    <color name="grey_700">#1D1E1E</color>
+    <color name="grey_100">#F5F5F5</color>
+    <color name="grey_300">#E0E0E0</color>
+    <color name="grey_400">#BDBDBD</color>
+    <color name="grey_500">#9E9E9E</color>
+    <color name="grey_600">#757575</color>
+    <color name="grey_700">#616161</color>
+    <color name="grey_800">#424242</color>
     <color name="app_logo_green">#00b0d4</color>
 </resources>
