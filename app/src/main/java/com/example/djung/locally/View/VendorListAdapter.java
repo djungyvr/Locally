@@ -7,12 +7,14 @@ import android.net.Uri;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.Model.Vendor;
@@ -118,16 +120,22 @@ public class VendorListAdapter extends RecyclerView.Adapter<VendorListAdapter.Vi
 
         @Override
         public void onClick(View v) {
+            int position = getAdapterPosition();
+            Vendor vendor = vendorListItems.get(position);
             switch (v.getId()) {
                 case R.id.vendor_list_item_call_button:
-                    String number = "7782978789";
-                    Uri call = Uri.parse("tel:" + number);
-                    Intent intent = new Intent(Intent.ACTION_DIAL, call);
-                    context.startActivity(intent);
+                    String number = vendor.getPhoneNumber();
+                    Log.e("VendorListAdapter", "Calling phone number " + number);
+                    if (number == null || number.equals("")){
+                        Toast.makeText(context, "The vendor does not have a valid phone number", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Uri call = Uri.parse("tel:" + number);
+                        Intent intent = new Intent(Intent.ACTION_DIAL, call);
+                        context.startActivity(intent);
+                    }
                     break;
                 case R.id.vendor_list_item:
-                    int position = getAdapterPosition();
-                    Vendor vendor = vendorListItems.get(position);
                     listener.onVendorListItemClick(vendor.getName(), currentMarket);
                     break;
             }

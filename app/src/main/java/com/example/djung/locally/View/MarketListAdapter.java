@@ -162,7 +162,7 @@ public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.Vi
             Market market = marketListItems.get(position);
             Log.e("Market List Item", "Building market list item notification now");
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
-            builder.setSmallIcon(R.mipmap.locally_launcher);
+            builder.setSmallIcon(R.mipmap.ic_app_launcher);
 
             NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
             bigText.bigText(market.getName() + " is about to open! Do not miss it!");
