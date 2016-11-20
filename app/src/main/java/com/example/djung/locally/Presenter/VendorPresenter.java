@@ -116,9 +116,9 @@ public class VendorPresenter {
      *
      * Returns the Vendor that was added
      */
-    public Vendor addVendor(String marketName, String vendorName) throws ExecutionException, InterruptedException {
+    public Vendor addVendor(String marketName, String vendorName, String vendorEmail, String vendorPhoneNumber) throws ExecutionException, InterruptedException {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<Vendor> future = executor.submit(new AddVendor(marketName,vendorName));
+        Future<Vendor> future = executor.submit(new AddVendor(marketName,vendorName,vendorPhoneNumber,vendorEmail));
 
         executor.shutdown(); // Important!
 
@@ -428,10 +428,14 @@ public class VendorPresenter {
 
         private String marketName;
         private String vendorName;
+        private String vendorPhoneNumber;
+        private String vendorEmail;
 
-        AddVendor(String marketName, String vendorName) {
+        AddVendor(String marketName, String vendorName, String vendorPhoneNumber, String vendorEmail) {
             this.marketName = marketName;
             this.vendorName = vendorName;
+            this.vendorEmail = vendorEmail;
+            this.vendorPhoneNumber = vendorPhoneNumber;
         }
 
         @Override
@@ -458,12 +462,17 @@ public class VendorPresenter {
 
             vendorToAdd.setMarketName(marketName);
             vendorToAdd.setName(vendorName);
+
             HashSet<String> initialHashSet = new HashSet<>();
             initialHashSet.add("PLACEHOLDER");
-            vendorToAdd.setDescription("Change this to your own description!");
             vendorToAdd.setItemSet(initialHashSet);
-            mapper.save(vendorToAdd);
 
+            vendorToAdd.setDescription("Change this to your own description!");
+
+            vendorToAdd.setEmail(this.vendorEmail);
+            vendorToAdd.setPhoneNumber(this.vendorPhoneNumber);
+
+            mapper.save(vendorToAdd);
             return vendorToAdd;
         }
     }

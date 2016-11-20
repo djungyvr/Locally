@@ -20,6 +20,10 @@ public class Vendor {
     private String description;
     // Set of items this vendor carries
     private Set<String> itemSet;
+    // Phone number
+    private String phoneNumber;
+    // Email
+    private String email;
 
     @DynamoDBHashKey(attributeName = "Vendor.MarketName")
     public String getMarketName() {
@@ -57,5 +61,23 @@ public class Vendor {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @DynamoDBAttribute(attributeName = "Vendor.PhoneNumber")
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    @DynamoDBAttribute(attributeName = "Vendor.Email")
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
