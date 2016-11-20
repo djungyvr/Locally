@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.djung.locally.R;
@@ -23,7 +24,7 @@ public class MarketCardSectionAdapter extends RecyclerView.Adapter<RecyclerView.
     private ArrayList<Object> mDataList;            // can either be MarketCardSection or a list of Thumbnails
     private Context mContext;
     private Location mCurrentLocation;
-    private final int THUMBNAILS = 0, MARKETCARDSECTION = 1;
+    private final int THUMBNAILS = 0, MARKETCARDSECTION = 1, REQUESTPERMISSIONS = 3;
 
     public MarketCardSectionAdapter() {
     }
@@ -40,6 +41,11 @@ public class MarketCardSectionAdapter extends RecyclerView.Adapter<RecyclerView.
         this.mCurrentLocation = currentLocation;
     }
 
+    public void updateData(ArrayList<Object> newData) {
+        this.mDataList = newData;
+        notifyDataSetChanged();
+    }
+
     /**
      * Returns the view type of the item at position for the purposes of view recycling.
      * @param position
@@ -52,7 +58,9 @@ public class MarketCardSectionAdapter extends RecyclerView.Adapter<RecyclerView.
         } else if (mDataList.get(position) instanceof MarketCardSection) {
             return MARKETCARDSECTION;
         }
-        else {
+        else if (mDataList.get(position) instanceof EnablePermissionsCard){
+            return REQUESTPERMISSIONS;
+        } else {
             return -1;
         }
     }
@@ -77,6 +85,10 @@ public class MarketCardSectionAdapter extends RecyclerView.Adapter<RecyclerView.
             case MARKETCARDSECTION:
                 View v2 = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_market_cards, null);
                 viewHolder = new ViewHolder2(v2);
+                break;
+            case REQUESTPERMISSIONS:
+                View v3 = LayoutInflater.from(parent.getContext()).inflate(R.layout.request_enable_permissions, null);
+                viewHolder = new ViewHolder3(v3);
                 break;
             default:
                 View v = inflater.inflate(R.layout.simple_list_item_1, parent, false);
@@ -104,6 +116,10 @@ public class MarketCardSectionAdapter extends RecyclerView.Adapter<RecyclerView.
             case MARKETCARDSECTION:
                 ViewHolder2 vh2 = (ViewHolder2) viewHolder;
                 configureViewHolder2(vh2, position);
+                break;
+            case REQUESTPERMISSIONS:
+                ViewHolder3 vh3 = (ViewHolder3) viewHolder;
+                configureViewHolder3(vh3, position);
                 break;
             default:
                 RecyclerViewSimpleTextViewHolder vh = (RecyclerViewSimpleTextViewHolder) viewHolder;
@@ -155,6 +171,16 @@ public class MarketCardSectionAdapter extends RecyclerView.Adapter<RecyclerView.
         holder.mRecyclerView.setAdapter(itemListDataAdapter);
     }
 
+    /**
+     * Configure ViewHolder3 for the thumbnail images
+     * @param holder
+     * @param position
+     */
+    private void configureViewHolder3(ViewHolder3 holder, int position) {
+        EnablePermissionsCard card = (EnablePermissionsCard) mDataList.get(position);
+        holder.mContext = card.getContext();
+    }
+
 
     @Override
     public int getItemCount() {
@@ -186,6 +212,26 @@ public class MarketCardSectionAdapter extends RecyclerView.Adapter<RecyclerView.
 
             this.mItemTitle = (TextView) view.findViewById(R.id.text_view_item_title);
             this.mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_list);
+        }
+    }
+
+    /**
+     * ViewHolder class for Enable Permissions rationale
+     */
+    public class ViewHolder3 extends RecyclerView.ViewHolder implements View.OnClickListener{
+        protected Button mButton;
+        protected Context mContext;
+
+        public ViewHolder3(View view) {
+            super(view);
+
+            this.mButton = (Button) view.findViewById(R.id.button_enable_permissions);
+            mButton.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            ((MainActivity) mContext).requestPermissions();
         }
     }
 

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -25,6 +26,7 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.djung.locally.AWS.AWSMobileClient;
 import com.example.djung.locally.AWS.IdentityManager;
@@ -53,6 +55,7 @@ public class MainActivity extends AppCompatActivity
     private ArrayList<Market> mAllMarketsList;
 
     private Location currentLocation;
+    private LocationManager locationManager;
 
     // Fragment for displaying maps
     private Fragment mGoogleMapsFragment;
@@ -90,6 +93,8 @@ public class MainActivity extends AppCompatActivity
 
     private AppBarLayout mAppBarLayout;
 
+    MarketCardSectionAdapter mRecyclerViewAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme_NoActionBar);
@@ -104,9 +109,9 @@ public class MainActivity extends AppCompatActivity
 
         fetchAllMarketsData();
 
-        getUserLocation();
-
         initializeContentMain();
+
+        getUserLocation();
 
         setAppBarElevation(0);
     }
@@ -126,10 +131,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        Log.e(TAG, "Back press recorded");
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
-            Log.e(TAG, "Back press drawer open");
             drawer.closeDrawer(GravityCompat.START);
         } else if (mFragmentManager != null) {
             int stackCount = mFragmentManager.getBackStackEntryCount();
@@ -237,9 +240,9 @@ public class MainActivity extends AppCompatActivity
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
         recyclerView.setHasFixedSize(true);
-        MarketCardSectionAdapter adapter = new MarketCardSectionAdapter(this, mCardSectionsData, currentLocation);
+        mRecyclerViewAdapter = new MarketCardSectionAdapter(this, mCardSectionsData, currentLocation);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(mRecyclerViewAdapter);
     }
 
     public void initializeAWS() {
@@ -438,47 +441,6 @@ public class MainActivity extends AppCompatActivity
         ft.commit();
     }
 
-
-    /**
-     * Get the current user location. Need to check runtime permissions to access location data.
-     */
-    private void getUserLocation() {
-        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Should we show an explanation
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.ACCESS_COARSE_LOCATION)) {
-
-            } else {
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                        Permissions.REQUEST_COURSE_PERMISSION);
-            }
-        }
-        currentLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case Permissions.REQUEST_COURSE_PERMISSION:
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    //Permission is granted to use location data
-
-
-                } else {
-                    //Permission is denied to use location data
-                    currentLocation = null;
-                }
-                return;
-        }
-    }
-
     /**
      * Initializes the quick links section which includes All Markets, Calendar,
      * Fruits & Vegetables, Your Lists
@@ -520,18 +482,27 @@ public class MainActivity extends AppCompatActivity
      * TODO: for now we'll just add all the markets
      */
     public void initializeMarketsCardSection() {
-        MarketCardSection openNowSection = new MarketCardSection();
-        openNowSection.setSectionTitle("Markets Nearby");
+        MarketCardSection nearbySection = new MarketCardSection();
+        nearbySection.setSectionTitle("Markets Nearby");
 
         MarketCardSection recentlyViewedSection = new MarketCardSection();
         recentlyViewedSection.setSectionTitle("Recently Viewed");
 
         if (mAllMarketsList != null && !mAllMarketsList.isEmpty()) {
-            openNowSection.setMarketList(mAllMarketsList);
-            recentlyViewedSection.setMarketList(mAllMarketsList);
+            if(currentLocation != null){
+                nearbySection.setMarketList(mAllMarketsList);
+                mCardSectionsData.add(nearbySection);
 
-            mCardSectionsData.add(openNowSection);
+            }
+            recentlyViewedSection.setMarketList(mAllMarketsList);
             mCardSectionsData.add(recentlyViewedSection);
+        }
+
+        // if location permissions denied, show the rationale
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            mCardSectionsData.add(new EnablePermissionsCard(this));
+
         }
     }
 
@@ -677,6 +648,105 @@ public class MainActivity extends AppCompatActivity
         } else {
             mAppBarLayout.setTargetElevation(0);
         }
+    }
+
+    /**
+     * Creates a new adapter for the MarketCardSection and replaces the old adapter with the new one
+     */
+    public void updateContentMain(){
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        mCardSectionsData = new ArrayList<>();
+        initializeQuickLinksCardSection();
+        initializeMarketsCardSection();
+        MarketCardSectionAdapter adapter = new MarketCardSectionAdapter(this, mCardSectionsData, currentLocation);
+        recyclerView.swapAdapter(adapter, true);
+        Log.e(TAG, "Replaced old adapter with new adapter for recycler view due to updated location permissions");
+    }
+
+    /**
+     * Get the current user location. Need to check runtime permissions to access location data.
+     */
+    void getUserLocation() {
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        if (!locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            Log.e(TAG, "Location services disabled");
+            Toast.makeText(this, "Enable location services for accurate data", Toast.LENGTH_LONG).show();
+        }
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            //We should show an explanation to the user about why we need location data
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                Toast.makeText(this, "Location permission is needed to show distances to markets.", Toast.LENGTH_LONG).show();
+            }
+
+            // No explanation needed, we can request the permission.
+            else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, Permissions.REQUEST_COURSE_PERMISSION);
+            }
+        }
+
+        //Permission is granted and we go ahead to access the location data
+        else {
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+            currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            Log.e(TAG, "Location permissions passed, successfully got user location");
+            updateContentMain();
+        }
+    }
+
+    LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            currentLocation = location;
+        }
+
+        @Override
+        public void onStatusChanged(String s, int i, Bundle bundle) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String s) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String s) {
+
+        }
+    };
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case Permissions.REQUEST_COURSE_PERMISSION:
+
+                //Permission is granted to use location data
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        return;
+                    }
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+                    currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                    Log.e(TAG, "Location permissions passed, successfully got user location");
+                    updateContentMain();
+                }
+
+                //Permission is denied to use location data and we explain to the user that distance to markets will not be shown
+                else {
+                    currentLocation = null;
+                    Toast.makeText(this, "Please turn on location permissions in App Settings for additional functionality.", Toast.LENGTH_LONG).show();
+                }
+                return;
+        }
+    }
+
+    public void requestPermissions() {
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, Permissions.REQUEST_COURSE_PERMISSION);
     }
 
 }

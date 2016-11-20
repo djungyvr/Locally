@@ -35,4 +35,7 @@
     <string name="title_fragment_grocery_list">Your Grocery List</string>
     <string name="title_fragment_vendors_search_results_list">Search Results</string>
     <string name="title_fragment_settings">Settings</string>
+
+    <string name="enable_permissions_rationale">We use your location data to customize your experience. Please turn on location permissions for additional functionality.</string>
+    <string name="enable_permissions">Enable Permissions</string>
 </resources>
