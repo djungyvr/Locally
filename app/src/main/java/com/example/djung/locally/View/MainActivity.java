@@ -201,22 +201,28 @@ public class MainActivity extends AppCompatActivity
                 }
                 break;
             case R.id.nav_grocery_list:
+                mSearchView.clearFocus();
                 launchGroceryFragment();
                 break;
             case R.id.nav_map:
+                mSearchView.clearFocus();
                 launchMapFragment();
                 break;
             case R.id.market_list:
+                mSearchView.clearFocus();
                 launchMarketFragment();
                 break;
             case R.id.nav_manage:
+                mSearchView.clearFocus();
                 launchSettingsFragment();
                 break;
             case R.id.nav_use_as_vendor:
+                mSearchView.clearFocus();
                 Intent loginActivity = new Intent(this, LoginActivity.class);
                 startActivity(loginActivity);
                 break;
             case R.id.nav_calendar:
+                mSearchView.clearFocus();
                 launchCalendarFragment();
                 //Intent calendarActivity = new Intent(this, CalendarActivity.class);
                 //startActivity(calendarActivity);

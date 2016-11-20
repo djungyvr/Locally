@@ -15,6 +15,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.Presenter.MarketPresenter;
@@ -30,7 +33,7 @@ import java.util.concurrent.ExecutionException;
  * Created by Andy Lin on 2016-11-08.
  */
 
-public class MarketListFragment extends android.support.v4.app.Fragment {
+public class MarketListFragment extends android.support.v4.app.Fragment{
     private onMarketListItemClick mCallback;
     private Location currentLocation;
 

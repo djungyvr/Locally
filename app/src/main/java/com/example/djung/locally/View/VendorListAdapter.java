@@ -3,20 +3,26 @@ package com.example.djung.locally.View;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
+import android.net.Uri;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.Model.Vendor;
 import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.LocationUtils;
 import com.example.djung.locally.Utils.MarketUtils;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,22 +65,23 @@ public class VendorListAdapter extends RecyclerView.Adapter<VendorListAdapter.Vi
     public void onBindViewHolder(VendorListAdapter.ViewHolder holder, int position) {
         Vendor item = vendorListItems.get(position);
         holder.vendorListItemVendorName.setText(item.getName());
-        holder.vendorListItemVendorLocation.setText(currentMarket.getAddress());
+        holder.vendorListItemDescription.setText(item.getDescription());
+        //holder.vendorListItemVendorLocation.setText(currentMarket.getAddress());
 
-        if (MarketUtils.isMarketCurrentlyOpen(currentMarket)){
-            holder.vendorListItemVendorStatus.setText("Open Now!");
-        }
-        else {
-            holder.vendorListItemVendorStatus.setText("Closed Now!");
-        }
-
-        if (currentLocation != null){
-            float distance = MarketUtils.getDistanceFromMarket(currentMarket, currentLocation);
-            holder.vendorListItemVendorDistance.setText(LocationUtils.formatDistanceInKm(distance));
-        }
-        else {
-            holder.vendorListItemVendorDistance.setText("");
-        }
+//        if (MarketUtils.isMarketCurrentlyOpen(currentMarket)){
+//            holder.vendorListItemVendorStatus.setText("Open Now!");
+//        }
+//        else {
+//            holder.vendorListItemVendorStatus.setText("Closed Now");
+//        }
+//
+//        if (currentLocation != null){
+//            float distance = MarketUtils.getDistanceFromMarket(currentMarket, currentLocation);
+//            holder.vendorListItemVendorDistance.setText(LocationUtils.formatDistanceInKm(distance));
+//        }
+//        else {
+//            holder.vendorListItemVendorDistance.setText("");
+//        }
     }
 
     @Override
@@ -89,9 +96,11 @@ public class VendorListAdapter extends RecyclerView.Adapter<VendorListAdapter.Vi
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public TextView vendorListItemVendorName;
-        public TextView vendorListItemVendorLocation;
-        public TextView vendorListItemVendorStatus;
-        public TextView vendorListItemVendorDistance;
+        public TextView vendorListItemDescription;
+        public Button vendorListItemCallButton;
+        //public TextView vendorListItemVendorLocation;
+        //public TextView vendorListItemVendorStatus;
+        //public TextView vendorListItemVendorDistance;
         public Context context;
         public List<Vendor> items;
 
@@ -99,10 +108,13 @@ public class VendorListAdapter extends RecyclerView.Adapter<VendorListAdapter.Vi
             super(itemView);
             this.context = context;
             this.items = items;
-            this.vendorListItemVendorDistance = (TextView) itemView.findViewById(R.id.vendor_list_item_distance);
-            this.vendorListItemVendorLocation = (TextView) itemView.findViewById(R.id.vendor_list_item_location);
+            this.vendorListItemDescription = (TextView) itemView.findViewById(R.id.vendor_list_item_description);
+            this.vendorListItemCallButton = (Button) itemView.findViewById(R.id.vendor_list_item_call_button);
+            //this.vendorListItemVendorDistance = (TextView) itemView.findViewById(R.id.vendor_list_item_distance);
+            //this.vendorListItemVendorLocation = (TextView) itemView.findViewById(R.id.vendor_list_item_location);
             this.vendorListItemVendorName = (TextView) itemView.findViewById(R.id.vendor_list_item_name);
-            this.vendorListItemVendorStatus = (TextView) itemView.findViewById(R.id.vendor_list_item_status);
+            //this.vendorListItemVendorStatus = (TextView) itemView.findViewById(R.id.vendor_list_item_status);
+            vendorListItemCallButton.setOnClickListener(this);
             itemView.setOnClickListener(this);
         }
 
@@ -110,7 +122,24 @@ public class VendorListAdapter extends RecyclerView.Adapter<VendorListAdapter.Vi
         public void onClick(View v) {
             int position = getAdapterPosition();
             Vendor vendor = vendorListItems.get(position);
-            listener.onVendorListItemClick(vendor.getName(), currentMarket);
+            switch (v.getId()) {
+                case R.id.vendor_list_item_call_button:
+                    String number = vendor.getPhoneNumber();
+                    Log.e("VendorListAdapter", "Calling phone number " + number);
+                    if (number == null || number.equals("")){
+                        Toast.makeText(context, "The vendor does not have a valid phone number", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Uri call = Uri.parse("tel:" + number);
+                        Intent intent = new Intent(Intent.ACTION_DIAL, call);
+                        context.startActivity(intent);
+                    }
+                    break;
+                case R.id.vendor_list_item:
+                    listener.onVendorListItemClick(vendor.getName(), currentMarket);
+                    break;
+            }
+
         }
     }
 }
