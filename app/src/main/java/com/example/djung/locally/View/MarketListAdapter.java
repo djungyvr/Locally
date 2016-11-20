@@ -1,8 +1,13 @@
 package com.example.djung.locally.View;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.location.Location;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +22,8 @@ import com.example.djung.locally.Utils.DateUtils;
 import com.example.djung.locally.Utils.LocationUtils;
 import com.example.djung.locally.Utils.MarketUtils;
 import com.squareup.picasso.Picasso;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -95,6 +102,7 @@ public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.Vi
         public TextView marketListItemMarketDates;
         public TextView marketListItemMarketStatus;
         public Button marketListItemSupportTextButton;
+        public Button marketListItemNotificationButton;
         public LinearLayout marketListItemSupportText;
         public Context context;
         public List<Market> items;
@@ -112,7 +120,9 @@ public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.Vi
             this.marketListItemImage = (ImageView) itemView.findViewById(R.id.market_list_item_image);
             this.marketListItemSupportTextButton = (Button) itemView.findViewById(R.id.market_list_item_details_button);
             this.marketListItemSupportText = (LinearLayout) itemView.findViewById(R.id.market_list_item_support_text);
+            this.marketListItemNotificationButton = (Button) itemView.findViewById(R.id.market_list_item_notifications_button);
             this.marketListItemSupportTextButton.setOnClickListener(this);
+            this.marketListItemNotificationButton.setOnClickListener(this);
             itemView.setOnClickListener(this);
         }
 
@@ -121,6 +131,9 @@ public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.Vi
             switch (v.getId()) {
                 case R.id.market_list_item_details_button:
                     toggleSupportText();
+                    break;
+                case R.id.market_list_item_notifications_button:
+                    buildNotification();
                     break;
                 case R.id.market_list_item:
                     int position = getAdapterPosition();
@@ -142,6 +155,23 @@ public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.Vi
                 marketListItemSupportText.setVisibility(View.VISIBLE);
                 marketListItemSupportTextButton.setText("Less Details");
             }
+        }
+
+        public void buildNotification(){
+            int position = getAdapterPosition();
+            Market market = marketListItems.get(position);
+            Log.e("Market List Item", "Building market list item notification now");
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+            builder.setSmallIcon(R.mipmap.locally_launcher);
+
+            NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
+            bigText.bigText(market.getName() + " is about to open! Do not miss it!");
+            bigText.setBigContentTitle("Market Notification");
+            builder.setStyle(bigText);
+
+            Notification notification = builder.build();
+            NotificationManagerCompat.from(context).notify(0,notification);
+
         }
     }
 }

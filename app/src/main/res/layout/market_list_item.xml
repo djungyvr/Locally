@@ -38,7 +38,7 @@
                 android:paddingTop="20dp"
                 android:scrollHorizontally="true"
                 android:text="Market Name"
-                android:textColor="#000"
+                android:textColor="@color/black"
                 android:textSize="20sp" />
 
             <LinearLayout
@@ -54,7 +54,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Market Open Status"
-                    android:textColor="#000"
+                    android:textColor="@color/black"
                     android:textSize="14sp" />
 
                 <TextView
@@ -68,7 +68,7 @@
                     android:maxLines="1"
                     android:scrollHorizontally="true"
                     android:text="Market Distance"
-                    android:textColor="#000"
+                    android:textColor="@color/black"
                     android:textSize="14sp" />
             </LinearLayout>
 
@@ -83,7 +83,7 @@
                 android:paddingRight="16dp"
                 android:scrollHorizontally="true"
                 android:text="Market Location"
-                android:textColor="#000"
+                android:textColor="@color/black"
                 android:textSize="14sp" />
 
             <LinearLayout
@@ -93,11 +93,12 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:id="@+id/market_list_item_notifications_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:background="?android:attr/selectableItemBackground"
-                    android:text="Notififications"
+                    android:text="Notifications"
                     android:textColor="#03A9F4" />
 
                 <Button
@@ -126,7 +127,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Dates Open: "
-                    android:textColor="#000"
+                    android:textColor="@color/black"
                     android:textSize="16sp" />
 
                 <TextView
@@ -134,7 +135,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Market Dates Open"
-                    android:textColor="#000"
+                    android:textColor="@color/black"
                     android:textSize="14sp" />
 
                 <Space
@@ -145,7 +146,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Daily Hours: "
-                    android:textColor="#000"
+                    android:textColor="@color/black"
                     android:textSize="16sp" />
 
                 <TextView
@@ -153,7 +154,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Market Hours"
-                    android:textColor="#000"
+                    android:textColor="@color/black"
                     android:textSize="14sp" />
             </LinearLayout>
         </LinearLayout>
