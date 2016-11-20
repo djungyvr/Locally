@@ -15,10 +15,6 @@
         android:name="com.example.permission.MAPS_RECEIVE"
         android:protectionLevel="signature" />
 
-    <permission
-        android:name="com.example.permission.GET_ACCOUNTS"
-        android:protectionLevel="signature" />
-
     <uses-permission
         android:name="com.example.djung.locally.permission.MAPS_RECEIVE"
         android:protectionLevel="signature" />

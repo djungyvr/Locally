@@ -4,6 +4,8 @@ import android.location.Location;
 
 import com.example.djung.locally.Model.Market;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -66,7 +68,7 @@ public class MarketUtils {
      *                        where each comma separated string is the daily hours of that particular day, starting from Monday and ending on Sunday.
      * @param weekdayDateTime date and time pattern string of the form "u MMdd HHmm" where
      *                        u = weekday (Monday = 1, ..., Sunday = 7)
-     *                        MMdd = Monday(1-12) and day(1-31)
+     *                        MMdd = Months(1-12) and day(1-31)
      *                        HHmm = hour(0-23) and minute (0-59)
      * @return
      */
@@ -95,7 +97,6 @@ public class MarketUtils {
         if (open == 0 && close == 0) return false;    // market not open today
         return (time >= open && time <= close);
     }
-
 
     /**
      * Determines which markets are closest to the given location

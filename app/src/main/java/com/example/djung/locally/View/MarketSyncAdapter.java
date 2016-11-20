@@ -30,19 +30,26 @@ public class MarketSyncAdapter extends RecyclerView.Adapter<MarketSyncAdapter.Vi
     private Set<String> mSynchedMarketSet;
     private Context mContext;
     private SharedPreferences mSettings;
+    private Callback mCallback;
 
-    public MarketSyncAdapter(List<Market> markets, Context context, String syncPreferencesFile){
+    public interface Callback {
+        void callback(Market market, boolean shouldAdd);
+    }
+
+
+    public MarketSyncAdapter(List<Market> markets, Context context, String syncPreferencesFile, Callback callback){
         mMarkets = markets;
         mContext = context;
         mSettings = context.getSharedPreferences(syncPreferencesFile,0);
         mSynchedMarketSet = new HashSet<>();
         mSynchedMarketSet = new HashSet<>(mSettings.getStringSet(SYNCHED_MARKETS_KEY,mSynchedMarketSet));
+        mCallback = callback;
     }
 
     @Override
     public MarketSyncAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.calendar_sync_market_item, parent, false);
-        MarketSyncAdapter.ViewHolder vh = new MarketSyncAdapter.ViewHolder(v,mContext);
+        MarketSyncAdapter.ViewHolder vh = new MarketSyncAdapter.ViewHolder(v);
         return vh;
     }
 
@@ -64,11 +71,9 @@ public class MarketSyncAdapter extends RecyclerView.Adapter<MarketSyncAdapter.Vi
         protected TextView mTextViewMarketName;
         protected Switch mSwitchMarketSync;
         protected Market mMarket;
-        private Context mContext;
 
-        public ViewHolder(View itemView, Context context) {
+        public ViewHolder(View itemView) {
             super(itemView);
-            mContext = context;
             mTextViewMarketName = (TextView) itemView.findViewById(R.id.text_view_sync_market_item);
             mSwitchMarketSync = (Switch) itemView.findViewById(R.id.switch_sync_market_item);
             mSwitchMarketSync.setOnCheckedChangeListener(this);
@@ -77,7 +82,6 @@ public class MarketSyncAdapter extends RecyclerView.Adapter<MarketSyncAdapter.Vi
         /**
          * Triggered when the user switches the market sync switch
          */
-        //TODO MAKE CALLS TO GOOGLE CALENDAR API
         @Override
         public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
             Log.e(TAG, "Set to " + b + " at position " + getAdapterPosition());
@@ -85,9 +89,11 @@ public class MarketSyncAdapter extends RecyclerView.Adapter<MarketSyncAdapter.Vi
             if(compoundButton.isChecked()) {
                 // Add the synced market to the set
                 mSynchedMarketSet.add(mMarket.getName());
+                mCallback.callback(mMarket,true);
             } else {
                 // Remove the market from the set
                 mSynchedMarketSet.remove(mMarket.getName());
+                mCallback.callback(mMarket,false);
             }
             // Save the updated synched market sets
             mSettings.edit().putStringSet(SYNCHED_MARKETS_KEY,mSynchedMarketSet).commit();
