@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.djung.locally.Model.Vendor;
+import com.example.djung.locally.Utils.DateUtils;
 import com.example.djung.locally.Utils.MarketUtils;
 import com.example.djung.locally.Utils.ThreadUtils;
 import com.example.djung.locally.Presenter.VendorPresenter;
@@ -47,7 +48,8 @@ public class VendorDetailsFragment extends Fragment implements View.OnClickListe
         getVendor(marketName, vendorName);
         populateViews(view);
         addButtonListeners(view);
-
+        ((MainActivity) getActivity()).setActionBarTitle(marketName);
+        ((MainActivity) getActivity()).setAppBarElevation(4);
         return view;
     }
 
@@ -118,7 +120,7 @@ public class VendorDetailsFragment extends Fragment implements View.OnClickListe
         }
 
         TextView vendorHoursView = (TextView) view.findViewById(R.id.vendor_detail_hours);
-        vendorHoursView.setText(vendorHours);
+        vendorHoursView.setText(DateUtils.parseHours(vendorHours));
     }
 
     /**

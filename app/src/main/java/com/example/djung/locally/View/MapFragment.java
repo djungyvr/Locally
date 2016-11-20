@@ -48,7 +48,9 @@ import static com.google.android.gms.location.LocationSettingsStatusCodes.*;
 
 //TODO: FIX SO THAT LOCATION IS ADDED UPON PRESSING YES
 
-public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class MapFragment extends Fragment
+        implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, LocationListener {
     private MapView mMapView;
     private GoogleMap mGoogleMap;
     private GoogleApiClient mGoogleApiClient;
@@ -65,6 +67,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
 
         // Needed to get the map to display immediately
         mMapView.onResume();
+
+        ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.title_fragment_maps));
+        ((MainActivity) getActivity()).setAppBarElevation(4);
 
         try {
             MapsInitializer.initialize(getActivity().getApplicationContext());
@@ -112,7 +117,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
 
     /**
      * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
+     * This Callback is triggered when the map is ready to be used.
      * This is where we can add markers or lines, add listeners or move the camera. In this case,
      * we just add a marker near Sydney, Australia.
      * If Google Play services is not installed on the device, the user will be prompted to install
@@ -360,6 +365,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
     public void onLocationChanged(Location location) {
         mLastLocation = location;
     }
+
 }
 
 

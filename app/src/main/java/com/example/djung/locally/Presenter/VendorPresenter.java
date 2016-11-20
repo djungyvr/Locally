@@ -7,6 +7,7 @@ import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBQueryExpression;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBScanExpression;
 import com.amazonaws.regions.Region;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
@@ -115,9 +116,9 @@ public class VendorPresenter {
      *
      * Returns the Vendor that was added
      */
-    public Vendor addVendor(String marketName, String vendorName) throws ExecutionException, InterruptedException {
+    public Vendor addVendor(String marketName, String vendorName, String vendorEmail, String vendorPhoneNumber) throws ExecutionException, InterruptedException {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<Vendor> future = executor.submit(new AddVendor(marketName,vendorName));
+        Future<Vendor> future = executor.submit(new AddVendor(marketName,vendorName,vendorPhoneNumber,vendorEmail));
 
         executor.shutdown(); // Important!
 
@@ -134,6 +135,20 @@ public class VendorPresenter {
     public List<Vendor> lookForVendors(String marketName, List<String> groceryList) throws ExecutionException, InterruptedException {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<List<Vendor>> future = executor.submit(new LookForVendorsTask(marketName,groceryList));
+
+        executor.shutdown(); // Important!
+
+        return future.get();
+    }
+
+    /**
+     * Return the vendors that have the given item
+     *
+     * Returns the Vendors that have the item
+     */
+    public List<Vendor> lookForVendorsItem(String item) throws ExecutionException, InterruptedException {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<List<Vendor>> future = executor.submit(new LookForVendorsItemTask(item));
 
         executor.shutdown(); // Important!
 
@@ -413,10 +428,14 @@ public class VendorPresenter {
 
         private String marketName;
         private String vendorName;
+        private String vendorPhoneNumber;
+        private String vendorEmail;
 
-        AddVendor(String marketName, String vendorName) {
+        AddVendor(String marketName, String vendorName, String vendorPhoneNumber, String vendorEmail) {
             this.marketName = marketName;
             this.vendorName = vendorName;
+            this.vendorEmail = vendorEmail;
+            this.vendorPhoneNumber = vendorPhoneNumber;
         }
 
         @Override
@@ -443,12 +462,17 @@ public class VendorPresenter {
 
             vendorToAdd.setMarketName(marketName);
             vendorToAdd.setName(vendorName);
+
             HashSet<String> initialHashSet = new HashSet<>();
             initialHashSet.add("PLACEHOLDER");
-            vendorToAdd.setDescription("Change this to your own description!");
             vendorToAdd.setItemSet(initialHashSet);
-            mapper.save(vendorToAdd);
 
+            vendorToAdd.setDescription("Change this to your own description!");
+
+            vendorToAdd.setEmail(this.vendorEmail);
+            vendorToAdd.setPhoneNumber(this.vendorPhoneNumber);
+
+            mapper.save(vendorToAdd);
             return vendorToAdd;
         }
     }
@@ -605,4 +629,53 @@ public class VendorPresenter {
             return mapper.query(Vendor.class,query);
         }
     }
+
+    /**
+     * Fetch vendors that have the given item in stock
+     */
+    private class LookForVendorsItemTask implements Callable<List<Vendor>> {
+
+        private String item;
+
+        LookForVendorsItemTask(String item) {
+            this.item = item;
+        }
+
+        @Override
+        public List<Vendor> call() throws Exception {
+            // Initialize the Amazon Cognito credentials provider
+            CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+                    context,
+                    AwsConfiguration.AMAZON_COGNITO_IDENTITY_POOL_ID, // Identity Pool ID
+                    AwsConfiguration.AMAZON_DYNAMODB_REGION // Region
+            );
+
+            // Create a Dynamo Database Client
+            AmazonDynamoDBClient ddbClient = Region.getRegion(AwsConfiguration.AMAZON_DYNAMODB_REGION) // CRUCIAL
+                    .createClient(
+                            AmazonDynamoDBClient.class,
+                            credentialsProvider,
+                            new ClientConfiguration()
+                    );
+
+            // Create a mapper from the client
+            DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
+
+            DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
+
+            // Get the list of vendors
+            List<Vendor> vendorList = mapper.scan(Vendor.class, scanExpression);
+
+            List<Vendor> matchingVendors = new ArrayList<>();
+
+            // Iterate through the vendors and add to the list if they have it
+            for (Vendor vendor : vendorList) {
+                // Add if it contains the item and if the vendor isn't already added
+                if (vendor.getItemSet().contains(item) && !matchingVendors.contains(vendor)) {
+                    matchingVendors.add(vendor);
+                }
+            }
+        return matchingVendors;
+    }
+}
 }

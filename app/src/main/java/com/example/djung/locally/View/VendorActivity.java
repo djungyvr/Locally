@@ -70,18 +70,18 @@ public class VendorActivity extends AppCompatActivity
     private CognitoUserDetails details;
 
     // User details
-    private String username;
+    private String mUsername;
     private ProgressDialog waitDialog;
-    private String marketName;
-    private String vendorName;
-    private Set<Integer> vendorItems;
-    private Vendor currentVendor;
+    private String mMarketName;
+    private String mVendorName;
+    private String mVendorEmail;
+    private String mVendorPhoneNumber;
+    private Vendor mCurrentVendor;
 
     // Adapters
     private SuggestionAdapter mVendorItemsSuggestionAdapter;
     private VendorItemAdapter mVendorItemAdapter;
 
-    private boolean haveItemsChanged;
     private Dialog mVendorSaveDialog;
 
     // Fragment for editing vendor details
@@ -110,8 +110,6 @@ public class VendorActivity extends AppCompatActivity
 
         mFabSaveList = (FloatingActionButton) findViewById(R.id.fab_save_vendor_list);
         mFabSaveList.setOnClickListener(this);
-
-        haveItemsChanged = false;
 
         initializeSearch();
 
@@ -220,9 +218,9 @@ public class VendorActivity extends AppCompatActivity
         if(mEditVendorDetailsFragment == null) {
             mEditVendorDetailsFragment = new EditVendorDetailsFragment();
             Bundle bundle = new Bundle();
-            bundle.putString("vendor_name", currentVendor.getName());
-            bundle.putString("market_name", currentVendor.getMarketName());
-            bundle.putString("vendor_description", currentVendor.getDescription());
+            bundle.putString("vendor_name", mCurrentVendor.getName());
+            bundle.putString("market_name", mCurrentVendor.getMarketName());
+            bundle.putString("vendor_description", mCurrentVendor.getDescription());
 
             mEditVendorDetailsFragment.setArguments(bundle);
         }
@@ -245,8 +243,8 @@ public class VendorActivity extends AppCompatActivity
     private void initialize() {
         // Get the user name
         Bundle extras = getIntent().getExtras();
-        username = AppHelper.getUser();
-        user = AppHelper.getCognitoUserPool().getUser(username);
+        mUsername = AppHelper.getUser();
+        user = AppHelper.getCognitoUserPool().getUser(mUsername);
         getDetails();
     }
 
@@ -254,7 +252,7 @@ public class VendorActivity extends AppCompatActivity
      * Get vendor details from CIP service
      */
     private void getDetails() {
-        AppHelper.getCognitoUserPool().getUser(username).getDetailsInBackground(detailsHandler);
+        AppHelper.getCognitoUserPool().getUser(mUsername).getDetailsInBackground(detailsHandler);
     }
 
     /**
@@ -264,20 +262,20 @@ public class VendorActivity extends AppCompatActivity
         VendorPresenter vendorPresenter = new VendorPresenter(this);
         try {
             // Fetch the items
-            Vendor vendor = vendorPresenter.fetchVendor(marketName,vendorName);
+            Vendor vendor = vendorPresenter.fetchVendor(mMarketName, mVendorName);
             // Check if we found a matching vendor in the database
             if(vendor != null) {
-                currentVendor = vendor;
+                mCurrentVendor = vendor;
             } else {
                 // Add the vendor to the database since we can't find it
-                currentVendor = vendorPresenter.addVendor(marketName, vendorName);
+                mCurrentVendor = vendorPresenter.addVendor(mMarketName, mVendorName,mVendorEmail,mVendorPhoneNumber);
             }
         }
         // IllegalArgumentException means we didn't find a vendor so we add it
         catch (final IllegalArgumentException | InterruptedException | ExecutionException findException) {
             try {
                 // Add the vendor to the database since we can't find it
-                currentVendor = vendorPresenter.addVendor(marketName, vendorName);
+                mCurrentVendor = vendorPresenter.addVendor(mMarketName, mVendorName,mVendorEmail,mVendorPhoneNumber);
             } catch (final InterruptedException | ExecutionException exception) {
                 showDialogMessage("Error Adding Vendor",exception.getMessage(),false);
             }
@@ -287,12 +285,12 @@ public class VendorActivity extends AppCompatActivity
     }
 
     private void initializeAdapter() {
-        if(currentVendor != null) {
+        if(mCurrentVendor != null) {
             mRecyclerViewVendorItems = (VendorItemRecyclerView) findViewById(R.id.recycler_view_vendor_items);
 
             mRecyclerViewVendorItems.setHasFixedSize(true);
 
-            ArrayList<String> filteredList = VendorUtils.filterPlaceholderText(new ArrayList<>(currentVendor.getItemSet()));
+            ArrayList<String> filteredList = VendorUtils.filterPlaceholderText(new ArrayList<>(mCurrentVendor.getItemSet()));
 
             mVendorItemAdapter = new VendorItemAdapter(filteredList, this);
 
@@ -312,11 +310,13 @@ public class VendorActivity extends AppCompatActivity
             // Store details in the AppHandler
             AppHelper.setUserDetails(cognitoUserDetails);
             // Change the nav header to vendor name
-            vendorName = AppHelper.getUserDetails().getAttributes().getAttributes().get("custom:vendor_name");
-            marketName = AppHelper.getUserDetails().getAttributes().getAttributes().get("custom:market_name");
-            Log.e(TAG,"Details of : " + vendorName);
-            if(vendorName != null && mTextViewVendorName != null) {
-                mTextViewVendorName.setText(vendorName);
+            mVendorName = AppHelper.getUserDetails().getAttributes().getAttributes().get("custom:vendor_name");
+            mMarketName = AppHelper.getUserDetails().getAttributes().getAttributes().get("custom:market_name");
+            mVendorEmail = AppHelper.getUserDetails().getAttributes().getAttributes().get("email");
+            mVendorPhoneNumber = AppHelper.getUserDetails().getAttributes().getAttributes().get("custom:gitphone_number");
+            Log.e(TAG,"Details of : " + mVendorName);
+            if(mVendorName != null && mTextViewVendorName != null) {
+                mTextViewVendorName.setText(mVendorName);
                 populateContentMain();
             }
         }
@@ -332,7 +332,7 @@ public class VendorActivity extends AppCompatActivity
      * Populates the adapter with the vendor items
      */
     private void populateRecycler() {
-        Set<String> itemIds = currentVendor.getItemSet();
+        Set<String> itemIds = mCurrentVendor.getItemSet();
     }
 
     // Dialog stuff
@@ -404,7 +404,7 @@ public class VendorActivity extends AppCompatActivity
             case R.id.fab_save_vendor_list:
                 VendorPresenter vendorPresenter = new VendorPresenter(this);
                 try {
-                    vendorPresenter.updateVendorProducts(currentVendor.getMarketName(),currentVendor.getName(),new HashSet<String>(mVendorItemAdapter.getItemNames()),currentVendor.getDescription());
+                    vendorPresenter.updateVendorProducts(mCurrentVendor.getMarketName(), mCurrentVendor.getName(),new HashSet<String>(mVendorItemAdapter.getItemNames()), mCurrentVendor.getDescription());
                     Toast.makeText(this,"Updating list",Toast.LENGTH_SHORT).show();
                 } catch (ExecutionException | InterruptedException e) {
                     showDialogMessage("Save Error", "Failed to save item list");

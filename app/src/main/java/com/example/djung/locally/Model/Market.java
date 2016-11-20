@@ -16,8 +16,6 @@ import java.io.Serializable;
 
 @DynamoDBTable(tableName = "Market")
 public class Market  implements Serializable {
-    // Primary Key
-    private int id;
     // Name of the market
     private String name;
     // Latitude of market
@@ -30,20 +28,18 @@ public class Market  implements Serializable {
     private String description;
     // Set of days and hours this market is open
     private String dailyHours;
-
     // Time of year open
     private String yearOpen;
+    // Rcf3339 opening day opening DateTime
+    private String openingDayOpen;
+    // Rcf3339 opening day closing DateTime
+    private String openingDayClose;
+    // Day of week open
+    private String dayOfWeek;
+    // Last day of market
+    private String lastDay;
 
-    @DynamoDBHashKey(attributeName="Market.Id")
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    @DynamoDBAttribute(attributeName="Market.Name")
+    @DynamoDBHashKey(attributeName = "Market.Name")
     public String getName() {
         return name;
     }
@@ -104,5 +100,41 @@ public class Market  implements Serializable {
 
     public void setYearOpen(String yearOpen) {
         this.yearOpen = yearOpen;
+    }
+
+    @DynamoDBAttribute(attributeName="Market.OpenRcf3339")
+    public String getOpeningDayOpen() {
+        return openingDayOpen;
+    }
+
+    public void setOpeningDayOpen(String openingDayOpen) {
+        this.openingDayOpen = openingDayOpen;
+    }
+
+    @DynamoDBAttribute(attributeName="Market.CloseRcf3339")
+    public String getOpeningDayClose() {
+        return openingDayClose;
+    }
+
+    public void setOpeningDayClose(String openingDayClose) {
+        this.openingDayClose = openingDayClose;
+    }
+
+    @DynamoDBAttribute(attributeName="Market.DaysOpen")
+    public String getDayOfWeek() {
+        return dayOfWeek;
+    }
+
+    public void setDayOfWeek(String dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
+    }
+
+    @DynamoDBAttribute(attributeName="Market.LastDay")
+    public String getLastDay() {
+        return lastDay;
+    }
+
+    public void setLastDay(String lastDay) {
+        this.lastDay = lastDay;
     }
 }
