@@ -54,6 +54,7 @@ public class VendorListFragment extends Fragment {
         this.currentMarket = (Market)  getArguments().getSerializable("currentMarket");
         View view = inflater.inflate(R.layout.vendor_list, container, false);
         ((MainActivity) getActivity()).setActionBarTitle(marketName);
+        ((MainActivity) getActivity()).setAppBarElevation(4);
         return view;
     }
 

@@ -28,6 +28,9 @@ public class SyncCalendarFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.calendar_sync_fragment, container, false);
 
+        ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.title_fragment_settings));
+        ((MainActivity) getActivity()).setAppBarElevation(4);
+
         Object[] serializedMarkets = (Object[]) getArguments().getSerializable("list_markets");
 
         List<Market> markets = new ArrayList<>();

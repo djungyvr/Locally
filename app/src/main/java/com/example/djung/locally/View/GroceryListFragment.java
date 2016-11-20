@@ -72,7 +72,7 @@ public class GroceryListFragment extends Fragment implements View.OnClickListene
         initializeAdapter(view);
 
         ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.title_fragment_grocery_list));
-
+        ((MainActivity) getActivity()).setAppBarElevation(0);
         return view;
     }
 

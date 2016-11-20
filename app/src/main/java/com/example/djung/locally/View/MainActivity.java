@@ -121,32 +121,35 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onPause(){
         super.onPause();
-        setAppBarElevation(8);
+        setAppBarElevation(4);
     }
 
     @Override
     public void onBackPressed() {
+        Log.e(TAG, "Back press recorded");
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
+            Log.e(TAG, "Back press drawer open");
             drawer.closeDrawer(GravityCompat.START);
         } else if (mFragmentManager != null) {
             int stackCount = mFragmentManager.getBackStackEntryCount();
             if(stackCount > 1) {
                 String fragmentName = mFragmentManager.getBackStackEntryAt(stackCount - 2).getName();
                 setActionBarTitle(fragmentName);
-                setAppBarElevation(8);
                 if (fragmentName.equals(getString(R.string.title_fragment_grocery_list))) {
-                    setAppBarElevation(0);
                     mNavigationView.setCheckedItem(R.id.nav_grocery_list);
                 } else if (fragmentName.equals(getString(R.string.title_fragment_calendar))) {
                     mNavigationView.setCheckedItem(R.id.nav_calendar);
                 } else if (fragmentName.equals(getString(R.string.title_activity_maps))) {
                     mNavigationView.setCheckedItem(R.id.nav_map);
+                } else if (fragmentName.equals(getString(R.string.title_fragment_settings))) {
+                    mNavigationView.setCheckedItem(R.id.nav_manage);
                 } else {
                     mNavigationView.setCheckedItem(R.id.market_list);
                 }
             }
             else {
+                Log.e(TAG, "Back press fragment: home");
                 mNavigationView.setCheckedItem(R.id.nav_home);
                 setAppBarElevation(0);
                 setActionBarTitle("Locally");
@@ -163,7 +166,6 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        setAppBarElevation(8);
         switch (id) {
             case R.id.nav_home:
                 if (mFragmentManager != null) {
@@ -344,7 +346,7 @@ public class MainActivity extends AppCompatActivity
         // Replace the container with the fragment
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.main_activity_container, mGroceryFragment);
-        ft.addToBackStack(null);
+        ft.addToBackStack(getString(R.string.title_fragment_grocery_list));
         ft.commit();
     }
 
@@ -358,7 +360,10 @@ public class MainActivity extends AppCompatActivity
             mFragmentManager = getSupportFragmentManager();
 
         // Replace the container with the fragment
-        mFragmentManager.beginTransaction().replace(R.id.main_activity_container, mCalendarFragment).commit();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.main_activity_container, mCalendarFragment);
+        ft.addToBackStack(getString(R.string.title_fragment_calendar));
+        ft.commit();
     }
 
     @Override
@@ -410,7 +415,7 @@ public class MainActivity extends AppCompatActivity
             Bundle bundle = new Bundle();
             bundle.putString("marketName", market.getName());
             bundle.putString("vendorName", vendorName);
-            bundle.putString("marketHours", DateUtils.parseHours(market.getDailyHours()));
+            bundle.putString("marketHours", market.getDailyHours());
             bundle.putString("marketAddress", market.getAddress());
             bundle.putString("marketDatesOpen", market.getYearOpen());
             mVendorDetailsFragment.setArguments(bundle);
@@ -418,7 +423,7 @@ public class MainActivity extends AppCompatActivity
             Bundle bundle = mVendorDetailsFragment.getArguments();
             bundle.putString("marketName", market.getName());
             bundle.putString("vendorName", vendorName);
-            bundle.putString("marketHours", DateUtils.parseHours(market.getDailyHours()));
+            bundle.putString("marketHours", market.getDailyHours());
             bundle.putString("marketAddress", market.getAddress());
             bundle.putString("marketDatesOpen", market.getYearOpen());
         }
@@ -485,9 +490,11 @@ public class MainActivity extends AppCompatActivity
         String marketsOpen = "";
 
         if(mAllMarketsList != null) {
-            allMarkets = mAllMarketsList.size() + " market";
-            if(mAllMarketsList.size() != 1) {
-                allMarkets = allMarkets + "s";
+            int numMarkets = mAllMarketsList.size();
+            if(numMarkets >= 1) {
+                allMarkets = numMarkets + " market";
+                if(numMarkets != 1)
+                    allMarkets = allMarkets + "s";
             }
             int numOpen = MarketUtils.getNumberOfCurrentlyOpenMarkets(mAllMarketsList);
             if(numOpen != 1) {

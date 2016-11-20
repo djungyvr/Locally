@@ -49,7 +49,7 @@ public class VendorSearchItemFragment extends Fragment {
         View view = inflater.inflate(R.layout.vendor_search_item_list, container, false);
         ((MainActivity) getActivity()).setActionBarTitle(getString(
                 R.string.title_fragment_vendors_search_results_list));
-
+        ((MainActivity) getActivity()).setAppBarElevation(4);
         searchVendorsForItem();
         initializeAdapter(view);
 

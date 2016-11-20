@@ -69,6 +69,7 @@ public class MapFragment extends Fragment
         mMapView.onResume();
 
         ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.title_fragment_maps));
+        ((MainActivity) getActivity()).setAppBarElevation(4);
 
         try {
             MapsInitializer.initialize(getActivity().getApplicationContext());
