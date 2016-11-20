@@ -312,8 +312,8 @@ public class VendorActivity extends AppCompatActivity
             // Change the nav header to vendor name
             mVendorName = AppHelper.getUserDetails().getAttributes().getAttributes().get("custom:vendor_name");
             mMarketName = AppHelper.getUserDetails().getAttributes().getAttributes().get("custom:market_name");
-            mVendorEmail = AppHelper.getUserDetails().getAttributes().getAttributes().get("custom:phone_number");
-            mVendorPhoneNumber = AppHelper.getUserDetails().getAttributes().getAttributes().get("email");
+            mVendorEmail = AppHelper.getUserDetails().getAttributes().getAttributes().get("email");
+            mVendorPhoneNumber = AppHelper.getUserDetails().getAttributes().getAttributes().get("custom:gitphone_number");
             Log.e(TAG,"Details of : " + mVendorName);
             if(mVendorName != null && mTextViewVendorName != null) {
                 mTextViewVendorName.setText(mVendorName);
