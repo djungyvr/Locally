@@ -38,16 +38,12 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.DateTime;
 import com.google.api.client.util.ExponentialBackOff;
-import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.calendar.model.Event;
-import com.google.api.services.calendar.model.EventAttendee;
 import com.google.api.services.calendar.model.EventDateTime;
 import com.google.api.services.calendar.model.EventReminder;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -66,7 +62,6 @@ public class SyncCalendarFragment extends Fragment implements EasyPermissions.Pe
     private final String PREFS_NAME = "SyncCalenderPrefs";
     private Dialog mDialog;
     protected ProgressDialog mProgress;
-    private MarketSyncAdapter.Callback mCallback;
     private boolean mAllowedApi;
     private boolean mAdapterAttached;
 
@@ -525,7 +520,7 @@ public class SyncCalendarFragment extends Fragment implements EasyPermissions.Pe
          */
         private Boolean removeMarketSchedule() throws IOException {
             String calendarId = "primary";
-            gmService.events().delete(calendarId, mMarket.getName().replaceAll("[^A-Za-z0-9]+", "").toLowerCase()).execute();
+            mService.events().delete(calendarId, mMarket.getName().replaceAll("[^A-Za-z0-9]+", "").toLowerCase()).execute();
 
             return true;
         }
