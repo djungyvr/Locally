@@ -153,8 +153,6 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_calendar:
                 launchCalendarFragment();
-                //Intent calendarActivity = new Intent(this, CalendarActivity.class);
-                //startActivity(calendarActivity);
                 break;
         }
 

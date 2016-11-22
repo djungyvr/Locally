@@ -87,7 +87,7 @@ public class VendorListAdapter extends RecyclerView.Adapter<VendorListAdapter.Vi
         }
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class ViewHolder extends RecyclerView.ViewHolder{
         public TextView vendorListItemVendorName;
         public TextView vendorListItemVendorLocation;
         public TextView vendorListItemVendorStatus;
@@ -103,14 +103,6 @@ public class VendorListAdapter extends RecyclerView.Adapter<VendorListAdapter.Vi
             this.vendorListItemVendorLocation = (TextView) itemView.findViewById(R.id.vendor_list_item_location);
             this.vendorListItemVendorName = (TextView) itemView.findViewById(R.id.vendor_list_item_name);
             this.vendorListItemVendorStatus = (TextView) itemView.findViewById(R.id.vendor_list_item_status);
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            int position = getAdapterPosition();
-            Vendor vendor = vendorListItems.get(position);
-            listener.onVendorListItemClick(vendor.getName(), currentMarket);
         }
     }
 }
