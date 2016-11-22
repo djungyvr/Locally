@@ -256,8 +256,6 @@ public class MapFragment extends Fragment
 
             mLastPositionMarker = mGoogleMap.addMarker(marker);
 
-            mGoogleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()) , 12.0f) );
-
             Log.d("MapFragment", "Added marker");
         }
     }
@@ -396,7 +394,7 @@ public class MapFragment extends Fragment
     public void moveCameraFocus(Location location) {
         if(location != null)
             mGoogleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(
-                    new LatLng(location.getLatitude(),location.getLongitude()) , 14.0f) );
+                    new LatLng(location.getLatitude(),location.getLongitude()) , 12.0f) );
     }
 }
 
