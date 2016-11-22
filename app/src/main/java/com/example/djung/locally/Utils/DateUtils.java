@@ -76,7 +76,7 @@ public class DateUtils {
     public static String getCurrentDateAndTime(String format) {
         DateFormat df = new SimpleDateFormat(format, Locale.CANADA);
         df.setTimeZone(TimeZone.getTimeZone("America/Vancouver"));
-        return String.valueOf(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) + " " + df.format(Calendar.getInstance(
+        return df.format(Calendar.getInstance(
                 TimeZone.getTimeZone("America/Vancouver"), Locale.CANADA).getTime());
     }
 

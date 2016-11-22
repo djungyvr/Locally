@@ -10,15 +10,15 @@
         android:background="@color/white"
         android:orientation="vertical">
 
-        <android.support.v7.widget.SearchView
-            android:id="@+id/search_view_grocery_list_items"
+        <include
+            layout="@layout/search_view_under_app_bar"
+            />
+
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
-            android:gravity="end"
-            android:iconifiedByDefault="true"
-            android:queryHint="Search"
-            android:theme="@style/ToolBarStyle"/>
+            android:layout_height="4dp"
+            android:background="@drawable/shadow" />
+
 
         <android.support.v7.widget.AppCompatSpinner
             android:layout_width="match_parent"
@@ -26,20 +26,13 @@
             android:id="@+id/spinner_market_name"
             android:layout_margin="16dp"/>
 
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/activity_text_height"
-            android:gravity="center_vertical"
-            android:text="Your Grocery List"
-            android:textSize="@dimen/nav_text_header_size"
-            android:layout_margin="16dp"/>
-
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view_grocery_list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"/>
+            android:layout_height="match_parent"
+            android:paddingTop="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"/>
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton

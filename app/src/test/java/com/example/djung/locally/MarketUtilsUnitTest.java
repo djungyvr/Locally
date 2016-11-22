@@ -79,37 +79,37 @@ public class MarketUtilsUnitTest {
         String hours;
 
         switch(weekday) {
-            case 1: // Monday
+            case 2: // Monday
                 hours = "00:00-23:59,00:00-00:00,00:00-00:00,00:00-00:00,00:00-00:00,00:00-00:00,00:00-00:00";
                 m4.setDailyHours(hours);
                 assertTrue(MarketUtils.isMarketCurrentlyOpen(m4));
                 break;
-            case 2: // Tuesday
+            case 3: // Tuesday
                 hours = "00:00-00:00,00:00-23:59,00:00-00:00,00:00-00:00,00:00-00:00,00:00-00:00,00:00-00:00";
                 m4.setDailyHours(hours);
                 assertTrue(MarketUtils.isMarketCurrentlyOpen(m4));
                 break;
-            case 3: // Wednesday
+            case 4: // Wednesday
                 hours = "00:00-00:00,00:00-00:00,00:00-23:59,00:00-00:00,00:00-00:00,00:00-00:00,00:00-00:00";
                 m4.setDailyHours(hours);
                 assertTrue(MarketUtils.isMarketCurrentlyOpen(m4));
                 break;
-            case 4: // Thursday
+            case 5: // Thursday
                 hours = "00:00-00:00,00:00-00:00,00:00-00:00,000:00-23:59,00:00-00:00,00:00-00:00,00:00-00:00";
                 m4.setDailyHours(hours);
                 assertTrue(MarketUtils.isMarketCurrentlyOpen(m4));
                 break;
-            case 5: // Friday
+            case 6: // Friday
                 hours = "00:00-00:00,00:00-00:00,00:00-00:00,00:00-00:00,00:00-23:59,00:00-00:00,00:00-00:00";
                 m4.setDailyHours(hours);
                 assertTrue(MarketUtils.isMarketCurrentlyOpen(m4));
                 break;
-            case 6: // Saturday
+            case 7: // Saturday
                 hours = "00:00-00:00,00:00-00:00,00:00-00:00,00:00-00:00,00:00-00:00,00:00-23:59,00:00-00:00";
                 m4.setDailyHours(hours);
                 assertTrue(MarketUtils.isMarketCurrentlyOpen(m4));
                 break;
-            case 7: // Sunday
+            case 1: // Sunday
                 hours = "00:00-00:00,00:00-00:00,00:00-00:00,00:00-00:00,00:00-00:00,00:00-00:00,00:00-23:590";
                 m4.setDailyHours(hours);
                 assertTrue(MarketUtils.isMarketCurrentlyOpen(m4));
@@ -119,32 +119,37 @@ public class MarketUtilsUnitTest {
 
     @Test
     public void testIsMarketOpen() {
-        String testTime1 = "1 0724 1400";        // Monday, July 24, 2:00 PM
+        String testTime1 = "Mon 0724 1400";        // Monday, July 24, 2:00 PM
         m4.setYearOpen("01/07-24/07");          // Open July 1 - July 24
         m4.setDailyHours("09:00-17:00,00:00-00:00,00:00-00:00," +
                 "00:00-00:00,00:00-00:00,00:00-00:00,00:00-00:00"); // open Monday 9AM-5PM
         assertTrue(MarketUtils.isMarketOpenAtThisTime(m4, testTime1));
 
-        String testTime2 = "1 0724 1700";        // Monday, July 24, 5:00 PM, at closing time
+        String testTime2 = "Mon 0724 1700";        // Monday, July 24, 5:00 PM, at closing time
         assertTrue(MarketUtils.isMarketOpenAtThisTime(m4, testTime2));
 
-        String testTime3 = "1 0724 1701";       // Monday, July 24, 5:01 PM, past closing time
+        String testTime3 = "Mon 0724 1701";       // Monday, July 24, 5:01 PM, past closing time
         assertFalse(MarketUtils.isMarketOpenAtThisTime(m4, testTime3));
 
-        String testTime4 = "1 0630 2359";        // Monday, June 30, 11:59 PM, day before
+        String testTime4 = "Mon 0630 2359";        // Monday, June 30, 11:59 PM, day before
         assertFalse(MarketUtils.isMarketOpenAtThisTime(m4, testTime4));
 
-        String testTime5 = "1 0701 0900";       // Monday, July 1, 9:00 AM, , at opening time
+        String testTime5 = "Mon 0701 0900";       // Monday, July 1, 9:00 AM, , at opening time
         assertTrue(MarketUtils.isMarketOpenAtThisTime(m4, testTime5));
 
-        String testTime6 = "1 0701 0859";       // Monday, July 1, 8:59 AM, before opening time
+        String testTime6 = "Mon 0701 0859";       // Monday, July 1, 8:59 AM, before opening time
         assertFalse(MarketUtils.isMarketOpenAtThisTime(m4, testTime6));
 
-        String testTime7 = "4 0724 1230";       // Thursday, July 1, 12:30 PM, right date, wrong weekday
+        String testTime7 = "Thu 0724 1230";       // Thursday, July 1, 12:30 PM, right date, wrong weekday
         assertFalse(MarketUtils.isMarketOpenAtThisTime(m4, testTime7));
 
-        String testTime8 = "1 1230 1230";       // Monday, December 30, 10:30 AM, right time, wrong date
+        String testTime8 = "Mon 1230 1230";       // Monday, December 30, 10:30 AM, right time, wrong date
         assertFalse(MarketUtils.isMarketOpenAtThisTime(m4, testTime8));
+
+        m4.setYearOpen("05/11-22/04");
+        m4.setDailyHours("00:00-00:00,00:00-00:00,00:00-00:00,00:00-00:00,00:00-00:00,10:00-14:00,00:00-00:00");
+        String testTime9 = "Sat 1119 1247";
+        assertTrue(MarketUtils.isMarketOpenAtThisTime(m4, testTime9));
 
     }
 
@@ -191,5 +196,32 @@ public class MarketUtilsUnitTest {
         }
 
         assertEquals("",MarketUtils.getMarketUrl("This Market Does Not Exist"));
+    }
+
+    @Test
+    public void testNumberOfCurrentlyOpenMarkets() {
+        // check null or empty market list
+        ArrayList<Market> list = new ArrayList<>();
+        assertEquals(0, MarketUtils.getNumberOfCurrentlyOpenMarkets(null));
+        assertEquals(0, MarketUtils.getNumberOfCurrentlyOpenMarkets(list));
+
+        MarketTest a1 = new MarketTest();
+        a1.setYearOpen(mAlwaysOpenYear);
+        a1.setDailyHours(mAlwaysClosedHours);
+
+        MarketTest a2 = new MarketTest();
+        a2.setDailyHours(mAlwaysClosedHours);
+        a2.setYearOpen(mAlwaysOpenYear);
+
+        list.add(a1);
+        list.add(a2);
+
+        assertEquals(0, MarketUtils.getNumberOfCurrentlyOpenMarkets(list));
+
+        a1.setDailyHours(mAlwaysOpenHours);
+        a2.setDailyHours(mAlwaysOpenHours);
+
+        assertEquals(2, MarketUtils.getNumberOfCurrentlyOpenMarkets(list));
+
     }
 }

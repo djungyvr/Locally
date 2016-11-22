@@ -34,7 +34,7 @@ public class VendorItemDatabase {
     // Database Info
     private static final String DATABASE_NAME = "vendor_items";
     private static final String FTS_VIRTUAL_TABLE = "FTS_vendor_items";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     // Columns
     public static final String KEY_VENDOR_ITEM_NAME = SearchManager.SUGGEST_COLUMN_TEXT_1;
@@ -193,7 +193,8 @@ public class VendorItemDatabase {
             try {
                 String line;
                 while((line=buffer.readLine()) != null) {
-                    long id = addVendorItem(line.trim());
+                    String[] vendorItem = line.trim().split(",");
+                    long id = addVendorItem(vendorItem[0],vendorItem[1]);
                     if(id < 0) {
                         Log.e(TAG,"Error adding item: " + line.trim());
                     }
@@ -210,10 +211,10 @@ public class VendorItemDatabase {
          * @param vendorItemName name of the item in the file
          * @return the id of the item added
          */
-        private long addVendorItem(String vendorItemName) {
+        private long addVendorItem(String vendorItemName, String itemSeason) {
             ContentValues initialValues = new ContentValues();
             initialValues.put(KEY_VENDOR_ITEM_NAME,vendorItemName);
-            initialValues.put(KEY_VENDOR_ITEM_INFO,"INFO");
+            initialValues.put(KEY_VENDOR_ITEM_INFO,itemSeason);
             return mDatabase.insert(FTS_VIRTUAL_TABLE, null, initialValues);
         }
 
