@@ -29,6 +29,10 @@ November 5, 2016  - 3 Hours - Continue with replacing ListView with RecyclerView
 November 7, 2016  - 2 Hours - Fetch data from database to populate vendor list and vendor detail view
 November 8, 2016  - 6 Hours - Create market list UI, custom adapter and populate market list with data from database. Replace sample data of market cards with data from database. Implement fragement interactions between market list, vendor list, and vendor details with on click listeners
 November 9, 2016  - 7 Hours - Use util functions to populate distance to market, market open status, and sort markets by closest distance. Populate related fields from market list to vendor list and vendor detail list
+November 17, 2016 - 4 Hours - Changed market list UI to utilize card views and followed Material Design guidelines
+November 18, 2016 - 4 Hours - Tested and experimented with various views for vendor list UI
+November 19, 2016 - 4 Hours - Redesigned vendor list view UI
+November 20, 2016 - 3 Hours - Integrated design and implemented call feature for users
 
 Alena
 October 3-9, 2016 - 4 hours - Learning Andriod Studio through setting up mini-project  
