@@ -134,7 +134,7 @@ public class MapFragment extends Fragment
 
         dropPins(mGoogleMap);
 
-        googleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(latitude,longitude) , 14.0f) );
+        googleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(latitude,longitude) , 12.0f) );
     }
 
     /**
@@ -246,6 +246,8 @@ public class MapFragment extends Fragment
                     .defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
 
             mGoogleMap.addMarker(marker);
+
+            mGoogleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()) , 12.0f) );
 
             Log.d("MapFragment", "Added marker");
         }

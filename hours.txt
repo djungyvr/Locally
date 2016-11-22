@@ -10,6 +10,13 @@ David
 06.11.16 - 2 hours - Update registration UI, add market field, add sign out, complete vendor sign up form
 08.11.16 - 4 hours - Add autocomplete search, create local database containing goods currently just PLU stuff, allow users to add items to vendors
 09.11.16 - 3 hours - Integrate Anna's calendar, add update vendor details fragment, UI updates
+11.11.16 - 1 hour  - Update unit tests, fix update vendor details
+12.11.16 - 1 hour  - Update unit tests
+15.11.16 - 3 hours - Add local database of user grocery list and add search for items in grocery list feature
+16.11.16 - 1 hour  - Add market images fetched from Amazon S3
+17.11.16 - 1 hour  - Make placeholder fragment for syncing market schedules to Google Calendar
+18.11.16 - 1 hour  - Clean up project, integrate grocery list and sync markets feature, update DynamoDB so primary key for market table is the market name
+20.11.16 - 2 hours - Complete calendar syncing, add phone number and email field to vendors, add seasons to vendor items
 
 Anna
 Week of October 3, 2016 - 4 hours - Product vision, project planning and use case analysis documentation
@@ -17,7 +24,11 @@ Week of October 10, 2016 - 7 hours - UI prototypes for Calendar, project design 
 Week of October 17, 2016 - 6 hours - Android Studio Lessons + started designing Calendar UI
 Week of October 24, 2016 - 8 hours - Designed calendar activity UI, market activity UI
 Week of October 31, 2016 - 8 hours - Redesigned calendar UI to have a custom grid adapter, connected market names with market activity UI
-November 7-9 - 10 hours - Integration with David's and Andy's parts, fetching and displaying actual database data
+Week of November 7, 2016 - 10 hours - Integration with David's and Andy's parts, fetching and displaying actual database data
+Week of November 14, 2016 - 2 hours turn calendar activity into fragment; 2 hours fix the market id bug - display the page with right market description for each market; 4 hours turn market page activity into a fragment displaying recyclerView instead of listView in xml layout file; 2 hours set the directions textView to open a Google map link with market location
+Week of November 21, 2016 - 3 hours replace static .pnd image with MapView object displaying market location
+
+
 
 Andy 
 October 7, 2016   - 2 Hours - Set up my own Android Project and Learn Android Development
@@ -29,6 +40,10 @@ November 5, 2016  - 3 Hours - Continue with replacing ListView with RecyclerView
 November 7, 2016  - 2 Hours - Fetch data from database to populate vendor list and vendor detail view
 November 8, 2016  - 6 Hours - Create market list UI, custom adapter and populate market list with data from database. Replace sample data of market cards with data from database. Implement fragement interactions between market list, vendor list, and vendor details with on click listeners
 November 9, 2016  - 7 Hours - Use util functions to populate distance to market, market open status, and sort markets by closest distance. Populate related fields from market list to vendor list and vendor detail list
+November 17, 2016 - 4 Hours - Changed market list UI to utilize card views and followed Material Design guidelines
+November 18, 2016 - 4 Hours - Tested and experimented with various views for vendor list UI
+November 19, 2016 - 4 Hours - Redesigned vendor list view UI
+November 20, 2016 - 3 Hours - Integrated design and implemented call feature for users
 
 Alena
 October 3-9, 2016 - 4 hours - Learning Andriod Studio through setting up mini-project  

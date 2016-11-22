@@ -55,9 +55,9 @@ public class VendorPresenter {
     /**
      * Updates the description of the vendor
      */
-    public boolean updateVendorDetails(String marketName, String vendorName, String description) throws ExecutionException, InterruptedException {
+    public boolean updateVendorDetails(String marketName, String vendorName, String description, String phoneNumber, String email) throws ExecutionException, InterruptedException {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<Boolean> future = executor.submit(new UpdateVendorDetails(marketName,vendorName, description));
+        Future<Boolean> future = executor.submit(new UpdateVendorDetails(marketName,vendorName, description, phoneNumber, email));
 
         executor.shutdown(); // Important!
 
@@ -299,14 +299,18 @@ public class VendorPresenter {
      */
     private class UpdateVendorDetails implements Callable<Boolean> {
         private final String TAG = "UpdateDetail";
-        private String marketName;
-        private String vendorName;
-        private String description;
+        private String mMarketName;
+        private String mVendorName;
+        private String mDescription;
+        private String mPhoneNumber;
+        private String mEmail;
 
-        UpdateVendorDetails(String marketName, String vendorName, String description) {
-            this.marketName = marketName;
-            this.vendorName = vendorName;
-            this.description = description;
+        UpdateVendorDetails(String marketName, String vendorName, String description, String phoneNumber, String email) {
+            mMarketName = marketName;
+            mVendorName = vendorName;
+            mDescription = description;
+            mPhoneNumber = phoneNumber;
+            mEmail = email;
         }
 
         @Override
@@ -331,14 +335,14 @@ public class VendorPresenter {
 
             Vendor vendorToFind = new Vendor();
             // Set primary hash key
-            vendorToFind.setMarketName(marketName);
+            vendorToFind.setMarketName(mMarketName);
 
 
             // Note ComparisonOperator.CONTAINS is not supported by query only by scan
             // Set range key condition
             Condition rangeKeyCondition = new Condition()
                     .withComparisonOperator(ComparisonOperator.BEGINS_WITH.toString())
-                    .withAttributeValueList(new AttributeValue().withS(vendorName.toString()));
+                    .withAttributeValueList(new AttributeValue().withS(mVendorName.toString()));
 
             DynamoDBQueryExpression query = new DynamoDBQueryExpression()
                     .withHashKeyValues(vendorToFind)
@@ -350,9 +354,15 @@ public class VendorPresenter {
 
             if(!vendors.isEmpty()) {
                 vendorToFind = vendors.get(0);
-                if(description.isEmpty() || description == null)
-                    description = "Add your own description!";
-                vendorToFind.setDescription(description);
+                if(mDescription.isEmpty() || mDescription == null)
+                    mDescription = "Add your own description!";
+                if(mPhoneNumber.isEmpty() || mPhoneNumber == null)
+                    mPhoneNumber = "No Phone Number";
+                if(mEmail.isEmpty() || mEmail == null)
+                    mEmail = "No Email";
+                vendorToFind.setDescription(mDescription);
+                vendorToFind.setPhoneNumber(mPhoneNumber);
+                vendorToFind.setEmail(mEmail);
                 mapper.save(vendorToFind);
                 Log.e(TAG,"Succesfully updated vendor description");
                 return true;
