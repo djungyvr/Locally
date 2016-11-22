@@ -10,6 +10,13 @@ David
 06.11.16 - 2 hours - Update registration UI, add market field, add sign out, complete vendor sign up form
 08.11.16 - 4 hours - Add autocomplete search, create local database containing goods currently just PLU stuff, allow users to add items to vendors
 09.11.16 - 3 hours - Integrate Anna's calendar, add update vendor details fragment, UI updates
+11.11.16 - 1 hour  - Update unit tests, fix update vendor details
+12.11.16 - 1 hour  - Update unit tests
+15.11.16 - 3 hours - Add local database of user grocery list and add search for items in grocery list feature
+16.11.16 - 1 hour  - Add market images fetched from Amazon S3
+17.11.16 - 1 hour  - Make placeholder fragment for syncing market schedules to Google Calendar
+18.11.16 - 1 hour  - Clean up project, integrate grocery list and sync markets feature, update DynamoDB so primary key for market table is the market name
+20.11.16 - 2 hours - Complete calendar syncing, add phone number and email field to vendors, add seasons to vendor items
 
 Anna
 Week of October 3, 2016 - 4 hours - Product vision, project planning and use case analysis documentation
