@@ -12,12 +12,14 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.djung.locally.Model.Market;
+import com.example.djung.locally.Utils.LocationUtils;
 import com.example.djung.locally.Utils.ThreadUtils;
 import com.example.djung.locally.Presenter.MarketPresenter;
 import com.example.djung.locally.R;
@@ -39,6 +41,8 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
@@ -56,6 +60,7 @@ public class MapFragment extends Fragment
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private LocationRequest mLocationRequest;
+    private Marker mLastPositionMarker;
 
     // Returns the view of the fragment
     @Override
@@ -119,7 +124,7 @@ public class MapFragment extends Fragment
      * Manipulates the map once available.
      * This Callback is triggered when the map is ready to be used.
      * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
+     * we just add a marker near Vancouver, Canada.
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
@@ -165,6 +170,7 @@ public class MapFragment extends Fragment
                         // requests here.
                         setLastLocation();
                         setLastPosition();
+                        moveCameraFocus(mLastLocation);
                         break;
                     case RESOLUTION_REQUIRED:
                         // Location settings are not satisfied. But could be fixed by showing the user
@@ -189,13 +195,15 @@ public class MapFragment extends Fragment
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         switch (requestCode) {
             // Check for the integer request code originally supplied to startResolutionForResult().
             case Permissions.REQUEST_LOCATION_SETTINGS:
                 switch (resultCode) {
                     case Activity.RESULT_OK:
-                        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, (LocationListener) this);
                         setLastLocation();
+                        setLastPosition();
+                        moveCameraFocus(mLastLocation);
                         break;
                     case Activity.RESULT_CANCELED:
                         requestLocation();
@@ -203,6 +211,7 @@ public class MapFragment extends Fragment
                 }
                 break;
         }
+        ((MainActivity)getActivity()).initializeBaseViews();
     }
 
     /**
@@ -229,7 +238,7 @@ public class MapFragment extends Fragment
                         Permissions.REQUEST_COURSE_PERMISSION);
             }
         }
-
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, (LocationListener) this);
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
     }
 
@@ -245,9 +254,7 @@ public class MapFragment extends Fragment
             marker.icon(BitmapDescriptorFactory
                     .defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
 
-            mGoogleMap.addMarker(marker);
-
-            mGoogleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()) , 12.0f) );
+            mLastPositionMarker = mGoogleMap.addMarker(marker);
 
             Log.d("MapFragment", "Added marker");
         }
@@ -365,9 +372,30 @@ public class MapFragment extends Fragment
 
     @Override
     public void onLocationChanged(Location location) {
-        mLastLocation = location;
+        if(mLastLocation == null) {
+            mLastLocation = location;
+            setLastPosition();
+            moveCameraFocus(mLastLocation);
+        }
+        // check if we should redraw the current position marker
+        // if new location is 50m away from last one
+        else if (LocationUtils.getDistanceBetween(mLastLocation, location) > 50) {
+            mLastLocation = location;
+            mLastPositionMarker.remove();
+            setLastPosition();
+        } else {
+            mLastLocation = location;
+        }
     }
 
+    /**
+     * Moves camera focus to given location
+     */
+    public void moveCameraFocus(Location location) {
+        if(location != null)
+            mGoogleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(
+                    new LatLng(location.getLatitude(),location.getLongitude()) , 12.0f) );
+    }
 }
 
 
