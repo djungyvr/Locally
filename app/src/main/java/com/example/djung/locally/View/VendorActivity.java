@@ -221,6 +221,8 @@ public class VendorActivity extends AppCompatActivity
             bundle.putString("vendor_name", mCurrentVendor.getName());
             bundle.putString("market_name", mCurrentVendor.getMarketName());
             bundle.putString("vendor_description", mCurrentVendor.getDescription());
+            bundle.putString("vendor_phone_number",mCurrentVendor.getPhoneNumber());
+            bundle.putString("vendor_email",mCurrentVendor.getEmail());
 
             mEditVendorDetailsFragment.setArguments(bundle);
         }
