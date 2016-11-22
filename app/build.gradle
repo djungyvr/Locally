@@ -15,7 +15,7 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
-
+        multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -60,4 +60,6 @@ dependencies {
         exclude group: 'org.apache.httpcomponents'
     }
 
+    // Fix multidex
+    compile 'com.android.support:multidex:1.0.1'
 }
