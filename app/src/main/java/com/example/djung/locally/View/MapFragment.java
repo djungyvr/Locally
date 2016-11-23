@@ -43,6 +43,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -52,7 +53,8 @@ import static com.google.android.gms.location.LocationSettingsStatusCodes.*;
 
 public class MapFragment extends Fragment
         implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener {
+        GoogleApiClient.OnConnectionFailedListener, LocationListener,
+        GoogleMap.OnInfoWindowClickListener{
     private MapView mMapView;
     private GoogleMap mGoogleMap;
     private GoogleApiClient mGoogleApiClient;
@@ -60,6 +62,7 @@ public class MapFragment extends Fragment
     private LocationRequest mLocationRequest;
     private Marker mLastPositionMarker;
     private static final float INITIAL_ZOOM = 12.0f;
+    private ArrayList<Market> mMarketsList;
 
     // Returns the view of the fragment
     @Override
@@ -147,6 +150,9 @@ public class MapFragment extends Fragment
         dropPins(mGoogleMap);
 
         googleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(latitude,longitude) , INITIAL_ZOOM) );
+
+        // Set on click listener for the marker's info windows
+        mGoogleMap.setOnInfoWindowClickListener(this);
     }
 
     /**
@@ -263,6 +269,7 @@ public class MapFragment extends Fragment
                     .defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
 
             mLastPositionMarker = mGoogleMap.addMarker(marker);
+            mLastPositionMarker.setTag("Current Position");
 
             Log.d("MapFragment", "Added marker");
         }
@@ -296,7 +303,9 @@ public class MapFragment extends Fragment
         MarketPresenter marketPresenter = new MarketPresenter(this.getContext());
         try {
             List<Market> marketList = marketPresenter.fetchMarkets();
+            mMarketsList = new ArrayList<>(marketList);
 
+            int i = 0;
             for(Market market : marketList) {
                 // Create marker
                 MarkerOptions marker = new MarkerOptions().position(
@@ -306,7 +315,8 @@ public class MapFragment extends Fragment
                 marker.icon(BitmapDescriptorFactory
                         .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
 
-                googleMap.addMarker(marker);
+                googleMap.addMarker(marker).setTag(i);      // marker tag = index for markets arraylist
+                ++i;
             }
         } catch (final ExecutionException ee) {
             ThreadUtils.runOnUiThread(new Runnable() {
@@ -411,6 +421,20 @@ public class MapFragment extends Fragment
             mLastPositionMarker.showInfoWindow();
         } else {
             requestLocation();
+        }
+    }
+
+    /**
+     * Click on a marker opens up the particular market page
+     * @param marker
+     */
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        if(mMarketsList != null) {
+            if(!marker.getTag().equals("Current Position")) {
+                Market market = mMarketsList.get((int) marker.getTag());
+                ((MainActivity) getActivity()).launchVendorListFragment(market);
+            }
         }
     }
 }

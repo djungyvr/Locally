@@ -382,7 +382,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * Launches the VendorList fragment
      */
-    void launchVendorListFragment(Market market) {
+    public void launchVendorListFragment(Market market) {
         if (mVendorListFragment == null) {
             mVendorListFragment = new VendorListFragment();
             Bundle bundle = new Bundle();
@@ -643,6 +643,11 @@ public class MainActivity extends AppCompatActivity
         ft.commit();
     }
 
+    /**
+     * Sets the app bar elevation to the given value
+     * Only takes effect for devices with API >= 21
+     * @param elevation
+     */
     public void setAppBarElevation(float elevation){
         if(mAppBarLayout == null) {
             mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
@@ -751,6 +756,9 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Opens the request permissions dialog
+     */
     public void requestPermissions() {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, Permissions.REQUEST_COURSE_PERMISSION);
     }
@@ -767,5 +775,4 @@ public class MainActivity extends AppCompatActivity
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
-
 }
