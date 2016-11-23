@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
     <group
         android:id="@+id/group_main"
         android:checkableBehavior="single"
@@ -33,13 +32,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
         <item
-            android:id="@+id/nav_use_as_vendor"
-            android:icon="@drawable/ic_perm_identity"
-            android:title="Use as Vendor" />
-        <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"
             android:title="Settings" />
+        <item
+            android:id="@+id/nav_use_as_vendor"
+            android:icon="@drawable/ic_perm_identity"
+            android:title="Use as Vendor" />
     </group>
 
 </menu>
