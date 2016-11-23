@@ -69,7 +69,11 @@ public class CalendarFragment extends android.support.v4.app.Fragment{
                     marketIndex.putInt("M_Index", position);
                     mMarketPageFragment.setArguments(marketIndex);
 
-                    mFragmentManager.beginTransaction().replace(R.id.main_activity_container, mMarketPageFragment).commit();
+                    // Replace the container with the fragment
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    ft.replace(R.id.main_layout, mMarketPageFragment);
+                    ft.addToBackStack(getString(R.string.title_fragment_market_description));
+                    ft.commit();
                 }
             });
         } catch (ExecutionException e) {
