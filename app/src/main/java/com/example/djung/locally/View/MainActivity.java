@@ -759,10 +759,6 @@ public class MainActivity extends AppCompatActivity
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         mSearchView.clearFocus();
         if(requestCode == Permissions.REQUEST_LOCATION_SETTINGS) {
-            Log.e(TAG, "On activity result request location settings");
-//            if(mGoogleMapsFragment != null) {
-//                mGoogleMapsFragment.onActivityResult(requestCode, resultCode, data);
-//            }
             if(mGoogleMapsFragment != null) {
                 mGoogleMapsFragment.onActivityResult(requestCode, resultCode, data);
             }

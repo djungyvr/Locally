@@ -12,14 +12,13 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import com.example.djung.locally.Model.Market;
-import com.example.djung.locally.Utils.LocationUtils;
 import com.example.djung.locally.Utils.ThreadUtils;
 import com.example.djung.locally.Presenter.MarketPresenter;
 import com.example.djung.locally.R;
@@ -41,7 +40,6 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -61,6 +59,7 @@ public class MapFragment extends Fragment
     private Location mLastLocation;
     private LocationRequest mLocationRequest;
     private Marker mLastPositionMarker;
+    private static final float INITIAL_ZOOM = 12.0f;
 
     // Returns the view of the fragment
     @Override
@@ -86,6 +85,14 @@ public class MapFragment extends Fragment
 
         // Create instance of google services api
         initializeApiClient();
+
+        // Set on click listener for the current location button
+        ImageButton button = (ImageButton) v.findViewById(R.id.button_maps_select_location);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                setCurrentLocationButton();
+            }
+        });
 
         return v;
     }
@@ -139,7 +146,7 @@ public class MapFragment extends Fragment
 
         dropPins(mGoogleMap);
 
-        googleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(latitude,longitude) , 12.0f) );
+        googleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(latitude,longitude) , INITIAL_ZOOM) );
     }
 
     /**
@@ -170,7 +177,7 @@ public class MapFragment extends Fragment
                         // requests here.
                         setLastLocation();
                         setLastPosition();
-                        moveCameraFocus(mLastLocation);
+                        moveCameraFocus(mLastLocation, INITIAL_ZOOM);
                         break;
                     case RESOLUTION_REQUIRED:
                         // Location settings are not satisfied. But could be fixed by showing the user
@@ -203,7 +210,7 @@ public class MapFragment extends Fragment
                     case Activity.RESULT_OK:
                         setLastLocation();
                         setLastPosition();
-                        moveCameraFocus(mLastLocation);
+                        moveCameraFocus(mLastLocation, INITIAL_ZOOM);
                         break;
                     case Activity.RESULT_CANCELED:
                         requestLocation();
@@ -244,6 +251,7 @@ public class MapFragment extends Fragment
 
     /**
      * Set the last known position to the map
+     * May want to call moveCameraFocus after this
      */
     public void setLastPosition() {
         if (mLastLocation != null) {
@@ -326,7 +334,7 @@ public class MapFragment extends Fragment
     }
 
     /**
-     * Hangles in app permission of location results
+     * Handles in app permission of location results
      *
      * @param requestCode request code of in app permission
      * @param permissions permissions requested
@@ -375,26 +383,35 @@ public class MapFragment extends Fragment
         if(mLastLocation == null) {
             mLastLocation = location;
             setLastPosition();
-            moveCameraFocus(mLastLocation);
+            moveCameraFocus(mLastLocation, INITIAL_ZOOM);
         }
-        // check if we should redraw the current position marker
-        // if new location is 50m away from last one
-        else if (LocationUtils.getDistanceBetween(mLastLocation, location) > 50) {
-            mLastLocation = location;
-            mLastPositionMarker.remove();
-            setLastPosition();
-        } else {
+         else {
             mLastLocation = location;
         }
     }
 
     /**
-     * Moves camera focus to given location
+     * Moves camera focus to given location at given zoom level
      */
-    public void moveCameraFocus(Location location) {
+    public void moveCameraFocus(Location location, float zoom) {
         if(location != null)
             mGoogleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(
-                    new LatLng(location.getLatitude(),location.getLongitude()) , 12.0f) );
+                    new LatLng(location.getLatitude(),location.getLongitude()) , zoom));
+    }
+
+    /**
+     * Updates the current position marker and shifts the camera focus
+     */
+    private void setCurrentLocationButton() {
+        if(mLastLocation != null) {
+            mLastPositionMarker.remove();
+            setLastPosition();
+            float zoom = mGoogleMap.getCameraPosition().zoom;
+            moveCameraFocus(mLastLocation, zoom);
+            mLastPositionMarker.showInfoWindow();
+        } else {
+            requestLocation();
+        }
     }
 }
 
