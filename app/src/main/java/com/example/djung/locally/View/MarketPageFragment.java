@@ -34,6 +34,8 @@ public class MarketPageFragment extends android.support.v4.app.Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.content_market_fragment, container, false);
+        ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.title_fragment_market_description));
+        ((MainActivity) getActivity()).setAppBarElevation(4);
         return view;
     }
 
@@ -59,7 +61,7 @@ public class MarketPageFragment extends android.support.v4.app.Fragment{
             LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
             layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
             recyclerView.setLayoutManager(layoutManager);
-            MarketDescriptionAdapter marketAdapter = new MarketDescriptionAdapter(new ArrayList<Market>(displayMarket),this.getContext());
+            MarketPageAdapter marketAdapter = new MarketPageAdapter(new ArrayList<Market>(displayMarket),this.getContext());
             recyclerView.setAdapter(marketAdapter);
         } catch (ExecutionException e) {
             Log.e(TAG,e.getMessage());
