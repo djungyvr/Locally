@@ -49,8 +49,6 @@ import java.util.concurrent.ExecutionException;
 
 import static com.google.android.gms.location.LocationSettingsStatusCodes.*;
 
-//TODO: FIX SO THAT LOCATION IS ADDED UPON PRESSING YES
-
 public class MapFragment extends Fragment
         implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener,
@@ -224,7 +222,6 @@ public class MapFragment extends Fragment
                 }
                 break;
         }
-        ((MainActivity)getActivity()).initializeBaseViews();
     }
 
     /**
@@ -270,8 +267,6 @@ public class MapFragment extends Fragment
 
             mLastPositionMarker = mGoogleMap.addMarker(marker);
             mLastPositionMarker.setTag("Current Position");
-
-            Log.d("MapFragment", "Added marker");
         }
     }
 
@@ -315,7 +310,8 @@ public class MapFragment extends Fragment
                 marker.icon(BitmapDescriptorFactory
                         .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
 
-                googleMap.addMarker(marker).setTag(i);      // marker tag = index for markets arraylist
+            // marker tag = index for markets ArrayList
+                googleMap.addMarker(marker).setTag(i);
                 ++i;
             }
         } catch (final ExecutionException ee) {
@@ -388,6 +384,13 @@ public class MapFragment extends Fragment
         }
     }
 
+    /**
+     * Updates the last location to the new one
+     * If this is the first time location has been acquired, it adds a marker
+     * to the map and focuses the camera on that position
+     *
+     * @param location
+     */
     @Override
     public void onLocationChanged(Location location) {
         if(mLastLocation == null) {
@@ -430,7 +433,7 @@ public class MapFragment extends Fragment
      */
     @Override
     public void onInfoWindowClick(Marker marker) {
-        if(mMarketsList != null) {
+        if(mMarketsList != null && !mMarketsList.isEmpty()) {
             if(!marker.getTag().equals("Current Position")) {
                 Market market = mMarketsList.get((int) marker.getTag());
                 ((MainActivity) getActivity()).launchVendorListFragment(market);
