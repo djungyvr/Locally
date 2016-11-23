@@ -223,8 +223,6 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_calendar:
                 mSearchView.clearFocus();
                 launchCalendarFragment();
-                //Intent calendarActivity = new Intent(this, CalendarActivity.class);
-                //startActivity(calendarActivity);
                 break;
         }
 

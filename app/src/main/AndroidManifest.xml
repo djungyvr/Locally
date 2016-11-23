@@ -89,14 +89,6 @@
                 android:value="@xml/searchable" />
         </activity>
 
-        <activity
-            android:name=".View.MarketActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait">
-
-        </activity>
-
         <!-- Provides search suggestions for words and their definitions. -->
         <provider android:name=".DB.VendorItemsProvider"
             android:authorities="com.example.djung.locally.DB.VendorItemsProvider" />

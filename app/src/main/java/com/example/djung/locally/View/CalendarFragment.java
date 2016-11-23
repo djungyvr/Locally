@@ -1,32 +1,25 @@
 package com.example.djung.locally.View;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.TextView;
 
 import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.Presenter.MarketPresenter;
 import com.example.djung.locally.R;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.concurrent.ExecutionException;
-
-import static android.R.id.list;
 
 /**
  * Created by Anna on 15.11.2016.
@@ -34,7 +27,10 @@ import static android.R.id.list;
 
 public class CalendarFragment extends android.support.v4.app.Fragment{
     private onCalendarItemClick mCallback;
-    private static final String TAG = "CalendarActivity";
+    private static final String TAG = "CalendarFragment";
+    // Fragment for displaying calendar
+    private Fragment mMarketPageFragment;
+    private FragmentManager mFragmentManager;
 
     public interface onCalendarItemClick {
         public void onCalendarItemClick(Market market);
@@ -42,7 +38,7 @@ public class CalendarFragment extends android.support.v4.app.Fragment{
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_calendar, container, false);
+        View view = inflater.inflate(R.layout.calendar_fragment, container, false);
         ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.title_fragment_calendar));
         ((MainActivity) getActivity()).setAppBarElevation(4);
         return view;
@@ -66,10 +62,20 @@ public class CalendarFragment extends android.support.v4.app.Fragment{
                 @Override
                 public void onItemClick(AdapterView<?> parent, View v,
                                         int position, long id) {
-                    Intent intent = new Intent(getActivity().getApplicationContext(), MarketActivity.class);
+                    if (mMarketPageFragment == null)
+                        mMarketPageFragment = new MarketPageFragment();
+                    if (mFragmentManager == null)
+                        mFragmentManager = getFragmentManager ();
+                    //save market position index for sending to next fragment
+                    Bundle marketIndex = new Bundle();
+                    marketIndex.putInt("M_Index", position);
+                    mMarketPageFragment.setArguments(marketIndex);
 
-                    intent.putExtra("M_ID",String.valueOf(position));
-                    startActivity(intent);
+                    // Replace the container with the fragment
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    ft.replace(R.id.main_layout, mMarketPageFragment);
+                    ft.addToBackStack(getString(R.string.title_fragment_market_description));
+                    ft.commit();
                 }
             });
         } catch (ExecutionException e) {
