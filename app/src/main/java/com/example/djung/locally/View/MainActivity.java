@@ -152,7 +152,6 @@ public class MainActivity extends AppCompatActivity
                 }
             }
             else {
-                Log.e(TAG, "Back press fragment: home");
                 mNavigationView.setCheckedItem(R.id.nav_home);
                 setAppBarElevation(0);
                 setActionBarTitle("Locally");
@@ -224,8 +223,6 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_calendar:
                 mSearchView.clearFocus();
                 launchCalendarFragment();
-                //Intent calendarActivity = new Intent(this, CalendarActivity.class);
-                //startActivity(calendarActivity);
                 break;
         }
 
@@ -290,7 +287,7 @@ public class MainActivity extends AppCompatActivity
             mFragmentManager = getSupportFragmentManager();
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.main_activity_container, mGoogleMapsFragment);
+        ft.replace(R.id.main_layout, mGoogleMapsFragment);
         ft.addToBackStack(getString(R.string.title_fragment_maps));
         ft.commit();
     }
@@ -305,7 +302,7 @@ public class MainActivity extends AppCompatActivity
             mFragmentManager = getSupportFragmentManager();
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.main_activity_container, mMarketListFragment);
+        ft.replace(R.id.main_layout, mMarketListFragment);
         ft.addToBackStack(getString(R.string.title_fragment_market_list));
         ft.commit();
     }
@@ -338,7 +335,7 @@ public class MainActivity extends AppCompatActivity
 
         // Replace the container with the fragment
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.main_activity_container, mSettingsFragment);
+        ft.replace(R.id.main_layout, mSettingsFragment);
         ft.addToBackStack(getString(R.string.title_fragment_settings));
         ft.commit();
     }
@@ -354,7 +351,7 @@ public class MainActivity extends AppCompatActivity
 
         // Replace the container with the fragment
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.main_activity_container, mGroceryFragment);
+        ft.replace(R.id.main_layout, mGroceryFragment);
         ft.addToBackStack(getString(R.string.title_fragment_grocery_list));
         ft.commit();
     }
@@ -370,7 +367,7 @@ public class MainActivity extends AppCompatActivity
 
         // Replace the container with the fragment
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.main_activity_container, mCalendarFragment);
+        ft.replace(R.id.main_layout, mCalendarFragment);
         ft.addToBackStack(getString(R.string.title_fragment_calendar));
         ft.commit();
     }
@@ -383,7 +380,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * Launches the VendorList fragment
      */
-    void launchVendorListFragment(Market market) {
+    public void launchVendorListFragment(Market market) {
         if (mVendorListFragment == null) {
             mVendorListFragment = new VendorListFragment();
             Bundle bundle = new Bundle();
@@ -406,7 +403,7 @@ public class MainActivity extends AppCompatActivity
             mFragmentManager = getSupportFragmentManager();
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.main_activity_container, mVendorListFragment);
+        ft.replace(R.id.main_layout, mVendorListFragment);
         ft.addToBackStack(market.getName());
         ft.commit();
     }
@@ -442,7 +439,7 @@ public class MainActivity extends AppCompatActivity
 
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.main_activity_container, mVendorDetailsFragment);
+        ft.replace(R.id.main_layout, mVendorDetailsFragment);
         ft.addToBackStack(market.getName());
         ft.commit();
     }
@@ -615,6 +612,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onSuggestionClick(int position) {
         String vendorItem = mVendorItemsSuggestionAdapter.getSuggestion(position);
+        mSearchView.clearFocus();
         launchVendorSearchItemFragment(vendorItem);
         return true;
     }
@@ -638,11 +636,16 @@ public class MainActivity extends AppCompatActivity
             mFragmentManager = getSupportFragmentManager();
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.main_activity_container, mVendorSearchItemFragment);
+        ft.replace(R.id.main_layout, mVendorSearchItemFragment);
         ft.addToBackStack("Search Results");
         ft.commit();
     }
 
+    /**
+     * Sets the app bar elevation to the given value
+     * Only takes effect for devices with API >= 21
+     * @param elevation
+     */
     public void setAppBarElevation(float elevation){
         if(mAppBarLayout == null) {
             mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
@@ -751,8 +754,23 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Opens the request permissions dialog
+     */
     public void requestPermissions() {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, Permissions.REQUEST_COURSE_PERMISSION);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        mSearchView.clearFocus();
+        if(requestCode == Permissions.REQUEST_LOCATION_SETTINGS) {
+            if(mGoogleMapsFragment != null) {
+                mGoogleMapsFragment.onActivityResult(requestCode, resultCode, data);
+            }
+        }
+        else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
 }

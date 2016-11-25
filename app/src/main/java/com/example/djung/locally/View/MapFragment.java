@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.Utils.ThreadUtils;
@@ -39,23 +40,27 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import static com.google.android.gms.location.LocationSettingsStatusCodes.*;
 
-//TODO: FIX SO THAT LOCATION IS ADDED UPON PRESSING YES
-
 public class MapFragment extends Fragment
         implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener {
+        GoogleApiClient.OnConnectionFailedListener, LocationListener,
+        GoogleMap.OnInfoWindowClickListener{
     private MapView mMapView;
     private GoogleMap mGoogleMap;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private LocationRequest mLocationRequest;
+    private Marker mLastPositionMarker;
+    private static final float INITIAL_ZOOM = 12.0f;
+    private ArrayList<Market> mMarketsList;
 
     // Returns the view of the fragment
     @Override
@@ -81,6 +86,14 @@ public class MapFragment extends Fragment
 
         // Create instance of google services api
         initializeApiClient();
+
+        // Set on click listener for the current location button
+        ImageButton button = (ImageButton) v.findViewById(R.id.button_maps_select_location);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                setCurrentLocationButton();
+            }
+        });
 
         return v;
     }
@@ -119,7 +132,7 @@ public class MapFragment extends Fragment
      * Manipulates the map once available.
      * This Callback is triggered when the map is ready to be used.
      * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
+     * we just add a marker near Vancouver, Canada.
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
@@ -134,7 +147,10 @@ public class MapFragment extends Fragment
 
         dropPins(mGoogleMap);
 
-        googleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(latitude,longitude) , 12.0f) );
+        googleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(latitude,longitude) , INITIAL_ZOOM) );
+
+        // Set on click listener for the marker's info windows
+        mGoogleMap.setOnInfoWindowClickListener(this);
     }
 
     /**
@@ -165,6 +181,7 @@ public class MapFragment extends Fragment
                         // requests here.
                         setLastLocation();
                         setLastPosition();
+                        moveCameraFocus(mLastLocation, INITIAL_ZOOM);
                         break;
                     case RESOLUTION_REQUIRED:
                         // Location settings are not satisfied. But could be fixed by showing the user
@@ -189,13 +206,15 @@ public class MapFragment extends Fragment
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         switch (requestCode) {
             // Check for the integer request code originally supplied to startResolutionForResult().
             case Permissions.REQUEST_LOCATION_SETTINGS:
                 switch (resultCode) {
                     case Activity.RESULT_OK:
-                        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, (LocationListener) this);
                         setLastLocation();
+                        setLastPosition();
+                        moveCameraFocus(mLastLocation, INITIAL_ZOOM);
                         break;
                     case Activity.RESULT_CANCELED:
                         requestLocation();
@@ -229,12 +248,13 @@ public class MapFragment extends Fragment
                         Permissions.REQUEST_COURSE_PERMISSION);
             }
         }
-
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, (LocationListener) this);
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
     }
 
     /**
      * Set the last known position to the map
+     * May want to call moveCameraFocus after this
      */
     public void setLastPosition() {
         if (mLastLocation != null) {
@@ -245,11 +265,8 @@ public class MapFragment extends Fragment
             marker.icon(BitmapDescriptorFactory
                     .defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
 
-            mGoogleMap.addMarker(marker);
-
-            mGoogleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()) , 12.0f) );
-
-            Log.d("MapFragment", "Added marker");
+            mLastPositionMarker = mGoogleMap.addMarker(marker);
+            mLastPositionMarker.setTag("Current Position");
         }
     }
 
@@ -281,7 +298,9 @@ public class MapFragment extends Fragment
         MarketPresenter marketPresenter = new MarketPresenter(this.getContext());
         try {
             List<Market> marketList = marketPresenter.fetchMarkets();
+            mMarketsList = new ArrayList<>(marketList);
 
+            int i = 0;
             for(Market market : marketList) {
                 // Create marker
                 MarkerOptions marker = new MarkerOptions().position(
@@ -291,7 +310,9 @@ public class MapFragment extends Fragment
                 marker.icon(BitmapDescriptorFactory
                         .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
 
-                googleMap.addMarker(marker);
+            // marker tag = index for markets ArrayList
+                googleMap.addMarker(marker).setTag(i);
+                ++i;
             }
         } catch (final ExecutionException ee) {
             ThreadUtils.runOnUiThread(new Runnable() {
@@ -319,7 +340,7 @@ public class MapFragment extends Fragment
     }
 
     /**
-     * Hangles in app permission of location results
+     * Handles in app permission of location results
      *
      * @param requestCode request code of in app permission
      * @param permissions permissions requested
@@ -363,11 +384,62 @@ public class MapFragment extends Fragment
         }
     }
 
+    /**
+     * Updates the last location to the new one
+     * If this is the first time location has been acquired, it adds a marker
+     * to the map and focuses the camera on that position
+     *
+     * @param location
+     */
     @Override
     public void onLocationChanged(Location location) {
-        mLastLocation = location;
+        if(mLastLocation == null) {
+            mLastLocation = location;
+            setLastPosition();
+            moveCameraFocus(mLastLocation, INITIAL_ZOOM);
+        }
+         else {
+            mLastLocation = location;
+        }
     }
 
+    /**
+     * Moves camera focus to given location at given zoom level
+     */
+    public void moveCameraFocus(Location location, float zoom) {
+        if(location != null)
+            mGoogleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(
+                    new LatLng(location.getLatitude(),location.getLongitude()) , zoom));
+    }
+
+    /**
+     * Updates the current position marker and shifts the camera focus
+     */
+    private void setCurrentLocationButton() {
+        if(mLastLocation != null) {
+            mLastPositionMarker.remove();
+            setLastPosition();
+            float zoom = mGoogleMap.getCameraPosition().zoom;
+            moveCameraFocus(mLastLocation, zoom);
+            mLastPositionMarker.showInfoWindow();
+        } else {
+            requestLocation();
+        }
+    }
+
+    /**
+     * Click on a marker opens up the particular market page
+     * @param marker
+     */
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        if(mMarketsList != null && !mMarketsList.isEmpty()) {
+            if(!marker.getTag().equals("Current Position")) {
+                Market market = mMarketsList.get((int) marker.getTag());
+                ((MainActivity) getActivity()).launchVendorListFragment(market);
+            }
+        }
+    }
 }
 
 

@@ -94,7 +94,7 @@ public class VendorListAdapter extends RecyclerView.Adapter<VendorListAdapter.Vi
         }
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView vendorListItemVendorName;
         public TextView vendorListItemDescription;
         public Button vendorListItemCallButton;
@@ -139,7 +139,6 @@ public class VendorListAdapter extends RecyclerView.Adapter<VendorListAdapter.Vi
                     listener.onVendorListItemClick(vendor.getName(), currentMarket);
                     break;
             }
-
         }
     }
 }

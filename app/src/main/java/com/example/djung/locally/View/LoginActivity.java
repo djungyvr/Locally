@@ -5,11 +5,8 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.Snackbar;
-import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -31,31 +28,29 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.NewP
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.AuthenticationHandler;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.ForgotPasswordHandler;
 import com.example.djung.locally.AWS.AppHelper;
+import com.example.djung.locally.AsyncTasks.LoginTask;
 import com.example.djung.locally.R;
 
 import java.util.Locale;
 
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener, LoginTask.LoginTaskCallback {
     private final String TAG = "LoginActivity";
-
-    // The Idling Resource which will be null in production.
-    @Nullable
-    private CountingIdlingResource mIdlingResource = new CountingIdlingResource("LOGIN IDLING RESOURCE");
 
     // Fields
     private EditText mEditTextUsername;
     private EditText mEditTextPassword;
 
-    // Text buttons
+    // Buttons
     private TextView mTextViewSignUp;
     private TextView mTextViewForgotPassword;
-
     private Button mButtonLogin;
 
+    // Dialogs
     private ProgressDialog mWaitDialog;
+    private Dialog mLoginDialog;
 
-    private String username;
-    private String password;
+    private String mUsername;
+    private String mPassword;
 
     //Continuations
     private MultiFactorAuthenticationContinuation multiFactorAuthenticationContinuation;
@@ -73,7 +68,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         initializeViews();
 
         // Initialize app helper
-        // used for testing
         AppHelper.initialize(getApplicationContext());
     }
 
@@ -98,8 +92,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View view) {
         switch(view.getId()) {
             case R.id.text_view_forgot_password:
-                Snackbar.make(view, "Replace with forgot password", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
                 //forgotPassword();
                 break;
             case R.id.text_view_signup:
@@ -112,23 +104,23 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     /**
-     * Launch vendor sign
+     * Launch vendor sign in
      */
     private void signinVendor() {
-        username = mEditTextUsername.getText().toString();
+        mUsername = mEditTextUsername.getText().toString();
 
-        if(username == null || username.length() < 1) {
+        if(mUsername == null || mUsername.length() < 1) {
             TextView label = (TextView) findViewById(R.id.text_view_username_message);
             label.setText(mEditTextUsername.getHint()+" cannot be empty");
             //mEditTextPassword.setBackground(getDrawable(R.drawable.text_border_error));
             return;
         }
 
-        AppHelper.setUser(username);
+        AppHelper.setUser(mUsername);
 
-        password = mEditTextPassword.getText().toString();
+        mPassword = mEditTextPassword.getText().toString();
 
-        if(password == null || password.length() < 1) {
+        if(mPassword == null || mPassword.length() < 1) {
             TextView label = (TextView) findViewById(R.id.text_view_password_message);
             label.setText(mEditTextPassword.getHint()+" cannot be empty");
             //mEditTextPassword.setBackground(getDrawable(R.drawable.text_border_error));
@@ -136,9 +128,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
 
         showWaitDialog("Signing in...");
-        // Background work starting so increment the idler
-        mIdlingResource.increment();
-        AppHelper.getCognitoUserPool().getUser(username).getSessionInBackground(authenticationHandler);
+        new LoginTask(this).execute(mUsername,mPassword);
     }
 
     /**
@@ -159,10 +149,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     /**
-     * Launch confirm vendor activity
+     * Login Async Task callback
+     * @param loginCodes possible codes for logins
+     * @param message to display
      */
-    private void confirmVendor() {
-        throw new UnsupportedOperationException("confirmVendor not implemented");
+    @Override
+    public void done(LoginTask.LOGIN_CODES loginCodes, String message) {
+        closeWaitDialog();
+        if(loginCodes == LoginTask.LOGIN_CODES.SUCCESS) {
+            showDialogMessage("Sign-in successful!", message);
+            launchVendor();
+        } else if(loginCodes == LoginTask.LOGIN_CODES.FAIL) {
+            showDialogMessage("Sign-in failed", message);
+        }
     }
 
     // Callbacks
@@ -187,103 +186,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             showDialogMessage("Forgot password failed",AppHelper.formatException(e));
         }
     };
-
-    AuthenticationHandler authenticationHandler = new AuthenticationHandler() {
-        @Override
-        public void onSuccess(CognitoUserSession cognitoUserSession, CognitoDevice cognitoDevice) {
-
-            Log.e(TAG,"Authentication Success");
-            showDialogMessage("Sign-in successful!", " ");
-            AppHelper.setCurrSession(cognitoUserSession);
-            AppHelper.setNewDevice(cognitoDevice);
-            closeWaitDialog();
-
-            // Login successful but background task done so we decrement the idler
-            mIdlingResource.decrement();
-
-            // Launch the vendor activity
-            launchVendor();
-        }
-
-        @Override
-        public void getAuthenticationDetails(AuthenticationContinuation authenticationContinuation, String s) {
-            closeWaitDialog();
-            Locale.setDefault(Locale.CANADA);
-            // Get user authentication
-            getUserAuthentication(authenticationContinuation, s);
-        }
-
-        @Override
-        public void getMFACode(MultiFactorAuthenticationContinuation multiFactorAuthenticationContinuation) {
-            closeWaitDialog();
-            // Multifactor authentication
-            showDialogMessage("Message MFA","Get MFA Code");
-        }
-
-        @Override
-        public void authenticationChallenge(ChallengeContinuation challengeContinuation) {
-            if ("NEW_PASSWORD_REQUIRED".equals(challengeContinuation.getChallengeName())) {
-                // This is the first sign-in attempt for an admin created user
-                newPasswordContinuation = (NewPasswordContinuation) challengeContinuation;
-                AppHelper.setUserAttributeForDisplayFirstLogIn(newPasswordContinuation.getCurrentUserAttributes(),
-                        newPasswordContinuation.getRequiredAttributes());
-                closeWaitDialog();
-                firstTimeSignIn();
-            }
-        }
-
-        @Override
-        public void onFailure(Exception e) {
-            closeWaitDialog();
-            TextView label = (TextView) findViewById(R.id.text_view_username_message);
-            label.setText("Sign-in failed");
-            //mEditTextPassword.setBackground(getDrawable(R.drawable.text_border_error))
-
-            label = (TextView) findViewById(R.id.text_view_username_message);
-            label.setText("Sign-in failed");
-
-            showDialogMessage("Sign-in failed", AppHelper.formatException(e));
-
-            // Login failed but background task done so we decrement the idler
-            mIdlingResource.decrement();
-        }
-    };
-
-
-    // Dialog stuff below here
-    private void showWaitDialog(String message) {
-        closeWaitDialog();
-        mWaitDialog = new ProgressDialog(this);
-        mWaitDialog.setTitle(message);
-        mWaitDialog.show();
-    }
-
-    private void closeWaitDialog() {
-        try {
-            mWaitDialog.dismiss();
-        }
-        catch (Exception e) {
-            //
-        }
-    }
-
-    private Dialog mLoginDialog;
-
-    private void showDialogMessage(String title, String body) {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(title).setMessage(body).setNeutralButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                try {
-                    mLoginDialog.dismiss();
-                } catch (Exception e) {
-                    //
-                }
-            }
-        });
-        mLoginDialog = builder.create();
-        mLoginDialog.show();
-    }
 
     // Launch other activities from here
 
@@ -312,33 +214,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         //startActivityForResult(newPasswordActivity, 6);
     }
 
-    private void getUserAuthentication(AuthenticationContinuation continuation, String username) {
-        if(username != null) {
-            this.username = username;
-            AppHelper.setUser(username);
-        }
-        if(this.password == null) {
-            mEditTextUsername.setText(username);
-            password = mEditTextPassword.getText().toString();
-            if(password == null) {
-                TextView label = (TextView) findViewById(R.id.text_view_password_message);
-                label.setText(mEditTextPassword.getHint()+" enter password");
-                //mEditTextPassword.setBackground(getDrawable(R.drawable.text_border_error));
-                return;
-            }
-
-            if(password.length() < 1) {
-                TextView label = (TextView) findViewById(R.id.text_view_password_message);
-                label.setText(mEditTextPassword.getHint()+" enter password");
-                //mEditTextPassword.setBackground(getDrawable(R.drawable.text_border_error));
-                return;
-            }
-        }
-        AuthenticationDetails authenticationDetails = new AuthenticationDetails(this.username, this.password, null);
-        continuation.setAuthenticationDetails(authenticationDetails);
-        continuation.continueTask();
-    }
-
     /**
      * Launch forgot password activity
      */
@@ -350,7 +225,36 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 //        startActivityForResult(intent, 3);
     }
 
-    public CountingIdlingResource getIdlingResource() {
-        return mIdlingResource;
+    // Dialog stuff below here
+    private void showWaitDialog(String message) {
+        closeWaitDialog();
+        mWaitDialog = new ProgressDialog(this);
+        mWaitDialog.setTitle(message);
+        mWaitDialog.show();
+    }
+
+    private void closeWaitDialog() {
+        try {
+            mWaitDialog.dismiss();
+        }
+        catch (Exception e) {
+            //
+        }
+    }
+
+    private void showDialogMessage(String title, String body) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title).setMessage(body).setNeutralButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                try {
+                    mLoginDialog.dismiss();
+                } catch (Exception e) {
+                    //
+                }
+            }
+        });
+        mLoginDialog = builder.create();
+        mLoginDialog.show();
     }
 }
