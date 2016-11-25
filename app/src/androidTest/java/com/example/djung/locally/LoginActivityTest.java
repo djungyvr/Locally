@@ -73,8 +73,6 @@ public class LoginActivityTest {
 
     @Test
     public void failedLoginBadPasswordTest() {
-        Espresso.registerIdlingResources(mActivityRule.getActivity().getIdlingResource());
-
         // Type username.
         onView(withId(R.id.edit_text_username)).perform(typeText("test"),
                 closeSoftKeyboard());
@@ -89,8 +87,6 @@ public class LoginActivityTest {
 
     @Test
     public void failedLoginBadUsernameTest() {
-        Espresso.registerIdlingResources(mActivityRule.getActivity().getIdlingResource());
-
         // Type username.
         onView(withId(R.id.edit_text_username)).perform(typeText("ThisUserDoesNotExist"),
                 closeSoftKeyboard());
@@ -107,8 +103,6 @@ public class LoginActivityTest {
     // Should sign out after each test
     @Test
     public void successfulLoginTest() {
-        Espresso.registerIdlingResources(mActivityRule.getActivity().getIdlingResource());
-
         // Type username.
         onView(withId(R.id.edit_text_username)).perform(typeText("test"),
                 closeSoftKeyboard());
@@ -121,9 +115,10 @@ public class LoginActivityTest {
 
         try {
             onView(withText(containsString("Sign-in successful!"))).check(matches(withText(containsString("Sign-in successful!"))));
+            onView(withId(R.id.nav_signout)).perform(click());
         } catch (NoMatchingViewException e) {
             try {
-                // Too many login attemps
+                // Too many login attempts
                 onView(withText(containsString("Sign-in failed"))).check(matches(withText(containsString("Sign-in failed"))));
             } catch(NoMatchingViewException e1) {
                 onView(withId(R.id.fab_save_vendor_list)).check(matches(isDisplayed()));
