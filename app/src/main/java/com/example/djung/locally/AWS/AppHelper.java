@@ -25,6 +25,7 @@ public class AppHelper {
     private static AppHelper appHelper;
     private static CognitoUserPool cognitoUserPool;
     private static String user;
+
     private static CognitoDevice newDevice;
 
     // User pool ID
@@ -150,6 +151,14 @@ public class AppHelper {
                 firstTimeLogInItemsCount++;
             }
         }
+    }
+
+    public static CognitoDevice getNewDevice() {
+        return newDevice;
+    }
+
+    public static CognitoUserSession getCurrSession() {
+        return currSession;
     }
 
     public static Map<String, String> getSignUpFieldsC2O() {
