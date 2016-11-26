@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoDevice;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserSession;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationDetails;
@@ -69,6 +70,20 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         // Initialize app helper
         AppHelper.initialize(getApplicationContext());
+
+        findCurrent();
+    }
+
+    /**
+     * Find the current user and log them in if already logged in
+     */
+    //TODO: ATTEMPT TO RETRIEVE CACHED
+    private void findCurrent() {
+        CognitoUser user = AppHelper.getCognitoUserPool().getCurrentUser();
+        if(user.getUserId() != null) {
+            AppHelper.setUser(user.getUserId());
+            new LoginTask(this, true).execute(user.getUserId(),"pw");
+        }
     }
 
     /**
@@ -128,7 +143,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
 
         showWaitDialog("Signing in...");
-        new LoginTask(this).execute(mUsername,mPassword);
+        new LoginTask(this, false).execute(mUsername,mPassword);
     }
 
     /**
@@ -161,6 +176,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             launchVendor();
         } else if(loginCodes == LoginTask.LOGIN_CODES.FAIL) {
             showDialogMessage("Sign-in failed", message);
+        } else if(loginCodes == LoginTask.LOGIN_CODES.CACHED_LOGIN_FAIL) {
+            Log.e(TAG,"Cached login failed");
         }
     }
 

@@ -47,16 +47,21 @@ public class LoginTask extends AsyncTask<String,Void, LoginTask.LOGIN_CODES> {
     // Synchronized object
     private final Object syncObject;
 
+    // Cached attempt login
+    private boolean mIsCached = false;
+
     public enum LOGIN_CODES {
         SUCCESS,
         FAIL,
+        CACHED_LOGIN_FAIL,
         PENDING
     }
 
-    public LoginTask(LoginTaskCallback callback) {
+    public LoginTask(LoginTaskCallback callback, boolean isCached) {
         mCallback = callback;
         mResult = LOGIN_CODES.PENDING;
         syncObject = new Object();
+        mIsCached = isCached;
     }
 
     public interface LoginTaskCallback{
@@ -121,7 +126,11 @@ public class LoginTask extends AsyncTask<String,Void, LoginTask.LOGIN_CODES> {
 
         @Override
         public void onFailure(Exception e) {
-            mResult = LOGIN_CODES.FAIL;
+            if(mIsCached) {
+                mResult = LOGIN_CODES.CACHED_LOGIN_FAIL;
+            } else {
+                mResult = LOGIN_CODES.FAIL;
+            }
             mErrorDetails = AppHelper.formatException(e);
             // Values have been set stop waiting
             synchronized (syncObject) {
