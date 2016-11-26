@@ -1,7 +1,6 @@
 package com.example.djung.locally.View;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.location.Location;
 import android.support.v4.app.NotificationManagerCompat;
@@ -22,8 +21,6 @@ import com.example.djung.locally.Utils.DateUtils;
 import com.example.djung.locally.Utils.LocationUtils;
 import com.example.djung.locally.Utils.MarketUtils;
 import com.squareup.picasso.Picasso;
-
-import org.w3c.dom.Text;
 
 import java.util.List;
 
