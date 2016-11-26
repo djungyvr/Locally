@@ -43,7 +43,6 @@ import static org.hamcrest.core.IsNot.not;
  */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class LoginActivityTest {
     @Rule
     public ActivityTestRule<LoginActivity> mActivityRule =

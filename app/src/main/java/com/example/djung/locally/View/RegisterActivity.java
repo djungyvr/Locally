@@ -24,9 +24,10 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserAttribu
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserCodeDeliveryDetails;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.SignUpHandler;
 import com.example.djung.locally.AWS.AppHelper;
+import com.example.djung.locally.AsyncTasks.RegisterTask;
 import com.example.djung.locally.R;
 
-public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
+public class RegisterActivity extends AppCompatActivity implements View.OnClickListener, RegisterTask.RegisterTaskCallback{
     private TextInputEditText mEditTextUserName;
     private TextInputEditText mEditTextPassword;
     private TextInputEditText mEditTextVendorName;
@@ -73,6 +74,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 onBackPressed();
             }
         }
+
+        // Initialize app helper
+        AppHelper.initialize(getApplicationContext());
     }
 
     private void initializeFieldsAndViews() {
@@ -157,27 +161,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         mButtonSignup = (Button) findViewById(R.id.button_reg_signup);
         mButtonSignup.setOnClickListener(this);
     }
-
-    // Callbacks
-    private SignUpHandler signUpHandler = new SignUpHandler() {
-        @Override
-        public void onSuccess(CognitoUser user, boolean signUpConfirmationState,
-                              CognitoUserCodeDeliveryDetails cognitoUserCodeDeliveryDetails) {
-            // Check signUpConfirmationState to see if the user is already confirmed
-            closeWaitDialog();
-
-            showDialogMessage("Sign up successful!", usernameInput + " has been added. You will be able to sign in once we confirm you as a vendor.", true);
-        }
-
-        @Override
-        public void onFailure(Exception exception) {
-            closeWaitDialog();
-            TextView label = (TextView) findViewById(R.id.text_view_reg_username_message);
-            label.setText("Sign up failed");
-            //username.setBackground(getDrawable(R.drawable.text_border_error));
-            showDialogMessage("Sign up failed", AppHelper.formatException(exception), false);
-        }
-    };
 
     // Dialog
     private void showWaitDialog(String message) {
@@ -266,31 +249,56 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 }
 
                 userInput = mEditTextVendorName.getText().toString();
-                if (userInput != null) {
-                    if (userInput.length() > 0) {
-                        userAttributes.addAttribute(AppHelper.getSignUpFieldsC2O().get(mEditTextVendorName.getHint()).toString(), userInput);
-                    }
+                if (userInput == null || userInput.isEmpty()) {
+                    TextView message = (TextView) findViewById(R.id.text_view_reg_vendor_name_message);
+                    message.setText(mEditTextVendorName.getHint() + " cannot be empty");
+                    //mEditTextPassword.setBackground(getDrawable(R.drawable.text_border_error));
+                    return;
+                } else {
+                    userAttributes.addAttribute(AppHelper.getSignUpFieldsC2O().get(mEditTextVendorName.getHint()).toString(), userInput);
                 }
 
                 userInput = mEditTextEmail.getText().toString();
-                if (userInput != null) {
-                    if (userInput.length() > 0) {
-                        userAttributes.addAttribute(AppHelper.getSignUpFieldsC2O().get(mEditTextEmail.getHint()).toString(), userInput);
-                    }
+                if (userInput == null || userInput.isEmpty()) {
+                    TextView message = (TextView) findViewById(R.id.text_view_reg_email_message);
+                    message.setText(mEditTextEmail.getHint() + " cannot be empty");
+                    //mEditTextPassword.setBackground(getDrawable(R.drawable.text_border_error));
+                    return;
+                } else {
+                    userAttributes.addAttribute(AppHelper.getSignUpFieldsC2O().get(mEditTextEmail.getHint()).toString(), userInput);
                 }
 
                 userInput = mEditTextPhoneNumber.getText().toString();
-                if (userInput != null) {
-                    if (userInput.length() > 0) {
-                        userAttributes.addAttribute(AppHelper.getSignUpFieldsC2O().get(mEditTextPhoneNumber.getHint()).toString(), userInput);
-                    }
+                if (userInput == null || userInput.isEmpty()) {
+                    TextView message = (TextView) findViewById(R.id.text_view_reg_phone_message);
+                    message.setText(mEditTextPhoneNumber.getHint() + " cannot be empty");
+                    //mEditTextPassword.setBackground(getDrawable(R.drawable.text_border_error));
+                    return;
+                } else {
+                    userAttributes.addAttribute(AppHelper.getSignUpFieldsC2O().get(mEditTextPhoneNumber.getHint()).toString(), userInput);
                 }
 
                 showWaitDialog("Signing up...");
 
-                AppHelper.getCognitoUserPool().signUpInBackground(usernameInput, userpasswordInput, userAttributes, null, signUpHandler);
 
+                new RegisterTask(this, userAttributes).execute(usernameInput,userPassword);
                 break;
+        }
+    }
+
+    @Override
+    public void done(RegisterTask.REGISTER_CODES code, String message) {
+        if(code == RegisterTask.REGISTER_CODES.SUCCESS) {
+            // Check signUpConfirmationState to see if the user is already confirmed
+            closeWaitDialog();
+
+            showDialogMessage("Sign up successful!", usernameInput + " has been added. You will be able to sign in once we confirm you as a vendor.", true);
+        } else if(code == RegisterTask.REGISTER_CODES.FAIL){
+            closeWaitDialog();
+            TextView label = (TextView) findViewById(R.id.text_view_reg_username_message);
+            label.setText("Sign up failed");
+            //username.setBackground(getDrawable(R.drawable.text_border_error));
+            showDialogMessage("Sign up failed", message, false);
         }
     }
 }
