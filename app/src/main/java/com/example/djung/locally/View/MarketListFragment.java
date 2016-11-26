@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import com.example.djung.locally.Presenter.MarketListPresenter;
 import com.example.djung.locally.R;
+import com.example.djung.locally.View.Adapters.MarketListAdapter;
 
 /**
  * Created by Andy Lin on 2016-11-08.

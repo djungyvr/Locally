@@ -1,4 +1,4 @@
-package com.example.djung.locally.View;
+package com.example.djung.locally.View.Adapters;
 
 import android.content.Context;
 import android.location.Location;
@@ -12,6 +12,10 @@ import android.widget.TextView;
 
 import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.MarketUtils;
+import com.example.djung.locally.View.EnablePermissionsCard;
+import com.example.djung.locally.View.MainActivity;
+import com.example.djung.locally.View.MarketCardSection;
+import com.example.djung.locally.View.QuickLinkCardSection;
 
 import java.util.ArrayList;
 import java.util.List;

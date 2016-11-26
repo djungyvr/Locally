@@ -11,7 +11,7 @@ import android.widget.Toast;
 import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.Model.Vendor;
 import com.example.djung.locally.Utils.ThreadUtils;
-import com.example.djung.locally.View.VendorListAdapter;
+import com.example.djung.locally.View.Adapters.VendorListAdapter;
 import com.example.djung.locally.View.VendorListView;
 
 import java.util.ArrayList;

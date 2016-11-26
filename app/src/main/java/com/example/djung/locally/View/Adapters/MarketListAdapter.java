@@ -1,4 +1,4 @@
-package com.example.djung.locally.View;
+package com.example.djung.locally.View.Adapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;

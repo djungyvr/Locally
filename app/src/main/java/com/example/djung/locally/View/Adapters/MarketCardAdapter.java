@@ -1,4 +1,4 @@
-package com.example.djung.locally.View;
+package com.example.djung.locally.View.Adapters;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -14,6 +14,7 @@ import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.LocationUtils;
 import com.example.djung.locally.Utils.MarketUtils;
+import com.example.djung.locally.View.MainActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

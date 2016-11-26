@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.example.djung.locally.Presenter.VendorListPresenter;
 import com.example.djung.locally.R;
+import com.example.djung.locally.View.Adapters.VendorListAdapter;
 
 
 /**

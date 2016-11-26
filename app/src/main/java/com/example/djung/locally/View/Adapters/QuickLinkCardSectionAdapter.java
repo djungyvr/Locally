@@ -1,4 +1,4 @@
-package com.example.djung.locally.View;
+package com.example.djung.locally.View.Adapters;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -9,6 +9,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.djung.locally.R;
+import com.example.djung.locally.View.MainActivity;
+import com.example.djung.locally.View.QuickLinkCard;
+import com.example.djung.locally.View.SquareImageView;
 
 import java.util.ArrayList;
 

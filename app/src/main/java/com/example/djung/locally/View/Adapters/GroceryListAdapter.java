@@ -1,4 +1,4 @@
-package com.example.djung.locally.View;
+package com.example.djung.locally.View.Adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -23,7 +23,7 @@ public class GroceryListAdapter extends RecyclerView.Adapter<GroceryListAdapter.
     private Context context;
     private List<String> foundItems;
 
-    GroceryListAdapter(ArrayList<String> itemNames, Context context) {
+    public GroceryListAdapter(ArrayList<String> itemNames, Context context) {
         this.itemNames = itemNames;
         this.context = context;
     }

@@ -37,6 +37,8 @@ import com.example.djung.locally.Model.Vendor;
 import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.VendorUtils;
+import com.example.djung.locally.View.Adapters.SuggestionAdapter;
+import com.example.djung.locally.View.Adapters.VendorItemAdapter;
 
 import java.util.ArrayList;
 import java.util.HashSet;

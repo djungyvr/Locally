@@ -38,6 +38,8 @@ import com.example.djung.locally.Presenter.MarketPresenter;
 import com.example.djung.locally.Presenter.VendorListPresenter;
 import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.MarketUtils;
+import com.example.djung.locally.View.Adapters.MarketCardSectionAdapter;
+import com.example.djung.locally.View.Adapters.SuggestionAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
