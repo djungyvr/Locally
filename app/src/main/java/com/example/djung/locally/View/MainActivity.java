@@ -547,6 +547,7 @@ public class MainActivity extends AppCompatActivity
         mSearchView.setOnQueryTextListener(this);
         mSearchView.setOnSuggestionListener(this);
         mSearchView.setQueryHint("Search locally for:");
+        mSearchView.clearFocus();
     }
 
     @Override
