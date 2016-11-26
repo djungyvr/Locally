@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
 
+import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoDevice;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserDetails;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserPool;
@@ -37,6 +38,7 @@ public class AppHelper {
     // User details from the service
     private static CognitoUserSession currSession;
     private static CognitoUserDetails userDetails;
+    private static CognitoCachingCredentialsProvider mCredentialsProvider;
     private static Map<String, String> firstTimeLogInUserAttributes;
     private static List<String> firstTimeLogInRequiredAttributes;
     private static Map<String, String> firstTimeLogInUpDatedAttributes;
@@ -59,6 +61,14 @@ public class AppHelper {
 
         if(cognitoUserPool == null) {
             cognitoUserPool = new CognitoUserPool(context, userPoolId, clientId,clientSecret,cognitoRegion);
+        }
+
+        if( mCredentialsProvider == null) {
+            mCredentialsProvider = new CognitoCachingCredentialsProvider(
+                    context,
+                    userPoolId,
+                    cognitoRegion
+            );
         }
     }
 
@@ -119,40 +129,6 @@ public class AppHelper {
         AppHelper.newDevice = newDevice;
     }
 
-    public static void setUserAttributeForDisplayFirstLogIn(Map<String, String> currAttributes, List<String> requiredAttributes) {
-        firstTimeLogInUserAttributes = currAttributes;
-        firstTimeLogInRequiredAttributes = requiredAttributes;
-        firstTimeLogInUpDatedAttributes = new HashMap<String, String>();
-        refreshDisplayItemsForFirstTimeLogin();
-    }
-
-    private static void refreshDisplayItemsForFirstTimeLogin() {
-        firstTimeLogInItemsCount = 0;
-        firstTimeLogInDetails = new ArrayList<ItemToDisplay>();
-
-        for(Map.Entry<String, String> attr: firstTimeLogInUserAttributes.entrySet()) {
-            if ("phone_number_verified".equals(attr.getKey()) || "email_verified".equals(attr.getKey())) {
-                continue;
-            }
-            String message = "";
-            if ((firstTimeLogInRequiredAttributes != null) && (firstTimeLogInRequiredAttributes.contains(attr.getKey()))) {
-                message = "Required";
-            }
-            ItemToDisplay item = new ItemToDisplay(attr.getKey(), attr.getValue(), message, Color.BLACK, Color.DKGRAY, Color.parseColor("#329AD6"), 0, null);
-            firstTimeLogInDetails.add(item);
-            firstTimeLogInRequiredAttributes.size();
-            firstTimeLogInItemsCount++;
-        }
-
-        for (String attr: firstTimeLogInRequiredAttributes) {
-            if (!firstTimeLogInUserAttributes.containsKey(attr)) {
-                ItemToDisplay item = new ItemToDisplay(attr, "", "Required", Color.BLACK, Color.DKGRAY, Color.parseColor("#329AD6"), 0, null);
-                firstTimeLogInDetails.add(item);
-                firstTimeLogInItemsCount++;
-            }
-        }
-    }
-
     public static CognitoDevice getNewDevice() {
         return newDevice;
     }
@@ -171,5 +147,9 @@ public class AppHelper {
 
     public static CognitoUserDetails getUserDetails() {
         return userDetails;
+    }
+
+    public static CognitoCachingCredentialsProvider getCredentialsProvider() {
+        return mCredentialsProvider;
     }
 }

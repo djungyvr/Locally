@@ -8,15 +8,18 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoDevice;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserSession;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationDetails;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.ChallengeContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.MultiFactorAuthenticationContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.AuthenticationHandler;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.GenericHandler;
 import com.example.djung.locally.AWS.AppHelper;
 import com.example.djung.locally.R;
 import com.example.djung.locally.View.VendorActivity;
@@ -47,21 +50,16 @@ public class LoginTask extends AsyncTask<String,Void, LoginTask.LOGIN_CODES> {
     // Synchronized object
     private final Object syncObject;
 
-    // Cached attempt login
-    private boolean mIsCached = false;
-
     public enum LOGIN_CODES {
         SUCCESS,
         FAIL,
-        CACHED_LOGIN_FAIL,
         PENDING
     }
 
-    public LoginTask(LoginTaskCallback callback, boolean isCached) {
+    public LoginTask(LoginTaskCallback callback) {
         mCallback = callback;
         mResult = LOGIN_CODES.PENDING;
         syncObject = new Object();
-        mIsCached = isCached;
     }
 
     public interface LoginTaskCallback{
@@ -116,6 +114,7 @@ public class LoginTask extends AsyncTask<String,Void, LoginTask.LOGIN_CODES> {
         public void onSuccess(CognitoUserSession cognitoUserSession, CognitoDevice cognitoDevice) {
             AppHelper.setCurrSession(cognitoUserSession);
             AppHelper.setNewDevice(cognitoDevice);
+            AppHelper.setUser(mUsername);
             mResult = LOGIN_CODES.SUCCESS;
             mErrorDetails = " ";
             // Values have been set stop waiting
@@ -126,11 +125,7 @@ public class LoginTask extends AsyncTask<String,Void, LoginTask.LOGIN_CODES> {
 
         @Override
         public void onFailure(Exception e) {
-            if(mIsCached) {
-                mResult = LOGIN_CODES.CACHED_LOGIN_FAIL;
-            } else {
-                mResult = LOGIN_CODES.FAIL;
-            }
+            mResult = LOGIN_CODES.FAIL;
             mErrorDetails = AppHelper.formatException(e);
             // Values have been set stop waiting
             synchronized (syncObject) {
@@ -152,6 +147,7 @@ public class LoginTask extends AsyncTask<String,Void, LoginTask.LOGIN_CODES> {
     private void getUserAuthentication(AuthenticationContinuation continuation, String username) {
         AuthenticationDetails authenticationDetails = new AuthenticationDetails(username, mPassword, null);
         continuation.setAuthenticationDetails(authenticationDetails);
+
         continuation.continueTask();
     }
 }
