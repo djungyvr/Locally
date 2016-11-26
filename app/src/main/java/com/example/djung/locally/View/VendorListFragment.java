@@ -31,6 +31,7 @@ public class VendorListFragment extends Fragment implements VendorListView{
     public void showVendorList(VendorListAdapter vendorListAdapter) {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(vendorListAdapter);
@@ -48,6 +49,7 @@ public class VendorListFragment extends Fragment implements VendorListView{
     @Override
     public void onActivityCreated(Bundle savedInstance){
         super.onActivityCreated(savedInstance);
+        vendorListPresenter.setActionBar();
         vendorListPresenter.populateVendorList();
     }
 }

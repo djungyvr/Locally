@@ -24,15 +24,15 @@ import java.util.concurrent.ExecutionException;
 
 public class VendorListPresenter {
     private Activity activity;
-    private VendorListView view;
+    private VendorListView vendorListView;
     private Market currentMarket;
     private List<Vendor> vendorList;
     private OnVendorListItemClickListener mCallback;
     private final String TAG = "VendorListPresenter";
 
-    public VendorListPresenter(Activity activity, VendorListView view, Bundle bundle){
+    public VendorListPresenter(Activity activity, VendorListView vendorListView, Bundle bundle){
         this.activity = activity;
-        this.view = view;
+        this.vendorListView = vendorListView;
         this.currentMarket = (Market) bundle.getSerializable("currentMarket");
         vendorList = new ArrayList<Vendor>();
         mCallback = (OnVendorListItemClickListener) activity;
@@ -42,7 +42,12 @@ public class VendorListPresenter {
         void onVendorListItemClick(String vendorName, Market market);
     }
 
+    public void setActionBar(){
+        vendorListView.setActionBarTitle(currentMarket.getName());
+    }
+
     public void populateVendorList(){
+        Log.e(TAG, "Populating the vendor list");
         VendorPresenter presenter = new VendorPresenter(activity);
 
         try {
@@ -77,7 +82,7 @@ public class VendorListPresenter {
         }
 
         VendorListAdapter adapter = new VendorListAdapter(this);
-        view.showVendorList(adapter);
+        vendorListView.showVendorList(adapter);
     }
 
     public List<Vendor> getVendorList(){

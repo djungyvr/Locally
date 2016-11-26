@@ -33,6 +33,7 @@ import com.example.djung.locally.AWS.IdentityManager;
 import com.example.djung.locally.DB.VendorItemDatabase;
 import com.example.djung.locally.DB.VendorItemsProvider;
 import com.example.djung.locally.Model.Market;
+import com.example.djung.locally.Presenter.MarketListPresenter;
 import com.example.djung.locally.Presenter.MarketPresenter;
 import com.example.djung.locally.Presenter.VendorListPresenter;
 import com.example.djung.locally.R;
@@ -44,7 +45,7 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, VendorListPresenter.OnVendorListItemClickListener,
-        MarketListFragment.onMarketListItemClick, SearchView.OnQueryTextListener, SearchView.OnSuggestionListener,
+        MarketListPresenter.onMarketListItemClick, SearchView.OnQueryTextListener, SearchView.OnSuggestionListener,
         VendorSearchItemFragment.OnVendorListItemClickListener{
 
     private final String TAG = "MainActivity";

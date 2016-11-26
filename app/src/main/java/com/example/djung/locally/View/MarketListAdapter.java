@@ -1,12 +1,6 @@
 package com.example.djung.locally.View;
 
-import android.app.Notification;
-import android.content.Context;
-import android.location.Location;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,81 +10,87 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.djung.locally.Model.Market;
+import com.example.djung.locally.Presenter.MarketListPresenter;
 import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.DateUtils;
-import com.example.djung.locally.Utils.LocationUtils;
-import com.example.djung.locally.Utils.MarketUtils;
-import com.squareup.picasso.Picasso;
-
-import java.util.List;
 
 /**
  * Created by Andy Lin on 2016-11-08.
  */
 
 public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.ViewHolder>{
-    private List<Market> marketListItems;
-    private Context context;
-    private MarketListFragment.onMarketListItemClick mCallBack;
-    private Location currentLocation;
+    private MarketListPresenter marketListPresenter;
 
-    public MarketListAdapter(List<Market> marketListItems, Context context, MarketListFragment.onMarketListItemClick mCallBack, Location currentLocation){
-        this.marketListItems = marketListItems;
-        this.context = context;
-        this.mCallBack = mCallBack;
-        this.currentLocation = currentLocation;
+    public MarketListAdapter(MarketListPresenter marketListPresenter){
+        this.marketListPresenter = marketListPresenter;
     }
 
     @Override
     public MarketListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.market_list_item, parent, false);
-        MarketListAdapter.ViewHolder vh = new MarketListAdapter.ViewHolder(v, context, marketListItems);
+        MarketListAdapter.ViewHolder vh = new MarketListAdapter.ViewHolder(v);
         return vh;
     }
 
     @Override
-    public void onBindViewHolder(MarketListAdapter.ViewHolder holder, int position) {
-        Market item = marketListItems.get(position);
+    public void onBindViewHolder(final MarketListAdapter.ViewHolder holder, final int position) {
+        Market item = marketListPresenter.getMarketList().get(position);
         holder.marketListItemMarketName.setText(item.getName());
-        holder.marketListItemMarketHours.setText(DateUtils.parseHours(item.getDailyHours()));
         holder.marketListItemMarketLocation.setText(item.getAddress());
+        holder.marketListItemMarketHours.setText(DateUtils.parseHours(item.getDailyHours()));
         holder.marketListItemMarketDates.setText(DateUtils.parseYear(item.getYearOpen()));
 
-        if (MarketUtils.isMarketCurrentlyOpen(item)){
-            holder.marketListItemMarketStatus.setText("Open Now!");
-        }
-        else {
-            holder.marketListItemMarketStatus.setText("Closed Now");
-        }
+        holder.marketListItemMarketStatus.setText(marketListPresenter.getStatus(position));
+        holder.marketListItemMarketDistance.setText(marketListPresenter.getDistance(position));
+        marketListPresenter.setImage(position, holder.marketListItemImage);
 
-        if (currentLocation != null){
-            float distance = MarketUtils.getDistanceFromMarket(item, currentLocation);
-            holder.marketListItemMarketDistance.setText(LocationUtils.formatDistanceInKm(distance));
-        }
-        else {
-            holder.marketListItemMarketDistance.setText("");
-        }
+        holder.marketListItemNotificationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                marketListPresenter.onNotificationsButtonClick(position);
+            }
+        });
 
-        String imageResource = MarketUtils.getMarketUrl(item.getName());
-        if(imageResource.isEmpty()) {
-            holder.marketListItemImage.setImageResource(R.drawable.ubc);
-        } else {
-            Picasso.with(context).setIndicatorsEnabled(true);
-            Picasso.with(context).load(imageResource).into(holder.marketListItemImage);
-        }
+        holder.marketListItemSupportTextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toggleSupportText(holder);
+            }
+        });
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                marketListPresenter.onMarketListItemClick(position);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        if (marketListItems != null){
-            return marketListItems.size();
+        if (marketListPresenter.getMarketList() != null){
+            return marketListPresenter.getMarketList().size();
         }
         else {
             return 0;
         }
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    /**
+     * Toggle the visibility of the support text
+     */
+    public void toggleSupportText(MarketListAdapter.ViewHolder view){
+        if (view.marketListItemSupportText.getVisibility() == View.VISIBLE){
+            view.marketListItemSupportText.setVisibility(View.GONE);
+            view.marketListItemSupportTextButton.setText("More Details");
+        }
+        else {
+            view. marketListItemSupportText.setVisibility(View.VISIBLE);
+            view.marketListItemSupportTextButton.setText("Less Details");
+        }
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder{
         public ImageView marketListItemImage;
         public TextView marketListItemMarketName;
         public TextView marketListItemMarketLocation;
@@ -101,13 +101,9 @@ public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.Vi
         public Button marketListItemSupportTextButton;
         public Button marketListItemNotificationButton;
         public LinearLayout marketListItemSupportText;
-        public Context context;
-        public List<Market> items;
 
-        public ViewHolder(View itemView, Context context, List<Market> items) {
+        public ViewHolder(View itemView) {
             super(itemView);
-            this.context = context;
-            this.items = items;
             this.marketListItemMarketName = (TextView) itemView.findViewById(R.id.market_list_item_name);
             this.marketListItemMarketLocation = (TextView) itemView.findViewById(R.id.market_list_item_location);
             this.marketListItemMarketHours = (TextView) itemView.findViewById(R.id.market_list_item_hours);
@@ -118,57 +114,6 @@ public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.Vi
             this.marketListItemSupportTextButton = (Button) itemView.findViewById(R.id.market_list_item_details_button);
             this.marketListItemSupportText = (LinearLayout) itemView.findViewById(R.id.market_list_item_support_text);
             this.marketListItemNotificationButton = (Button) itemView.findViewById(R.id.market_list_item_notifications_button);
-            this.marketListItemSupportTextButton.setOnClickListener(this);
-            this.marketListItemNotificationButton.setOnClickListener(this);
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.market_list_item_details_button:
-                    toggleSupportText();
-                    break;
-                case R.id.market_list_item_notifications_button:
-                    buildNotification();
-                    break;
-                case R.id.market_list_item:
-                    int position = getAdapterPosition();
-                    Market market = marketListItems.get(position);
-                    mCallBack.onMarketListItemClick(market);
-                    break;
-            }
-        }
-
-        /**
-         * Toggle the visibility of the support text
-         */
-        public void toggleSupportText(){
-            if (marketListItemSupportText.getVisibility() == View.VISIBLE){
-                marketListItemSupportText.setVisibility(View.GONE);
-                marketListItemSupportTextButton.setText("More Details");
-            }
-            else {
-                marketListItemSupportText.setVisibility(View.VISIBLE);
-                marketListItemSupportTextButton.setText("Less Details");
-            }
-        }
-
-        public void buildNotification(){
-            int position = getAdapterPosition();
-            Market market = marketListItems.get(position);
-            Log.e("Market List Item", "Building market list item notification now");
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
-            builder.setSmallIcon(R.mipmap.ic_app_launcher);
-
-            NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
-            bigText.bigText(market.getName() + " is about to open! Do not miss it!");
-            bigText.setBigContentTitle("Market Notification");
-            builder.setStyle(bigText);
-
-            Notification notification = builder.build();
-            NotificationManagerCompat.from(context).notify(0,notification);
-
         }
     }
 }
