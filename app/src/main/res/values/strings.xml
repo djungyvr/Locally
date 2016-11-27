@@ -11,6 +11,8 @@
     <string name="title_activity_register">Register</string>
     <string name="title_activity_vendor_list">VendorListActivity</string>
     <string name="title_activity_vendor_details">VendorDetails</string>
+    <string name="title_activity_reset">Reset Password</string>
+    <string name="title_activity_verify">Verify Email</string>
 
     //to be modified later
     <string name="market_name">Market Name</string>

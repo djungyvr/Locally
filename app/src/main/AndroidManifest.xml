@@ -64,6 +64,28 @@
                 android:value="com.example.djung.locally.View.MainActivity" />
         </activity>
         <activity
+            android:name=".View.ForgotPasswordActivity"
+            android:label="@string/title_activity_reset"
+            android:parentActivityName=".View.LoginActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleTop">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.djung.locally.View.LoginActivity" />
+        </activity>
+        <activity
+            android:name=".View.VerifyActivity"
+            android:label="@string/title_activity_verify"
+            android:parentActivityName=".View.LoginActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleTop">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.djung.locally.View.LoginActivity" />
+        </activity>
+        <activity
             android:name=".View.RegisterActivity"
             android:label="@string/title_activity_register"
             android:parentActivityName=".View.LoginActivity"
@@ -89,14 +111,6 @@
             <!-- Points to searchable metadata -->
             <meta-data android:name="android.app.searchable"
                 android:value="@xml/searchable" />
-        </activity>
-        <activity
-            android:name=".View.MarketActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop">
-
         </activity>
         <!-- Provides search suggestions for words and their definitions. -->
         <provider android:name=".DB.VendorItemsProvider"

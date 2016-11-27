@@ -39,13 +39,13 @@ public class AppHelper {
     private static CognitoUserDetails userDetails;
     private static Map<String, String> firstTimeLogInUserAttributes;
     private static List<String> firstTimeLogInRequiredAttributes;
-    private static Map<String, String> firstTimeLogInUpDatedAttributes;
-    private static int firstTimeLogInItemsCount;
     private static ArrayList<ItemToDisplay> firstTimeLogInDetails;
 
-    private static List<String> attributeDisplaySeq;
     private static Map<String, String> signUpFieldsC2O;
     private static Map<String, String> signUpFieldsO2C;
+
+    private static boolean emailAvailable;
+    private static boolean emailVerified;
 
     public static void initialize(Context context) {
         setData();
@@ -60,6 +60,9 @@ public class AppHelper {
         if(cognitoUserPool == null) {
             cognitoUserPool = new CognitoUserPool(context, userPoolId, clientId,clientSecret,cognitoRegion);
         }
+
+        emailVerified = false;
+        emailAvailable = false;
     }
 
     private static void setData() {
@@ -119,40 +122,6 @@ public class AppHelper {
         AppHelper.newDevice = newDevice;
     }
 
-    public static void setUserAttributeForDisplayFirstLogIn(Map<String, String> currAttributes, List<String> requiredAttributes) {
-        firstTimeLogInUserAttributes = currAttributes;
-        firstTimeLogInRequiredAttributes = requiredAttributes;
-        firstTimeLogInUpDatedAttributes = new HashMap<String, String>();
-        refreshDisplayItemsForFirstTimeLogin();
-    }
-
-    private static void refreshDisplayItemsForFirstTimeLogin() {
-        firstTimeLogInItemsCount = 0;
-        firstTimeLogInDetails = new ArrayList<ItemToDisplay>();
-
-        for(Map.Entry<String, String> attr: firstTimeLogInUserAttributes.entrySet()) {
-            if ("phone_number_verified".equals(attr.getKey()) || "email_verified".equals(attr.getKey())) {
-                continue;
-            }
-            String message = "";
-            if ((firstTimeLogInRequiredAttributes != null) && (firstTimeLogInRequiredAttributes.contains(attr.getKey()))) {
-                message = "Required";
-            }
-            ItemToDisplay item = new ItemToDisplay(attr.getKey(), attr.getValue(), message, Color.BLACK, Color.DKGRAY, Color.parseColor("#329AD6"), 0, null);
-            firstTimeLogInDetails.add(item);
-            firstTimeLogInRequiredAttributes.size();
-            firstTimeLogInItemsCount++;
-        }
-
-        for (String attr: firstTimeLogInRequiredAttributes) {
-            if (!firstTimeLogInUserAttributes.containsKey(attr)) {
-                ItemToDisplay item = new ItemToDisplay(attr, "", "Required", Color.BLACK, Color.DKGRAY, Color.parseColor("#329AD6"), 0, null);
-                firstTimeLogInDetails.add(item);
-                firstTimeLogInItemsCount++;
-            }
-        }
-    }
-
     public static CognitoDevice getNewDevice() {
         return newDevice;
     }
@@ -171,5 +140,13 @@ public class AppHelper {
 
     public static CognitoUserDetails getUserDetails() {
         return userDetails;
+    }
+
+    public static boolean isEmailAvailable() {
+        return emailAvailable;
+    }
+
+    public static boolean isEmailVerified() {
+        return emailVerified;
     }
 }

@@ -53,9 +53,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private String mPassword;
 
     //Continuations
-    private MultiFactorAuthenticationContinuation multiFactorAuthenticationContinuation;
     private ForgotPasswordContinuation forgotPasswordContinuation;
-    private NewPasswordContinuation newPasswordContinuation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +67,27 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         // Initialize app helper
         AppHelper.initialize(getApplicationContext());
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case 3:
+                // Forgot password
+                if(resultCode == RESULT_OK) {
+                    String newPass = data.getStringExtra("newPass");
+                    String code = data.getStringExtra("code");
+                    if (newPass != null && code != null) {
+                        if (!newPass.isEmpty() && !code.isEmpty()) {
+                            forgotPasswordContinuation.setPassword(newPass);
+                            forgotPasswordContinuation.setVerificationCode(code);
+                            forgotPasswordContinuation.continueTask();
+                        }
+                    }
+                }
+                break;
+        }
     }
 
     /**
@@ -92,7 +111,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View view) {
         switch(view.getId()) {
             case R.id.text_view_forgot_password:
-                //forgotPassword();
+                forgotPassword();
                 break;
             case R.id.text_view_signup:
                 signupVendor();
@@ -140,11 +159,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if(username == null || username.length() < 1) {
             TextView label = (TextView) findViewById(R.id.text_view_username_message);
             label.setText(mEditTextUsername.getHint()+" cannot be empty");
-            //mEditTextPassword.setBackground(getDrawable(R.drawable.text_border_error));
             return;
         }
-
-        showWaitDialog("");
+        AppHelper.setUser(username);
         AppHelper.getCognitoUserPool().getUser(username).forgotPasswordInBackground(forgotPasswordHandler);
     }
 
@@ -168,7 +185,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     ForgotPasswordHandler forgotPasswordHandler = new ForgotPasswordHandler() {
         @Override
         public void onSuccess() {
-            closeWaitDialog();
             showDialogMessage("Password successfully changed!","");
             mEditTextPassword.setText("");
             mEditTextPassword.requestFocus();
@@ -176,14 +192,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         @Override
         public void getResetCode(ForgotPasswordContinuation forgotPasswordContinuation) {
-            closeWaitDialog();
             getForgotPasswordCode(forgotPasswordContinuation);
         }
 
         @Override
         public void onFailure(Exception e) {
-            closeWaitDialog();
-            showDialogMessage("Forgot password failed",AppHelper.formatException(e));
+            if(e.getMessage().contains("registered")) {
+                verifyUser();
+            }
+            Log.e(TAG,e.getMessage());
         }
     };
 
@@ -207,22 +224,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     /**
-     * Launch first time sign in activity
+     * Launch verify username
      */
-    private void firstTimeSignIn() {
-        //Intent newPasswordActivity = new Intent(this, NewPassword.class);
-        //startActivityForResult(newPasswordActivity, 6);
+    private void verifyUser() {
+        Intent verifyActivity = new Intent(this, VerifyActivity.class);
+        startActivityForResult(verifyActivity, 1);
     }
 
     /**
      * Launch forgot password activity
      */
     private void getForgotPasswordCode(ForgotPasswordContinuation forgotPasswordContinuation) {
-//        this.forgotPasswordContinuation = forgotPasswordContinuation;
-//        Intent intent = new Intent(this, ForgotPasswordActivity.class);
-//        intent.putExtra("destination",forgotPasswordContinuation.getParameters().getDestination());
-//        intent.putExtra("deliveryMed", forgotPasswordContinuation.getParameters().getDeliveryMedium());
-//        startActivityForResult(intent, 3);
+        this.forgotPasswordContinuation = forgotPasswordContinuation;
+        Intent intent = new Intent(this, ForgotPasswordActivity.class);
+        intent.putExtra("destination",forgotPasswordContinuation.getParameters().getDestination());
+        intent.putExtra("deliveryMed", forgotPasswordContinuation.getParameters().getDeliveryMedium());
+        startActivityForResult(intent, 3);
     }
 
     // Dialog stuff below here
