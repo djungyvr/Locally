@@ -1,12 +1,10 @@
 package com.example.djung.locally.View;
 
-import android.animation.StateListAnimator;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,9 +21,10 @@ import android.widget.Toast;
 import com.example.djung.locally.DB.GroceryListDatabase;
 import com.example.djung.locally.DB.VendorItemDatabase;
 import com.example.djung.locally.DB.VendorItemsProvider;
-import com.example.djung.locally.Model.Vendor;
 import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
+import com.example.djung.locally.View.Adapters.GroceryListAdapter;
+import com.example.djung.locally.View.Adapters.SuggestionAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

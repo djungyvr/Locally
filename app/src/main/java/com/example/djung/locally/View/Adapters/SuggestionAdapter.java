@@ -1,4 +1,4 @@
-package com.example.djung.locally.View;
+package com.example.djung.locally.View.Adapters;
 
 import android.content.Context;
 import android.database.Cursor;

@@ -1,4 +1,4 @@
-package com.example.djung.locally.View;
+package com.example.djung.locally.View.Adapters;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +19,7 @@ import com.example.djung.locally.Presenter.MarketPresenter;
 import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.LocationUtils;
 import com.example.djung.locally.Utils.MarketUtils;
+import com.example.djung.locally.View.VendorSearchItemFragment;
 
 /**
  * Created by Angy Chung on 2016-11-18.

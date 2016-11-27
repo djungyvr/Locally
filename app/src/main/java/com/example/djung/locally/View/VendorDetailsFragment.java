@@ -18,10 +18,10 @@ import com.example.djung.locally.Utils.ThreadUtils;
 import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.VendorUtils;
+import com.example.djung.locally.View.Adapters.VendorProduceListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -172,7 +172,7 @@ public class VendorDetailsFragment extends Fragment implements View.OnClickListe
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
 
-        VendorProduceListAdapter adapter = new VendorProduceListAdapter(produceList, getActivity());
+        VendorProduceListAdapter adapter = new VendorProduceListAdapter(produceList);
         recyclerView.setAdapter(adapter);
     }
 

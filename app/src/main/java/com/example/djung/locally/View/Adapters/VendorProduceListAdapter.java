@@ -1,16 +1,12 @@
-package com.example.djung.locally.View;
+package com.example.djung.locally.View.Adapters;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.djung.locally.Model.Product;
 import com.example.djung.locally.R;
-
-import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -20,18 +16,16 @@ import java.util.List;
 
 public class VendorProduceListAdapter extends RecyclerView.Adapter<VendorProduceListAdapter.ViewHolder>{
     private List<String> produceList;
-    private Context context;
 
 
-    public VendorProduceListAdapter (List<String> produceList, Context context){
+    public VendorProduceListAdapter (List<String> produceList){
         this.produceList = produceList;
-        this.context = context;
     }
 
     @Override
     public VendorProduceListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.vendor_details_produce_list_item, parent, false);
-        ViewHolder vh = new ViewHolder(v, context, produceList);
+        ViewHolder vh = new ViewHolder(v);
         return vh;
     }
 
@@ -52,14 +46,10 @@ public class VendorProduceListAdapter extends RecyclerView.Adapter<VendorProduce
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private Context context;
-        private List<String> productList;
         private TextView produceListItemName;
 
-        public ViewHolder(View itemView, Context  context, List<String> produceList) {
+        public ViewHolder(View itemView) {
             super(itemView);
-            this.context = context;
-            this.productList = produceList;
             this.produceListItemName = (TextView) itemView.findViewById(R.id.produce_list_item_name);
         }
     }

@@ -22,6 +22,7 @@ import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.Model.Vendor;
 import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
+import com.example.djung.locally.View.Adapters.VendorSearchItemAdapter;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;

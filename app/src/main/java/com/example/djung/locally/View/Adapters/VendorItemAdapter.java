@@ -1,4 +1,4 @@
-package com.example.djung.locally.View;
+package com.example.djung.locally.View.Adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -6,9 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.djung.locally.R;
 
@@ -25,7 +23,7 @@ public class VendorItemAdapter extends RecyclerView.Adapter<VendorItemAdapter.Ve
     private ArrayList<String> itemNames;
     private Context context;
 
-    VendorItemAdapter(ArrayList<String> itemNames, Context context) {
+    public VendorItemAdapter(ArrayList<String> itemNames, Context context) {
         this.itemNames = itemNames;
         this.context = context;
     }

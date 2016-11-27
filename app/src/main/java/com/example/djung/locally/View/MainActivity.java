@@ -33,19 +33,21 @@ import com.example.djung.locally.AWS.IdentityManager;
 import com.example.djung.locally.DB.VendorItemDatabase;
 import com.example.djung.locally.DB.VendorItemsProvider;
 import com.example.djung.locally.Model.Market;
+import com.example.djung.locally.Presenter.MarketListPresenter;
 import com.example.djung.locally.Presenter.MarketPresenter;
+import com.example.djung.locally.Presenter.VendorListPresenter;
 import com.example.djung.locally.R;
-import com.example.djung.locally.Utils.DateUtils;
 import com.example.djung.locally.Utils.MarketUtils;
+import com.example.djung.locally.View.Adapters.MarketCardSectionAdapter;
+import com.example.djung.locally.View.Adapters.SuggestionAdapter;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, VendorListFragment.OnVendorListItemClickListener,
-        MarketListFragment.onMarketListItemClick, SearchView.OnQueryTextListener, SearchView.OnSuggestionListener,
+        implements NavigationView.OnNavigationItemSelectedListener, VendorListPresenter.OnVendorListItemClickListener,
+        MarketListPresenter.onMarketListItemClick, SearchView.OnQueryTextListener, SearchView.OnSuggestionListener,
         VendorSearchItemFragment.OnVendorListItemClickListener{
 
     private final String TAG = "MainActivity";
@@ -385,18 +387,10 @@ public class MainActivity extends AppCompatActivity
             mVendorListFragment = new VendorListFragment();
             Bundle bundle = new Bundle();
             bundle.putSerializable("currentMarket", market);
-            bundle.putString("marketName", market.getName());
-            bundle.putString("marketAddress", market.getAddress());
-            bundle.putString("marketHours", market.getDailyHours());
-            bundle.putString("marketDatesOpen", market.getYearOpen());
             mVendorListFragment.setArguments(bundle);
         } else {
             Bundle b = mVendorListFragment.getArguments();
             b.putSerializable("currentMarket", market);
-            b.putString("marketName", market.getName());
-            b.putString("marketAddress", market.getAddress());
-            b.putString("marketHours", market.getDailyHours());
-            b.putString("marketDatesOpen", market.getYearOpen());
         }
 
         if (mFragmentManager == null)

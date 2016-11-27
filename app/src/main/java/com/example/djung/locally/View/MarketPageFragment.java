@@ -9,11 +9,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.Presenter.MarketPresenter;
 import com.example.djung.locally.R;
+import com.example.djung.locally.View.Adapters.MarketPageAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
