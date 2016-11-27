@@ -14,10 +14,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.concurrent.ExecutionException;
 
@@ -35,6 +37,7 @@ public class EditVendorDetailsFragment extends Fragment implements View.OnClickL
     private TextInputEditText mEditTextDescription;
     private TextInputEditText mEditTextEmail;
     private TextInputEditText mEditTextPhoneNumber;
+    private ImageView mImageViewVendor;
 
     private String mVendorName;
     private String mMarketName;
@@ -52,6 +55,7 @@ public class EditVendorDetailsFragment extends Fragment implements View.OnClickL
         mEditTextDescription = (TextInputEditText) view.findViewById(R.id.edit_text_vendor_description);
         mEditTextEmail = (TextInputEditText) view.findViewById(R.id.edit_text_edit_email);
         mEditTextPhoneNumber = (TextInputEditText) view.findViewById(R.id.edit_text_edit_phone);
+        mImageViewVendor = (ImageView) view.findViewById(R.id.image_view_edit_vendor_image);
 
         // For phone number formatting see here http://stackoverflow.com/a/34907607
         mEditTextPhoneNumber.addTextChangedListener(new PhoneNumberFormattingTextWatcher() {
@@ -99,7 +103,6 @@ public class EditVendorDetailsFragment extends Fragment implements View.OnClickL
                         mEditTextPhoneNumber.setText(ans);
                         //we deliver the cursor to its original position relative to the end of the string
                         mEditTextPhoneNumber.setSelection(mEditTextPhoneNumber.getText().length() - cursorComplement);
-
                         //we end at the most simple case, when just one character mask is needed
                         //example: 99999 <- 3+ digits already typed
                         // masked: (999) 99
@@ -121,6 +124,7 @@ public class EditVendorDetailsFragment extends Fragment implements View.OnClickL
         String vendorDescription = getArguments().getString("vendor_description");
         String vendorPhoneNumber = getArguments().getString("vendor_phone_number");
         String vendorEmail = getArguments().getString("vendor_email");
+        String vendorPhotoUrl = getArguments().getString("vendor_photo_url");
 
         if(vendorDescription != null && !vendorDescription.isEmpty()) {
             mEditTextDescription.setText(vendorDescription);
@@ -132,6 +136,13 @@ public class EditVendorDetailsFragment extends Fragment implements View.OnClickL
 
         if(vendorEmail != null && !vendorPhoneNumber.isEmpty()) {
             mEditTextEmail.setText(vendorEmail);
+        }
+
+        if(vendorPhotoUrl != null && !vendorPhotoUrl.equals("PLACEHOLDER")) {
+            Picasso.with(getContext()).setIndicatorsEnabled(true);
+            Picasso.with(getContext()).load(vendorPhotoUrl)
+                    .error(R.drawable.default_market_image)
+                    .into(mImageViewVendor);
         }
 
         return view;

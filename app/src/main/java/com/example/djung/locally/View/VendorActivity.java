@@ -233,6 +233,7 @@ public class VendorActivity extends AppCompatActivity
             bundle.putString("vendor_description", mCurrentVendor.getDescription());
             bundle.putString("vendor_phone_number",mCurrentVendor.getPhoneNumber());
             bundle.putString("vendor_email",mCurrentVendor.getEmail());
+            bundle.putString("vendor_photo_url",mCurrentVendor.getPhotoUrl());
 
             mEditVendorDetailsFragment.setArguments(bundle);
         }

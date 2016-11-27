@@ -18,9 +18,25 @@
         <android.support.v7.widget.AppCompatTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Tap Photo to Change"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            android:layout_margin="8dp" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:src="@drawable/ubc"
+            android:id="@+id/image_view_edit_vendor_image"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="Edit Description"
             android:textColor="@android:color/black"
-            android:textSize="12sp"
+            android:textSize="20sp"
             android:id="@+id/edit_text_vendor_description_label"
             android:layout_margin="8dp"
             android:labelFor="@+id/edit_text_vendor_description"/>

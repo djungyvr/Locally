@@ -478,7 +478,7 @@ public class VendorPresenter {
             vendorToAdd.setItemSet(initialHashSet);
 
             vendorToAdd.setDescription("Change this to your own description!");
-
+            vendorToAdd.setPhotoUrl("PLACEHOLDER");
             vendorToAdd.setEmail(this.vendorEmail);
             vendorToAdd.setPhoneNumber(this.vendorPhoneNumber);
 

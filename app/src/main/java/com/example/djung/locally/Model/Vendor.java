@@ -24,6 +24,8 @@ public class Vendor {
     private String phoneNumber;
     // Email
     private String email;
+    //
+    private String photoUrl;
 
     @DynamoDBHashKey(attributeName = "Vendor.MarketName")
     public String getMarketName() {
@@ -80,4 +82,9 @@ public class Vendor {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    @DynamoDBAttribute(attributeName = "Vendor.PhotoUrl")
+    public String getPhotoUrl() {return photoUrl;}
+
+    public void setPhotoUrl(String photoUrl) {this.photoUrl = photoUrl;}
 }
