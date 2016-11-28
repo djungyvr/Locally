@@ -23,14 +23,13 @@ import java.util.List;
 /**
  * Created by David Jung on 16/10/16.
  */
-public class MarketCardSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-
+public class ContentMainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private ArrayList<Object> mDataList;            // can either be MarketCardSection or a list of Thumbnails
     private Context mContext;
     private Location mCurrentLocation;
     private final int THUMBNAILS = 0, MARKETCARDSECTION = 1, REQUESTPERMISSIONS = 3;
 
-    public MarketCardSectionAdapter() {
+    public ContentMainAdapter() {
     }
 
     /**
@@ -39,7 +38,7 @@ public class MarketCardSectionAdapter extends RecyclerView.Adapter<RecyclerView.
      * @param dataList
      * @param currentLocation
      */
-    public MarketCardSectionAdapter(Context context, ArrayList<Object> dataList, Location currentLocation) {
+    public ContentMainAdapter(Context context, ArrayList<Object> dataList, Location currentLocation) {
         this.mContext = context;
         this.mDataList = dataList;
         this.mCurrentLocation = currentLocation;

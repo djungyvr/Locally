@@ -1,11 +1,9 @@
 package com.example.djung.locally.View;
 
 import android.Manifest;
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -20,9 +18,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -30,34 +25,27 @@ import android.widget.Toast;
 
 import com.example.djung.locally.AWS.AWSMobileClient;
 import com.example.djung.locally.AWS.IdentityManager;
-import com.example.djung.locally.DB.VendorItemDatabase;
-import com.example.djung.locally.DB.VendorItemsProvider;
 import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.Presenter.MarketListPresenter;
 import com.example.djung.locally.Presenter.MarketPresenter;
 import com.example.djung.locally.Presenter.VendorListPresenter;
 import com.example.djung.locally.R;
-import com.example.djung.locally.Utils.MarketUtils;
-import com.example.djung.locally.View.Adapters.MarketCardSectionAdapter;
-import com.example.djung.locally.View.Adapters.SuggestionAdapter;
+import com.example.djung.locally.View.Adapters.ContentMainAdapter;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, VendorListPresenter.OnVendorListItemClickListener,
-        MarketListPresenter.onMarketListItemClick, SearchView.OnQueryTextListener, SearchView.OnSuggestionListener,
-        VendorSearchItemFragment.OnVendorListItemClickListener{
+        MarketListPresenter.onMarketListItemClick, VendorSearchItemFragment.OnVendorListItemClickListener{
 
     private final String TAG = "MainActivity";
 
-    private ArrayList<Object> mCardSectionsData;
-
-    private ArrayList<Market> mAllMarketsList;
-
     private Location currentLocation;
     private LocationManager locationManager;
+
+    // Fragment for displaying content main
+    private Fragment mContentMainFragment;
 
     // Fragment for displaying maps
     private Fragment mGoogleMapsFragment;
@@ -89,13 +77,7 @@ public class MainActivity extends AppCompatActivity
 
     private NavigationView mNavigationView;
 
-    private SearchView mSearchView;
-
-    private SuggestionAdapter mVendorItemsSuggestionAdapter;
-
     private AppBarLayout mAppBarLayout;
-
-    MarketCardSectionAdapter mRecyclerViewAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,15 +89,13 @@ public class MainActivity extends AppCompatActivity
 
         initializeBaseViews();
 
-        mCardSectionsData = new ArrayList<>();
-
-        fetchAllMarketsData();
-
-        initializeContentMain();
-
         getUserLocation();
 
-        setAppBarElevation(0);
+        if(savedInstanceState != null) {
+            return;
+        }
+
+        launchContentMainFragment();
     }
 
     @Override
@@ -202,28 +182,22 @@ public class MainActivity extends AppCompatActivity
                 }
                 break;
             case R.id.nav_grocery_list:
-                mSearchView.clearFocus();
                 launchGroceryFragment();
                 break;
             case R.id.nav_map:
-                mSearchView.clearFocus();
                 launchMapFragment();
                 break;
             case R.id.market_list:
-                mSearchView.clearFocus();
                 launchMarketFragment();
                 break;
             case R.id.nav_manage:
-                mSearchView.clearFocus();
                 launchSettingsFragment();
                 break;
             case R.id.nav_use_as_vendor:
-                mSearchView.clearFocus();
                 Intent loginActivity = new Intent(this, LoginActivity.class);
                 startActivity(loginActivity);
                 break;
             case R.id.nav_calendar:
-                mSearchView.clearFocus();
                 launchCalendarFragment();
                 break;
         }
@@ -231,23 +205,6 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    /**
-     * Initializes content_main which has card sections for quick links and nearby
-     * and recently viewed markets
-     */
-    public void initializeContentMain() {
-        initializeSearchView();
-        initializeQuickLinksCardSection();
-        initializeMarketsCardSection();
-
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-
-        recyclerView.setHasFixedSize(true);
-        mRecyclerViewAdapter = new MarketCardSectionAdapter(this, mCardSectionsData, currentLocation);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        recyclerView.setAdapter(mRecyclerViewAdapter);
     }
 
     public void initializeAWS() {
@@ -277,6 +234,18 @@ public class MainActivity extends AppCompatActivity
 
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
+    }
+
+    /**
+     * Launches the content main fragment
+     */
+    public void launchContentMainFragment() {
+        if (mContentMainFragment == null)
+            mContentMainFragment = new ContentMainFragment();
+        if (mFragmentManager == null)
+            mFragmentManager = getSupportFragmentManager();
+
+        mFragmentManager.beginTransaction().add(R.id.main_layout, mContentMainFragment).commit();
     }
 
     /**
@@ -439,184 +408,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * Initializes the quick links section which includes All Markets, Calendar,
-     * Fruits & Vegetables, Your Lists
-     */
-    public void initializeQuickLinksCardSection() {
-        ArrayList<QuickLinkCard> q = new ArrayList<>();
-
-        String allMarkets = "";
-        String marketsOpen = "";
-
-        if(mAllMarketsList != null) {
-            int numMarkets = mAllMarketsList.size();
-            if(numMarkets >= 1) {
-                allMarkets = numMarkets + " market";
-                if(numMarkets != 1)
-                    allMarkets = allMarkets + "s";
-            }
-            int numOpen = MarketUtils.getNumberOfCurrentlyOpenMarkets(mAllMarketsList);
-            if(numOpen != 1) {
-                marketsOpen = numOpen + " markets open now";
-            } else {
-                marketsOpen = numOpen + " market open now";
-            }
-        }
-
-//       TODO: get number of items on the user's grocery list
-
-        q.add(new QuickLinkCard(R.drawable.ubc, "All Markets", allMarkets));
-        q.add(new QuickLinkCard(R.drawable.thumbnail2, "Calendar", marketsOpen));
-        q.add(new QuickLinkCard(R.drawable.thumbnail3, "In Season Produce", "16 items"));
-        q.add(new QuickLinkCard(R.drawable.thumbnail4, "Your Grocery List", "3 saved items"));
-
-        QuickLinkCardSection qs = new QuickLinkCardSection(q);
-        mCardSectionsData.add(qs);
-    }
-
-    /**
-     * Decide which markets to display in the sections
-     * TODO: for now we'll just add all the markets
-     */
-    public void initializeMarketsCardSection() {
-        MarketCardSection nearbySection = new MarketCardSection();
-        nearbySection.setSectionTitle("Markets Nearby");
-
-        MarketCardSection recentlyViewedSection = new MarketCardSection();
-        recentlyViewedSection.setSectionTitle("Recently Viewed");
-
-        if (mAllMarketsList != null && !mAllMarketsList.isEmpty()) {
-            if(currentLocation != null){
-                nearbySection.setMarketList(mAllMarketsList);
-                mCardSectionsData.add(nearbySection);
-
-            }
-            recentlyViewedSection.setMarketList(mAllMarketsList);
-            mCardSectionsData.add(recentlyViewedSection);
-        }
-
-        // if location permissions denied, show the rationale
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            mCardSectionsData.add(new EnablePermissionsCard(this));
-
-        }
-    }
-
-    /**
-     * Gets a list of all the markets
-     */
-    private void fetchAllMarketsData() {
-        MarketPresenter presenter = new MarketPresenter(this);
-        mAllMarketsList = new ArrayList<>();
-        try {
-            mAllMarketsList = new ArrayList<>(presenter.fetchMarkets());
-        } catch (final ExecutionException | InterruptedException e) {
-            Log.e(TAG, e.getMessage());
-        }
-    }
-
-    /**
-     * Sets the action bar title as the given string
-     * @param title
-     */
-    public void setActionBarTitle(String title) {
-        getSupportActionBar().setTitle(title);
-    }
-
-    /**
-     * Simulates selecting an item from the navigation bar
-     * @param resId menu item id for the navigation bar
-     */
-    public void selectNavigationDrawer(int resId) {
-        mNavigationView.setCheckedItem(resId);
-        onNavigationItemSelected(mNavigationView.getMenu().findItem(resId));
-    }
-
-    private void initializeSearchView() {
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        mSearchView = (SearchView) findViewById(R.id.search_view);
-        mSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        mSearchView.setIconifiedByDefault(false);
-        mSearchView.setOnQueryTextListener(this);
-        mSearchView.setOnSuggestionListener(this);
-        mSearchView.setQueryHint("Search locally for:");
-        mSearchView.clearFocus();
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        // Because this activity has set launchMode="singleTop", the system calls this method
-        // to deliver the intent if this activity is currently the foreground activity when
-        // invoked again (when the user executes a search from this activity, we don't create
-        // a new instance of this activity, so the system delivers the search intent here)
-        handleIntent(intent);
-    }
-
-    private void handleIntent(Intent intent) {
-        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-        } else if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            // handles a search query
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            showResults(query);
-        }
-    }
-
-    /**
-     * Searches the vendor items and displays results for the given query.
-     * @param query The search query
-     */
-    private void showResults(String query) {
-        Cursor cursor = managedQuery(VendorItemsProvider.CONTENT_URI, null, null,
-                new String[] {query}, null);
-
-        if (cursor == null) {
-        } else {
-            // Specify the columns we want to display in the result
-            String[] from = new String[] {VendorItemDatabase.KEY_VENDOR_ITEM_NAME,
-                    VendorItemDatabase.KEY_VENDOR_ITEM_INFO};
-
-            // Specify the corresponding layout elements where we want the columns to go
-            int[] to = new int[] { R.id.vendor_item_name_search_result,
-                    R.id.vendor_item_info_search_result };
-
-            // Create a simple cursor adapter for vendor
-            mVendorItemsSuggestionAdapter = new SuggestionAdapter(this,cursor);
-
-            mSearchView.setSuggestionsAdapter(mVendorItemsSuggestionAdapter);
-        }
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        showResults(query);
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        showResults(newText);
-        return false;
-    }
-
-    @Override
-    public boolean onSuggestionSelect(int position) {
-        return true;
-    }
-
-    @Override
-    public boolean onSuggestionClick(int position) {
-        String vendorItem = mVendorItemsSuggestionAdapter.getSuggestion(position);
-        mSearchView.clearFocus();
-        launchVendorSearchItemFragment(vendorItem);
-        return true;
-    }
-
-
-    /**
      * Launches fragment for showing Vendors search result
      */
-    void launchVendorSearchItemFragment(String item) {
+    public void launchVendorSearchItemFragment(String item) {
         if (mVendorSearchItemFragment == null) {
             mVendorSearchItemFragment = new VendorSearchItemFragment();
             Bundle bundle = new Bundle();
@@ -634,6 +428,23 @@ public class MainActivity extends AppCompatActivity
         ft.replace(R.id.main_layout, mVendorSearchItemFragment);
         ft.addToBackStack("Search Results");
         ft.commit();
+    }
+
+    /**
+     * Sets the action bar title as the given string
+     * @param title
+     */
+    public void setActionBarTitle(String title) {
+        getSupportActionBar().setTitle(title);
+    }
+
+    /**
+     * Simulates selecting an item from the navigation bar
+     * @param resId menu item id for the navigation bar
+     */
+    public void selectNavigationDrawer(int resId) {
+        mNavigationView.setCheckedItem(resId);
+        onNavigationItemSelected(mNavigationView.getMenu().findItem(resId));
     }
 
     /**
@@ -655,17 +466,17 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * Creates a new adapter for the MarketCardSection and replaces the old adapter with the new one
-     */
-    public void updateContentMain(){
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        mCardSectionsData = new ArrayList<>();
-        initializeQuickLinksCardSection();
-        initializeMarketsCardSection();
-        MarketCardSectionAdapter adapter = new MarketCardSectionAdapter(this, mCardSectionsData, currentLocation);
-        recyclerView.swapAdapter(adapter, true);
-        Log.e(TAG, "Replaced old adapter with new adapter for recycler view due to updated location permissions");
-    }
+//     * Creates a new adapter for the MarketCardSection and replaces the old adapter with the new one
+//     */
+//    public void updateContentMain(){
+//        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+//        mCardSectionsData = new ArrayList<>();
+//        initializeQuickLinksCardSection();
+//        initializeMarketsCardSection();
+//        ContentMainAdapter adapter = new ContentMainAdapter(this, mCardSectionsData, currentLocation);
+//        recyclerView.swapAdapter(adapter, true);
+//        Log.e(TAG, "Replaced old adapter with new adapter for recycler view due to updated location permissions");
+//    }
 
     /**
      * Get the current user location. Need to check runtime permissions to access location data.
@@ -697,7 +508,6 @@ public class MainActivity extends AppCompatActivity
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
             currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             Log.e(TAG, "Location permissions passed, successfully got user location");
-            updateContentMain();
         }
     }
 
@@ -737,7 +547,7 @@ public class MainActivity extends AppCompatActivity
                     locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
                     currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                     Log.e(TAG, "Location permissions passed, successfully got user location");
-                    updateContentMain();
+
                 }
 
                 //Permission is denied to use location data and we explain to the user that distance to markets will not be shown
@@ -758,7 +568,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        mSearchView.clearFocus();
         if(requestCode == Permissions.REQUEST_LOCATION_SETTINGS) {
             if(mGoogleMapsFragment != null) {
                 mGoogleMapsFragment.onActivityResult(requestCode, resultCode, data);
