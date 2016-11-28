@@ -121,13 +121,32 @@ public class VendorDetailsPresenter {
         else {
             Log.e(TAG, "Calling phone number " + number);
             Uri call = Uri.parse("tel:" + number);
-            Intent intent = new Intent(Intent.ACTION_DIAL, call);
-            activity.startActivity(intent);
+            Intent callIntent = new Intent(Intent.ACTION_DIAL, call);
+            try {
+                activity.startActivity(callIntent);
+            } catch (android.content.ActivityNotFoundException ex) {
+                Toast.makeText(activity, "There is no phone client installed.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
     public void emailVendor(){
         Log.e(TAG, "Emailing Vendor " + currentVendor.getName() + " with email address " + currentVendor.getEmail());
+        String emailAddress = currentVendor.getEmail();
+        if (emailAddress == null || emailAddress.equals("")){
+            Log.e(TAG, "Not a valid email address");
+            Toast.makeText(activity, "The vendor does not have a valid email address", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+            emailIntent.setData(Uri.parse("mailto:" + emailAddress));
+            try {
+                activity.startActivity(emailIntent);
+            } catch (android.content.ActivityNotFoundException ex) {
+                Toast.makeText(activity, "There is no email client installed.", Toast.LENGTH_SHORT).show();
+            }
+        }
+
     }
 }
 
