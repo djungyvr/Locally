@@ -10,11 +10,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/market_name"
-        android:textSize="30sp"
+        android:textSize="20sp"
         android:padding="7dp"
         android:textStyle="bold"
         android:paddingTop="8dp"
-        android:textColor="#00c853"
+        android:textColor="#00bfa5"
         />
 
     <TextView
@@ -24,7 +24,7 @@
         android:textSize="15sp"
         android:padding="7dp"
         android:textStyle="bold"
-        android:textColor="#00c853"
+        android:textColor="#00bfa5"
         />
 
     <TextView
@@ -80,7 +80,7 @@
         android:textStyle="bold"
         android:textColor="#4c516d"
         android:gravity="center_horizontal"
-        android:textSize="16sp"
+        android:textSize="15sp"
         />
 
     <com.google.android.gms.maps.MapView
