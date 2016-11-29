@@ -43,7 +43,9 @@ November 9, 2016  - 7 Hours - Use util functions to populate distance to market,
 November 17, 2016 - 4 Hours - Changed market list UI to utilize card views and followed Material Design guidelines
 November 18, 2016 - 4 Hours - Tested and experimented with various views for vendor list UI
 November 19, 2016 - 4 Hours - Redesigned vendor list view UI
-November 20, 2016 - 3 Hours - Integrated design and implemented call feature for users
+November 20, 2016 - 3 Hours - Integrated design and implemented call feature for users to call vendors
+November 26, 2016 - 3 Hours - Refactor MarketListFragment and VendorListFragment to follow MVP design pattern
+November 27, 2016 - 3 Hours - Refactor VendorDetailsFragment to follow MVP design pattern and add email feature for users to email vendors
 
 Alena
 October 3-9, 2016 - 4 hours - Learning Andriod Studio through setting up mini-project  
