@@ -11,6 +11,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.djung.locally.DB.VendorItemDatabase;
 import com.example.djung.locally.DB.VendorItemsProvider;
@@ -72,10 +73,12 @@ public class ContentMainPresenter {
     }
 
     /**
-     * Sets the action bar title as "Locally"
+     * Sets the action bar title as "Locally" and highlights "Home" item
+     * in navigation drawer
      */
     public void setActionBar() {
         mContentMainView.setActionBarTitle("Locally");
+        mContentMainView.setNavigationDrawer(R.id.nav_home);
     }
 
     /**
@@ -83,6 +86,10 @@ public class ContentMainPresenter {
      */
     public void getUserLocation(){
         LocationManager lm = (LocationManager) mActivity.getSystemService(Context.LOCATION_SERVICE);
+        if (!lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            Log.e(TAG, "Location services disabled");
+            Toast.makeText(mActivity, "Enable location services for accurate data", Toast.LENGTH_LONG).show();
+        }
         if (ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);

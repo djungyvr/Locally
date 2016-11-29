@@ -71,6 +71,7 @@ public class SyncCalendarFragment extends Fragment implements EasyPermissions.Pe
 
         ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.title_fragment_settings));
         ((MainActivity) getActivity()).setAppBarElevation(4);
+        ((MainActivity) getActivity()).setNavigationDrawerCheckedItem(R.id.nav_manage);
 
         Object[] serializedMarkets = (Object[]) getArguments().getSerializable("list_markets");
 

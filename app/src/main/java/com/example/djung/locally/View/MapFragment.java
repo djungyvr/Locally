@@ -75,6 +75,7 @@ public class MapFragment extends Fragment
 
         ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.title_fragment_maps));
         ((MainActivity) getActivity()).setAppBarElevation(4);
+        ((MainActivity) getActivity()).setNavigationDrawerCheckedItem(R.id.nav_map);
 
         try {
             MapsInitializer.initialize(getActivity().getApplicationContext());

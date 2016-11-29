@@ -72,6 +72,7 @@ public class GroceryListFragment extends Fragment implements View.OnClickListene
 
         ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.title_fragment_grocery_list));
         ((MainActivity) getActivity()).setAppBarElevation(0);
+        ((MainActivity) getActivity()).setNavigationDrawerCheckedItem(R.id.nav_grocery_list);
         return view;
     }
 

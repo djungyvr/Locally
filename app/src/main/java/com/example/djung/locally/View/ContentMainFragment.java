@@ -37,6 +37,11 @@ public class ContentMainFragment extends android.support.v4.app.Fragment impleme
     }
 
     @Override
+    public void setNavigationDrawer(int id) {
+        mMainActivity.setNavigationDrawerCheckedItem(id);
+    }
+
+    @Override
     public void showContentMain(ContentMainAdapter adapter) {
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mMainActivity, LinearLayoutManager.VERTICAL, false));
@@ -70,8 +75,14 @@ public class ContentMainFragment extends android.support.v4.app.Fragment impleme
         mPresenter.setActionBar();
         mPresenter.getUserLocation();
         mPresenter.populateContentMain();
+        clearSearchFocus();
     }
 
+    @Override
+    public void onDestroy() {
+        mMainActivity = null;
+        super.onDestroy();
+    }
 
     private void initializeSearchView() {
         SearchManager searchManager = (SearchManager) mMainActivity.getSystemService(Context.SEARCH_SERVICE);

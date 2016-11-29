@@ -51,6 +51,7 @@ public class VendorSearchItemFragment extends Fragment {
         ((MainActivity) getActivity()).setActionBarTitle(getString(
                 R.string.title_fragment_vendors_search_results_list));
         ((MainActivity) getActivity()).setAppBarElevation(4);
+        ((MainActivity) getActivity()).setNavigationDrawerCheckedItem(R.id.nav_home);
         searchVendorsForItem();
         initializeAdapter(view);
 

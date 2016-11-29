@@ -23,24 +23,23 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.djung.locally.AWS.AWSMobileClient;
-import com.example.djung.locally.AWS.IdentityManager;
 import com.example.djung.locally.Model.Market;
+import com.example.djung.locally.Presenter.MainActivityPresenter;
 import com.example.djung.locally.Presenter.MarketListPresenter;
 import com.example.djung.locally.Presenter.MarketPresenter;
 import com.example.djung.locally.Presenter.VendorListPresenter;
 import com.example.djung.locally.R;
-import com.example.djung.locally.View.Adapters.ContentMainAdapter;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, VendorListPresenter.OnVendorListItemClickListener,
-        MarketListPresenter.onMarketListItemClick, VendorSearchItemFragment.OnVendorListItemClickListener{
+        MarketListPresenter.onMarketListItemClick, VendorSearchItemFragment.OnVendorListItemClickListener,
+        MainActivityView {
 
     private final String TAG = "MainActivity";
-
+    private MainActivityPresenter mPresenter;
     private Location currentLocation;
     private LocationManager locationManager;
 
@@ -73,11 +72,9 @@ public class MainActivity extends AppCompatActivity
 
     private FragmentManager mFragmentManager;
 
-    private IdentityManager identityManager;
-
     private NavigationView mNavigationView;
-
     private AppBarLayout mAppBarLayout;
+    private DrawerLayout mDrawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,11 +82,14 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initializeAWS();
+        if(mPresenter == null)
+            mPresenter = new MainActivityPresenter(this);
+
+        mPresenter.initializeAWSModel();
 
         initializeBaseViews();
 
-        getUserLocation();
+        // getUserLocation();
 
         if(savedInstanceState != null) {
             return;
@@ -101,122 +101,100 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        setAppBarElevation(0);
-        final AWSMobileClient awsMobileClient = AWSMobileClient.defaultMobileClient();
+        mPresenter.onResume();
     }
 
     @Override
     protected void onPause(){
         super.onPause();
-        setAppBarElevation(4);
     }
 
     @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else if (mFragmentManager != null) {
-            int stackCount = mFragmentManager.getBackStackEntryCount();
-            if(stackCount > 1) {
-                String fragmentName = mFragmentManager.getBackStackEntryAt(stackCount - 2).getName();
-                setActionBarTitle(fragmentName);
-                if (fragmentName.equals(getString(R.string.title_fragment_grocery_list))) {
-                    mNavigationView.setCheckedItem(R.id.nav_grocery_list);
-                } else if (fragmentName.equals(getString(R.string.title_fragment_calendar))) {
-                    mNavigationView.setCheckedItem(R.id.nav_calendar);
-                } else if (fragmentName.equals(getString(R.string.title_activity_maps))) {
-                    mNavigationView.setCheckedItem(R.id.nav_map);
-                } else if (fragmentName.equals(getString(R.string.title_fragment_settings))) {
-                    mNavigationView.setCheckedItem(R.id.nav_manage);
-                } else {
-                    mNavigationView.setCheckedItem(R.id.market_list);
-                }
-            }
-            else {
-                mNavigationView.setCheckedItem(R.id.nav_home);
-                setAppBarElevation(0);
-                setActionBarTitle("Locally");
-            }
-            super.onBackPressed();
+    protected void onDestroy() {
+        mPresenter.onDestroy();
+        super.onDestroy();
+    }
+
+    @Override
+    public Context getActivityContext() {
+        return this;
+    }
+
+
+    /**
+     * Sets the action bar title as the given string
+     * @param title
+     */
+    @Override
+    public void setActionBarTitle(String title) {
+        getSupportActionBar().setTitle(title);
+    }
+
+    /**
+     * Checks if the navigation drawer is currently open
+     * @return
+     */
+    @Override
+    public boolean isNavigationDrawerOpen() {
+        return (mDrawerLayout.isDrawerOpen(GravityCompat.START));
+    }
+
+    /**
+     * Closes the navigation drawer
+     */
+    @Override
+    public void closeNavigationDrawer() {
+        mDrawerLayout.closeDrawer(GravityCompat.START);
+    }
+
+    /**
+     * Highlights the menu item with given id in the navigation drawer
+     * @param resId
+     */
+    public void setNavigationDrawerCheckedItem(int resId){
+        mNavigationView.setCheckedItem(resId);
+    }
+
+    /**
+     * Sets the app bar elevation to the given value
+     * Only takes effect for devices with API >= 21
+     * @param elevation
+     */
+    @Override
+    public void setAppBarElevation(float elevation){
+        if(mAppBarLayout == null) {
+            mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
         }
-        else {
-            super.onBackPressed();
+        if(android.os.Build.VERSION.SDK_INT >= 21) {
+//            Log.e(TAG, "Setting app bar elevation=" + elevation);
+            mAppBarLayout.setStateListAnimator(null);
+            mAppBarLayout.setElevation(elevation);
+        } else {
+            mAppBarLayout.setTargetElevation(0);
         }
     }
 
+    /**
+     * Handles back press user input
+     */
+    @Override
+    public void onBackPressed() {
+        if(mPresenter.onBackPressed())
+            super.onBackPressed();
+    }
+
+    /**
+     * Handles navigation drawer item selection user input
+     * @param item
+     * @return
+     */
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        switch (id) {
-            case R.id.nav_home:
-                if (mFragmentManager != null) {
-                    if (mGoogleMapsFragment != null) {
-                        mFragmentManager.beginTransaction().remove(mGoogleMapsFragment).commit();
-                    }
-                    if (mMarketListFragment != null) {
-                        mFragmentManager.beginTransaction().remove(mMarketListFragment).commit();
-                    }
-                    if (mVendorListFragment != null) {
-                        mFragmentManager.beginTransaction().remove(mVendorListFragment).commit();
-                    }
-                    if (mVendorDetailsFragment != null) {
-                        mFragmentManager.beginTransaction().remove(mVendorDetailsFragment).commit();
-                    }
-                    if (mSettingsFragment != null) {
-                        mFragmentManager.beginTransaction().remove(mSettingsFragment).commit();
-                    }
-                    if (mCalendarFragment != null) {
-                        mFragmentManager.beginTransaction().remove(mCalendarFragment).commit();
-                    }
-                    if (mGroceryFragment != null) {
-                        mFragmentManager.beginTransaction().remove(mGroceryFragment).commit();
-                    }
-                    for (int i = 0; i < mFragmentManager.getBackStackEntryCount(); i++) {
-                            mFragmentManager.popBackStack();
-                    }
-                    setAppBarElevation(0);
-                    setActionBarTitle("Locally");
-                }
-                break;
-            case R.id.nav_grocery_list:
-                launchGroceryFragment();
-                break;
-            case R.id.nav_map:
-                launchMapFragment();
-                break;
-            case R.id.market_list:
-                launchMarketFragment();
-                break;
-            case R.id.nav_manage:
-                launchSettingsFragment();
-                break;
-            case R.id.nav_use_as_vendor:
-                Intent loginActivity = new Intent(this, LoginActivity.class);
-                startActivity(loginActivity);
-                break;
-            case R.id.nav_calendar:
-                launchCalendarFragment();
-                break;
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        mPresenter.onNavigationItemSelected(id);
         return true;
-    }
-
-    public void initializeAWS() {
-        // Obtain a reference to the mobile client. It is created in the Application class,
-        // but in case a custom Application class is not used, we initialize it here if necessary.
-        AWSMobileClient.initializeMobileClientIfNecessary(this);
-
-        // Obtain a reference to the mobile client. It is created in the Application class.
-        final AWSMobileClient awsMobileClient = AWSMobileClient.defaultMobileClient();
-
-        // Obtain a reference to the identity manager.
-        identityManager = awsMobileClient.getIdentityManager();
     }
 
     /**
@@ -226,10 +204,10 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+                this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mDrawerLayout.setDrawerListener(toggle);
         toggle.syncState();
 
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -245,36 +223,37 @@ public class MainActivity extends AppCompatActivity
         if (mFragmentManager == null)
             mFragmentManager = getSupportFragmentManager();
 
-        mFragmentManager.beginTransaction().add(R.id.main_layout, mContentMainFragment).commit();
+        mFragmentManager.beginTransaction().replace(R.id.main_layout, mContentMainFragment,
+                String.valueOf(R.id.nav_home)).commit();
     }
 
     /**
      * Launches the Google maps fragment
      */
-    void launchMapFragment() {
+    public void launchMapFragment() {
         if (mGoogleMapsFragment == null)
             mGoogleMapsFragment = new MapFragment();
         if (mFragmentManager == null)
             mFragmentManager = getSupportFragmentManager();
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.main_layout, mGoogleMapsFragment);
-        ft.addToBackStack(getString(R.string.title_fragment_maps));
+        ft.replace(R.id.main_layout, mGoogleMapsFragment, String.valueOf(R.id.nav_map));
+        ft.addToBackStack(String.valueOf(R.id.nav_map));
         ft.commit();
     }
 
     /**
      * Launches the MarketList fragment
      */
-    void launchMarketFragment() {
+    public void launchMarketFragment() {
         if (mMarketListFragment == null)
             mMarketListFragment = new MarketListFragment();
         if (mFragmentManager == null)
             mFragmentManager = getSupportFragmentManager();
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.main_layout, mMarketListFragment);
-        ft.addToBackStack(getString(R.string.title_fragment_market_list));
+        ft.replace(R.id.main_layout, mMarketListFragment, String.valueOf(R.id.market_list));
+        ft.addToBackStack(String.valueOf(R.id.market_list));
         ft.commit();
     }
 
@@ -282,7 +261,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * Launches the Settings fragment
      */
-    private void launchSettingsFragment() {
+    public void launchSettingsFragment() {
         if (mSettingsFragment == null)
             mSettingsFragment = new SyncCalendarFragment();
         if (mFragmentManager == null)
@@ -306,15 +285,15 @@ public class MainActivity extends AppCompatActivity
 
         // Replace the container with the fragment
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.main_layout, mSettingsFragment);
-        ft.addToBackStack(getString(R.string.title_fragment_settings));
+        ft.replace(R.id.main_layout, mSettingsFragment, String.valueOf(R.id.nav_manage));
+        ft.addToBackStack(String.valueOf(R.id.nav_manage));
         ft.commit();
     }
 
     /**
      * Launches the Grocery fragment
      */
-    private void launchGroceryFragment() {
+    public void launchGroceryFragment() {
         if (mGroceryFragment == null)
             mGroceryFragment = new GroceryListFragment();
         if (mFragmentManager == null)
@@ -322,15 +301,15 @@ public class MainActivity extends AppCompatActivity
 
         // Replace the container with the fragment
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.main_layout, mGroceryFragment);
-        ft.addToBackStack(getString(R.string.title_fragment_grocery_list));
+        ft.replace(R.id.main_layout, mGroceryFragment, String.valueOf(R.id.nav_grocery_list));
+        ft.addToBackStack(String.valueOf(R.id.nav_grocery_list));
         ft.commit();
     }
 
     /**
      * Launches the Calendar fragment
      */
-    void launchCalendarFragment() {
+    public void launchCalendarFragment() {
         if (mCalendarFragment == null)
             mCalendarFragment = new CalendarFragment();
         if (mFragmentManager == null)
@@ -338,8 +317,8 @@ public class MainActivity extends AppCompatActivity
 
         // Replace the container with the fragment
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.main_layout, mCalendarFragment);
-        ft.addToBackStack(getString(R.string.title_fragment_calendar));
+        ft.replace(R.id.main_layout, mCalendarFragment, String.valueOf(R.id.nav_calendar));
+        ft.addToBackStack(String.valueOf(R.id.nav_calendar));
         ft.commit();
     }
 
@@ -366,8 +345,8 @@ public class MainActivity extends AppCompatActivity
             mFragmentManager = getSupportFragmentManager();
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.main_layout, mVendorListFragment);
-        ft.addToBackStack(market.getName());
+        ft.replace(R.id.main_layout, mVendorListFragment, "");
+        ft.addToBackStack(String.valueOf(R.id.market_list));
         ft.commit();
     }
 
@@ -402,8 +381,8 @@ public class MainActivity extends AppCompatActivity
 
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.main_layout, mVendorDetailsFragment);
-        ft.addToBackStack(market.getName());
+        ft.replace(R.id.main_layout, mVendorDetailsFragment, "");
+        ft.addToBackStack(String.valueOf(R.id.market_list));
         ft.commit();
     }
 
@@ -431,52 +410,39 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * Sets the action bar title as the given string
-     * @param title
+     * Starts the intent for the login activity
      */
-    public void setActionBarTitle(String title) {
-        getSupportActionBar().setTitle(title);
+    @Override
+    public void startLoginActivityIntent() {
+        Intent loginActivity = new Intent(this, LoginActivity.class);
+        startActivity(loginActivity);
     }
 
     /**
-     * Simulates selecting an item from the navigation bar
-     * @param resId menu item id for the navigation bar
+     * Clears the fragment back stack
      */
-    public void selectNavigationDrawer(int resId) {
-        mNavigationView.setCheckedItem(resId);
-        onNavigationItemSelected(mNavigationView.getMenu().findItem(resId));
-    }
+    @Override
+    public void clearFragmentBackStack() {
+        if (mFragmentManager != null) {
 
-    /**
-     * Sets the app bar elevation to the given value
-     * Only takes effect for devices with API >= 21
-     * @param elevation
-     */
-    public void setAppBarElevation(float elevation){
-        if(mAppBarLayout == null) {
-            mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
-        }
-        if(android.os.Build.VERSION.SDK_INT >= 21) {
-//            Log.e(TAG, "Setting app bar elevation=" + elevation);
-            mAppBarLayout.setStateListAnimator(null);
-            mAppBarLayout.setElevation(elevation);
-        } else {
-            mAppBarLayout.setTargetElevation(0);
+            for (int i = 0; i < mFragmentManager.getBackStackEntryCount(); i++) {
+                mFragmentManager.popBackStack();
+            }
         }
     }
 
-    /**
-//     * Creates a new adapter for the MarketCardSection and replaces the old adapter with the new one
-//     */
-//    public void updateContentMain(){
-//        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-//        mCardSectionsData = new ArrayList<>();
-//        initializeQuickLinksCardSection();
-//        initializeMarketsCardSection();
-//        ContentMainAdapter adapter = new ContentMainAdapter(this, mCardSectionsData, currentLocation);
-//        recyclerView.swapAdapter(adapter, true);
-//        Log.e(TAG, "Replaced old adapter with new adapter for recycler view due to updated location permissions");
-//    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == Permissions.REQUEST_LOCATION_SETTINGS) {
+            if(mGoogleMapsFragment != null) {
+                mGoogleMapsFragment.onActivityResult(requestCode, resultCode, data);
+            }
+        }
+        else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
 
     /**
      * Get the current user location. Need to check runtime permissions to access location data.
@@ -566,15 +532,5 @@ public class MainActivity extends AppCompatActivity
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, Permissions.REQUEST_COURSE_PERMISSION);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == Permissions.REQUEST_LOCATION_SETTINGS) {
-            if(mGoogleMapsFragment != null) {
-                mGoogleMapsFragment.onActivityResult(requestCode, resultCode, data);
-            }
-        }
-        else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
+
 }

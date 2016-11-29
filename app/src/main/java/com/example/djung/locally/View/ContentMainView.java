@@ -9,8 +9,8 @@ import com.example.djung.locally.View.Adapters.SuggestionAdapter;
 
 public interface ContentMainView {
     void setActionBarTitle(String title);
+    void setNavigationDrawer(int id);
     void showContentMain(ContentMainAdapter adapter);
     void showSearchSuggestions(SuggestionAdapter adapter);
     void clearSearchFocus();
-
 }
