@@ -9,7 +9,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <permission
         android:name="com.example.permission.MAPS_RECEIVE"
@@ -27,6 +27,10 @@
         android:theme="@style/AppTheme"
         android:name="android.support.multidex.MultiDexApplication">
         <uses-library android:name="com.google.android.maps" />
+
+        <service
+            android:name="com.amazonaws.mobileconnectors.s3.transferutility.TransferService"
+            android:enabled="true" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

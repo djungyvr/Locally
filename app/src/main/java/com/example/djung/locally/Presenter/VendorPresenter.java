@@ -55,9 +55,9 @@ public class VendorPresenter {
     /**
      * Updates the description of the vendor
      */
-    public boolean updateVendorDetails(String marketName, String vendorName, String description, String phoneNumber, String email) throws ExecutionException, InterruptedException {
+    public boolean updateVendorDetails(String marketName, String vendorName, String description, String phoneNumber, String email, String imageUrl) throws ExecutionException, InterruptedException {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<Boolean> future = executor.submit(new UpdateVendorDetails(marketName,vendorName, description, phoneNumber, email));
+        Future<Boolean> future = executor.submit(new UpdateVendorDetails(marketName,vendorName, description, phoneNumber, email, imageUrl));
 
         executor.shutdown(); // Important!
 
@@ -304,13 +304,15 @@ public class VendorPresenter {
         private String mDescription;
         private String mPhoneNumber;
         private String mEmail;
+        private String mImageUrl;
 
-        UpdateVendorDetails(String marketName, String vendorName, String description, String phoneNumber, String email) {
+        UpdateVendorDetails(String marketName, String vendorName, String description, String phoneNumber, String email, String imageUrl) {
             mMarketName = marketName;
             mVendorName = vendorName;
             mDescription = description;
             mPhoneNumber = phoneNumber;
             mEmail = email;
+            mImageUrl = imageUrl;
         }
 
         @Override
@@ -360,9 +362,12 @@ public class VendorPresenter {
                     mPhoneNumber = "No Phone Number";
                 if(mEmail.isEmpty() || mEmail == null)
                     mEmail = "No Email";
+                if(mImageUrl.isEmpty() || mImageUrl == null)
+                    mImageUrl = "PLACEHOLDER";
                 vendorToFind.setDescription(mDescription);
                 vendorToFind.setPhoneNumber(mPhoneNumber);
                 vendorToFind.setEmail(mEmail);
+                vendorToFind.setPhotoUrl(mImageUrl);
                 mapper.save(vendorToFind);
                 Log.e(TAG,"Succesfully updated vendor description");
                 return true;
