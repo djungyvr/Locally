@@ -88,7 +88,7 @@ public class ContentMainPresenter {
         LocationManager lm = (LocationManager) mActivity.getSystemService(Context.LOCATION_SERVICE);
         if (!lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
             Log.e(TAG, "Location services disabled");
-            Toast.makeText(mActivity, "Enable location services for accurate data", Toast.LENGTH_LONG).show();
+            Toast.makeText(mActivity, "Enable location services for additional functionality", Toast.LENGTH_LONG).show();
         }
         if (ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
@@ -189,9 +189,6 @@ public class ContentMainPresenter {
         MarketCardSection nearbySection = new MarketCardSection();
         nearbySection.setSectionTitle("Markets Nearby");
 
-        MarketCardSection recentlyViewedSection = new MarketCardSection();
-        recentlyViewedSection.setSectionTitle("Recently Viewed");
-
         if (mAllMarketsList != null && !mAllMarketsList.isEmpty()) {
             if(mCurrentLocation != null){
 
@@ -209,13 +206,6 @@ public class ContentMainPresenter {
 
             }
 
-            ArrayList recentlyViewed = new ArrayList();
-            // show the first 4 markets
-            for(int i=0; i != 4 && i != mAllMarketsList.size(); ++i) {
-                recentlyViewed.add(mAllMarketsList.get(i));
-            }
-            recentlyViewedSection.setMarketList(recentlyViewed);
-            mContentMainSectionsData.add(recentlyViewedSection);
         }
 
         // if location permissions denied, show the rationale

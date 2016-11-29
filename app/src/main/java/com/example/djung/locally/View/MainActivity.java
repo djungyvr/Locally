@@ -12,7 +12,6 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -43,14 +42,8 @@ public class MainActivity extends AppCompatActivity
     private Location currentLocation;
     private LocationManager locationManager;
 
-    // Fragment for displaying content main
-    private Fragment mContentMainFragment;
-
     // Fragment for displaying maps
     private Fragment mGoogleMapsFragment;
-
-    // Fragment for displaying market list
-    private Fragment mMarketListFragment;
 
     // Fragment for displaying vendor list
     private Fragment mVendorListFragment;
@@ -58,19 +51,8 @@ public class MainActivity extends AppCompatActivity
     // Fragment for displaying vendor detail
     private Fragment mVendorDetailsFragment;
 
-    // Fragment for displaying calendar
-    private Fragment mCalendarFragment;
-
-    // Fragment for displaying settings
-    private Fragment mSettingsFragment;
-
-    // Fragment for displaying the grocery list
-    private Fragment mGroceryFragment;
-
     // Fragment for display vendor item search result
     private Fragment mVendorSearchItemFragment;
-
-    private FragmentManager mFragmentManager;
 
     private NavigationView mNavigationView;
     private AppBarLayout mAppBarLayout;
@@ -218,12 +200,7 @@ public class MainActivity extends AppCompatActivity
      * Launches the content main fragment
      */
     public void launchContentMainFragment() {
-        if (mContentMainFragment == null)
-            mContentMainFragment = new ContentMainFragment();
-        if (mFragmentManager == null)
-            mFragmentManager = getSupportFragmentManager();
-
-        mFragmentManager.beginTransaction().replace(R.id.main_layout, mContentMainFragment,
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, new ContentMainFragment(),
                 String.valueOf(R.id.nav_home)).commit();
     }
 
@@ -231,10 +208,8 @@ public class MainActivity extends AppCompatActivity
      * Launches the Google maps fragment
      */
     public void launchMapFragment() {
-        if (mGoogleMapsFragment == null)
+        if(mGoogleMapsFragment == null)
             mGoogleMapsFragment = new MapFragment();
-        if (mFragmentManager == null)
-            mFragmentManager = getSupportFragmentManager();
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.main_layout, mGoogleMapsFragment, String.valueOf(R.id.nav_map));
@@ -246,13 +221,8 @@ public class MainActivity extends AppCompatActivity
      * Launches the MarketList fragment
      */
     public void launchMarketFragment() {
-        if (mMarketListFragment == null)
-            mMarketListFragment = new MarketListFragment();
-        if (mFragmentManager == null)
-            mFragmentManager = getSupportFragmentManager();
-
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.main_layout, mMarketListFragment, String.valueOf(R.id.market_list));
+        ft.replace(R.id.main_layout, new MarketListFragment(), String.valueOf(R.id.market_list));
         ft.addToBackStack(String.valueOf(R.id.market_list));
         ft.commit();
     }
@@ -262,11 +232,6 @@ public class MainActivity extends AppCompatActivity
      * Launches the Settings fragment
      */
     public void launchSettingsFragment() {
-        if (mSettingsFragment == null)
-            mSettingsFragment = new SyncCalendarFragment();
-        if (mFragmentManager == null)
-            mFragmentManager = getSupportFragmentManager();
-
         List<Market> markets;
 
         try {
@@ -281,11 +246,12 @@ public class MainActivity extends AppCompatActivity
 
         Bundle bundle = new Bundle();
         bundle.putSerializable("list_markets", markets.toArray());
-        mSettingsFragment.setArguments(bundle);
+        SyncCalendarFragment settingsFragment = new SyncCalendarFragment();
+        settingsFragment.setArguments(bundle);
 
         // Replace the container with the fragment
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.main_layout, mSettingsFragment, String.valueOf(R.id.nav_manage));
+        ft.replace(R.id.main_layout, settingsFragment, String.valueOf(R.id.nav_manage));
         ft.addToBackStack(String.valueOf(R.id.nav_manage));
         ft.commit();
     }
@@ -294,14 +260,9 @@ public class MainActivity extends AppCompatActivity
      * Launches the Grocery fragment
      */
     public void launchGroceryFragment() {
-        if (mGroceryFragment == null)
-            mGroceryFragment = new GroceryListFragment();
-        if (mFragmentManager == null)
-            mFragmentManager = getSupportFragmentManager();
-
         // Replace the container with the fragment
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.main_layout, mGroceryFragment, String.valueOf(R.id.nav_grocery_list));
+        ft.replace(R.id.main_layout, new GroceryListFragment(), String.valueOf(R.id.nav_grocery_list));
         ft.addToBackStack(String.valueOf(R.id.nav_grocery_list));
         ft.commit();
     }
@@ -310,14 +271,9 @@ public class MainActivity extends AppCompatActivity
      * Launches the Calendar fragment
      */
     public void launchCalendarFragment() {
-        if (mCalendarFragment == null)
-            mCalendarFragment = new CalendarFragment();
-        if (mFragmentManager == null)
-            mFragmentManager = getSupportFragmentManager();
-
         // Replace the container with the fragment
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.main_layout, mCalendarFragment, String.valueOf(R.id.nav_calendar));
+        ft.replace(R.id.main_layout, new CalendarFragment(), String.valueOf(R.id.nav_calendar));
         ft.addToBackStack(String.valueOf(R.id.nav_calendar));
         ft.commit();
     }
@@ -340,9 +296,6 @@ public class MainActivity extends AppCompatActivity
             Bundle b = mVendorListFragment.getArguments();
             b.putSerializable("currentMarket", market);
         }
-
-        if (mFragmentManager == null)
-            mFragmentManager = getSupportFragmentManager();
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.main_layout, mVendorListFragment, "");
@@ -376,10 +329,6 @@ public class MainActivity extends AppCompatActivity
             bundle.putString("marketDatesOpen", market.getYearOpen());
         }
 
-        if (mFragmentManager == null)
-            mFragmentManager = getSupportFragmentManager();
-
-
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.main_layout, mVendorDetailsFragment, "");
         ft.addToBackStack(String.valueOf(R.id.market_list));
@@ -399,9 +348,6 @@ public class MainActivity extends AppCompatActivity
             Bundle b = mVendorSearchItemFragment.getArguments();
             b.putString("searchItem", item);
         }
-
-        if (mFragmentManager == null)
-            mFragmentManager = getSupportFragmentManager();
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.main_layout, mVendorSearchItemFragment);
@@ -423,12 +369,10 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public void clearFragmentBackStack() {
-        if (mFragmentManager != null) {
-
-            for (int i = 0; i < mFragmentManager.getBackStackEntryCount(); i++) {
-                mFragmentManager.popBackStack();
-            }
+        for (int i = 0; i < getSupportFragmentManager().getBackStackEntryCount(); i++) {
+            getSupportFragmentManager().popBackStack();
         }
+
     }
 
 
@@ -531,6 +475,4 @@ public class MainActivity extends AppCompatActivity
     public void requestPermissions() {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, Permissions.REQUEST_COURSE_PERMISSION);
     }
-
-
 }
