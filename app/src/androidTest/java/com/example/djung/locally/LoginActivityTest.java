@@ -8,6 +8,7 @@ import android.support.test.espresso.ViewAssertion;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
+import android.util.Log;
 
 import com.example.djung.locally.View.LoginActivity;
 import com.example.djung.locally.View.VendorActivity;
@@ -35,15 +36,16 @@ import static org.hamcrest.core.IsNot.not;
 /**
  * Tests the login activity
  *
- * Better to do each one individually because of AWS
- *
- * User should sign out of test user after successful login
+ * PLEASE READ BEFORE TESTING :
+ * Before running these tests ensure any users are signed out of the app
  *
  * Created by David Jung on 09/11/16.
  */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class LoginActivityTest {
+    private final String TAG = "LoginTest";
     @Rule
     public ActivityTestRule<LoginActivity> mActivityRule =
             new ActivityTestRule<>(LoginActivity.class);
@@ -73,7 +75,7 @@ public class LoginActivityTest {
     @Test
     public void failedLoginBadPasswordTest() {
         // Type username.
-        onView(withId(R.id.edit_text_username)).perform(typeText("test"),
+        onView(withId(R.id.edit_text_username)).perform(typeText("test2"),
                 closeSoftKeyboard());
         // Type password.
         onView(withId(R.id.edit_text_password)).perform(typeText("Test123"),

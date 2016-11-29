@@ -182,13 +182,6 @@ public class VendorActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    protected void onStop() {
-        user.signOut();
-        Log.e(TAG,"User signed out");
-        super.onStop();
-    }
-
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override

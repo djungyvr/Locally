@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
 
+import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoDevice;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserDetails;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserPool;
@@ -37,6 +38,7 @@ public class AppHelper {
     // User details from the service
     private static CognitoUserSession currSession;
     private static CognitoUserDetails userDetails;
+    private static CognitoCachingCredentialsProvider mCredentialsProvider;
     private static Map<String, String> firstTimeLogInUserAttributes;
     private static List<String> firstTimeLogInRequiredAttributes;
     private static ArrayList<ItemToDisplay> firstTimeLogInDetails;
@@ -63,6 +65,14 @@ public class AppHelper {
 
         emailVerified = false;
         emailAvailable = false;
+
+        if( mCredentialsProvider == null) {
+            mCredentialsProvider = new CognitoCachingCredentialsProvider(
+                    context,
+                    userPoolId,
+                    cognitoRegion
+            );
+        }
     }
 
     private static void setData() {
@@ -148,5 +158,9 @@ public class AppHelper {
 
     public static boolean isEmailVerified() {
         return emailVerified;
+    }
+
+    public static CognitoCachingCredentialsProvider getCredentialsProvider() {
+        return mCredentialsProvider;
     }
 }

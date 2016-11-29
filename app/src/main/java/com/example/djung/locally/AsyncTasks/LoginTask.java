@@ -1,27 +1,15 @@
 package com.example.djung.locally.AsyncTasks;
 
-import android.app.Activity;
-import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v7.app.AlertDialog;
-import android.widget.TextView;
 
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoDevice;
-import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserCodeDeliveryDetails;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserSession;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationDetails;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.ChallengeContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.MultiFactorAuthenticationContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.AuthenticationHandler;
-import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.VerificationHandler;
 import com.example.djung.locally.AWS.AppHelper;
-import com.example.djung.locally.R;
-import com.example.djung.locally.View.VendorActivity;
 
 import java.util.Locale;
 
@@ -113,6 +101,7 @@ public class LoginTask extends AsyncTask<String,Void, LoginTask.LOGIN_CODES> {
         public void onSuccess(CognitoUserSession cognitoUserSession, CognitoDevice cognitoDevice) {
             AppHelper.setCurrSession(cognitoUserSession);
             AppHelper.setNewDevice(cognitoDevice);
+            AppHelper.setUser(mUsername);
             mResult = LOGIN_CODES.SUCCESS;
             mErrorDetails = " ";
             // Values have been set stop waiting
@@ -145,6 +134,7 @@ public class LoginTask extends AsyncTask<String,Void, LoginTask.LOGIN_CODES> {
     private void getUserAuthentication(AuthenticationContinuation continuation, String username) {
         AuthenticationDetails authenticationDetails = new AuthenticationDetails(username, mPassword, null);
         continuation.setAuthenticationDetails(authenticationDetails);
+
         continuation.continueTask();
     }
 }

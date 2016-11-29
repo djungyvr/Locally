@@ -28,8 +28,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.djung.locally.AWS.AWSMobileClient;
-import com.example.djung.locally.AWS.IdentityManager;
 import com.example.djung.locally.DB.VendorItemDatabase;
 import com.example.djung.locally.DB.VendorItemsProvider;
 import com.example.djung.locally.Model.Market;
@@ -85,8 +83,6 @@ public class MainActivity extends AppCompatActivity
 
     private FragmentManager mFragmentManager;
 
-    private IdentityManager identityManager;
-
     private NavigationView mNavigationView;
 
     private SearchView mSearchView;
@@ -102,8 +98,6 @@ public class MainActivity extends AppCompatActivity
         setTheme(R.style.AppTheme_NoActionBar);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        initializeAWS();
 
         initializeBaseViews();
 
@@ -122,7 +116,6 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         setAppBarElevation(0);
-        final AWSMobileClient awsMobileClient = AWSMobileClient.defaultMobileClient();
     }
 
     @Override
@@ -248,18 +241,6 @@ public class MainActivity extends AppCompatActivity
         mRecyclerViewAdapter = new MarketCardSectionAdapter(this, mCardSectionsData, currentLocation);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(mRecyclerViewAdapter);
-    }
-
-    public void initializeAWS() {
-        // Obtain a reference to the mobile client. It is created in the Application class,
-        // but in case a custom Application class is not used, we initialize it here if necessary.
-        AWSMobileClient.initializeMobileClientIfNecessary(this);
-
-        // Obtain a reference to the mobile client. It is created in the Application class.
-        final AWSMobileClient awsMobileClient = AWSMobileClient.defaultMobileClient();
-
-        // Obtain a reference to the identity manager.
-        identityManager = awsMobileClient.getIdentityManager();
     }
 
     /**

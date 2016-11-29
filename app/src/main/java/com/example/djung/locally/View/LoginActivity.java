@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoDevice;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserSession;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationDetails;
@@ -67,6 +68,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         // Initialize app helper
         AppHelper.initialize(getApplicationContext());
+
+        clearCachedLogins();
+    }
+
+    /**
+     * Clear cached logins
+     */
+    private void clearCachedLogins() {
+        AppHelper.getCredentialsProvider().clear();
+        AppHelper.getCredentialsProvider().clearCredentials();
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
