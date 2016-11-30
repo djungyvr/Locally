@@ -1,9 +1,17 @@
 package com.example.djung.locally.View;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
@@ -14,12 +22,32 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.amazonaws.auth.AnonymousAWSCredentials;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.example.djung.locally.AWS.AppHelper;
+import com.example.djung.locally.AWS.AwsConfiguration;
+import com.example.djung.locally.AsyncTasks.UploadImageTask;
 import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
+import com.example.djung.locally.Utils.FileUtils;
+import com.example.djung.locally.Utils.VendorUtils;
+import com.google.firebase.FirebaseApiNotAvailableException;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
+
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
 
 /**
  * This fragment is for vendors to edit their own details
@@ -27,7 +55,9 @@ import java.util.concurrent.ExecutionException;
  * Created by David Jung on 09/11/16.
  */
 
-public class EditVendorDetailsFragment extends Fragment implements View.OnClickListener{
+public class EditVendorDetailsFragment extends Fragment implements View.OnClickListener, EasyPermissions.PermissionCallbacks, UploadImageTask.UploadImageCallback{
+    private static final int REQUEST_READ_EXTERNAL_FILES_KIT_KAT = 2001;
+    private static final int REQUEST_READ_EXTERNAL_FILES = 2002;
 
     private final String TAG = "EditDetailsFragment";
 
@@ -35,10 +65,14 @@ public class EditVendorDetailsFragment extends Fragment implements View.OnClickL
     private TextInputEditText mEditTextDescription;
     private TextInputEditText mEditTextEmail;
     private TextInputEditText mEditTextPhoneNumber;
+    private ImageView mImageViewVendor;
 
     private String mVendorName;
     private String mMarketName;
     private AlertDialog mSaveDescriptionDialog;
+    private Uri mImageUri;
+    private String mImageUrl;
+    private boolean mImageChanged = false;
 
     public EditVendorDetailsFragment() {
     }
@@ -52,6 +86,8 @@ public class EditVendorDetailsFragment extends Fragment implements View.OnClickL
         mEditTextDescription = (TextInputEditText) view.findViewById(R.id.edit_text_vendor_description);
         mEditTextEmail = (TextInputEditText) view.findViewById(R.id.edit_text_edit_email);
         mEditTextPhoneNumber = (TextInputEditText) view.findViewById(R.id.edit_text_edit_phone);
+        mImageViewVendor = (ImageView) view.findViewById(R.id.image_view_edit_vendor_image);
+        mImageViewVendor.setOnClickListener(this);
 
         // For phone number formatting see here http://stackoverflow.com/a/34907607
         mEditTextPhoneNumber.addTextChangedListener(new PhoneNumberFormattingTextWatcher() {
@@ -99,7 +135,6 @@ public class EditVendorDetailsFragment extends Fragment implements View.OnClickL
                         mEditTextPhoneNumber.setText(ans);
                         //we deliver the cursor to its original position relative to the end of the string
                         mEditTextPhoneNumber.setSelection(mEditTextPhoneNumber.getText().length() - cursorComplement);
-
                         //we end at the most simple case, when just one character mask is needed
                         //example: 99999 <- 3+ digits already typed
                         // masked: (999) 99
@@ -121,6 +156,7 @@ public class EditVendorDetailsFragment extends Fragment implements View.OnClickL
         String vendorDescription = getArguments().getString("vendor_description");
         String vendorPhoneNumber = getArguments().getString("vendor_phone_number");
         String vendorEmail = getArguments().getString("vendor_email");
+        String vendorPhotoUrl = getArguments().getString("vendor_photo_url");
 
         if(vendorDescription != null && !vendorDescription.isEmpty()) {
             mEditTextDescription.setText(vendorDescription);
@@ -134,6 +170,16 @@ public class EditVendorDetailsFragment extends Fragment implements View.OnClickL
             mEditTextEmail.setText(vendorEmail);
         }
 
+        if(vendorPhotoUrl != null && !vendorPhotoUrl.equals("PLACEHOLDER")) {
+            vendorPhotoUrl = VendorUtils.getS3Url(mMarketName,mVendorName);
+        }
+
+        // Load the image
+        Picasso.with(getContext()).setIndicatorsEnabled(true);
+        Picasso.with(getContext()).load(vendorPhotoUrl)
+                .memoryPolicy(MemoryPolicy.NO_CACHE)
+                .error(R.drawable.default_market_image)
+                .into(mImageViewVendor);
         return view;
     }
 
@@ -154,18 +200,88 @@ public class EditVendorDetailsFragment extends Fragment implements View.OnClickL
                 String description = mEditTextDescription.getText().toString();
                 String phoneNumber = mEditTextPhoneNumber.getText().toString();
                 String email = mEditTextEmail.getText().toString();
+                mImageUrl = VendorUtils.getS3Url(mMarketName,mVendorName);
+                if(mImageChanged)
+                    readFile();
 
                 VendorPresenter vendorPresenter = new VendorPresenter(getContext());
                 try {
-                    boolean successfullyAdded = vendorPresenter.updateVendorDetails(mMarketName,mVendorName,description,phoneNumber,email);
+                    boolean successfullyAdded = vendorPresenter.updateVendorDetails(mMarketName,mVendorName,description,phoneNumber,email, mImageUrl);
                     if(successfullyAdded)
-                        Toast.makeText(getContext(),"Updated Description",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(),"Updated Information",Toast.LENGTH_SHORT).show();
                 } catch (ExecutionException | InterruptedException e) {
-                    showDialogMessage("Error", "Failed to update description");
+                    //TODO: Figure out what's causing this exception
+                    showDialogMessage("Error", AppHelper.formatException(e));
+                    //showDialogMessage("Error", "Failed to update description");
+                    Log.e(TAG,"Couldn't update : " + mImageUrl);
                     Log.e(TAG,"Couldn't update : " + mVendorName);
                 }
                 break;
+            case R.id.image_view_edit_vendor_image:
+                fetchImage();
+                break;
         }
+    }
+
+    @SuppressLint("NewApi")
+    private void fetchImage() {
+        if (Build.VERSION.SDK_INT <19){
+            Intent intent = new Intent();
+            intent.setType("image/jpeg");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(Intent.createChooser(intent, "SelectPicture"),REQUEST_READ_EXTERNAL_FILES);
+        } else {
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType("image/jpeg");
+            startActivityForResult(intent, REQUEST_READ_EXTERNAL_FILES_KIT_KAT);
+        }
+    }
+
+    /**
+     * Called when the image is chosen
+     *
+     * @param requestCode permission code
+     * @param resultCode result code of selecting image
+     * @param data contains the Uri of the selected image
+     */
+    //TODO ONLY UPLOAD IMAGE WHEN CHANGED
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode != Activity.RESULT_OK) {
+            mImageChanged = false;
+            return;
+        }
+        if(null == data) {
+            mImageChanged = false;
+            return;
+        }
+
+        // Used to check if an image was actually selected
+        mImageChanged = true;
+
+        if(requestCode == REQUEST_READ_EXTERNAL_FILES) {
+            mImageUri = data.getData();
+        } else if(requestCode == REQUEST_READ_EXTERNAL_FILES_KIT_KAT){
+            mImageUri = data.getData();
+
+            final int takeFlags = data.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION  | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+            getActivity().getContentResolver().takePersistableUriPermission(mImageUri, takeFlags);
+        }
+
+
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), mImageUri);
+            mImageViewVendor.setImageBitmap(bitmap);
+        }catch (IOException e) {
+            showDialogMessage("Error", "Error uploading image");
+            Log.e(TAG, "Error Uploading " + e.getMessage());
+        }
+
+        Log.e(TAG,"Filepath: " + mImageUri);
     }
 
     private void showDialogMessage(String title, String body) {
@@ -182,5 +298,77 @@ public class EditVendorDetailsFragment extends Fragment implements View.OnClickL
         });
         mSaveDescriptionDialog = builder.create();
         mSaveDescriptionDialog.show();
+    }
+
+    @AfterPermissionGranted(REQUEST_READ_EXTERNAL_FILES)
+    private void readFile() {
+        if (EasyPermissions.hasPermissions(
+                getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            // Begin asynchronous task of uploading to the s3 bucket
+            new UploadImageTask(mMarketName,mVendorName,FileUtils.getPath(getContext(),mImageUri),this).execute(getContext());
+        } else {
+            // Request the GET_ACCOUNTS permission via a user dialog
+            EasyPermissions.requestPermissions(
+                    this,
+                    "This app needs to access your Google account (via Contacts).",
+                    REQUEST_READ_EXTERNAL_FILES,
+                    Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
+    }
+
+    /**
+     * Respond to requests for permissions at runtime for API 23 and above.
+     * @param requestCode The request code passed in
+     *     requestPermissions(android.app.Activity, String, int, String[])
+     * @param permissions The requested permissions. Never null.
+     * @param grantResults The grant results for the corresponding permissions
+     *     which is either PERMISSION_GRANTED or PERMISSION_DENIED. Never null.
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(
+                requestCode, permissions, grantResults, this);
+    }
+
+    /**
+     * Callback for when a permission is granted using the EasyPermissions
+     * library.
+     * @param requestCode The request code associated with the requested
+     *         permission
+     * @param list The requested permission list. Never null.
+     */
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> list) {
+        // Do nothing.
+    }
+
+    /**
+     * Callback for when a permission is denied using the EasyPermissions
+     * library.
+     * @param requestCode The request code associated with the requested
+     *         permission
+     * @param list The requested permission list. Never null.
+     */
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> list) {
+        // Do nothing.
+    }
+
+    /**
+     * Handles the callback from the UploadImageTask
+     *
+     * @param code can either be Fail or Success
+     * @param message carries the error messsage
+     */
+    @Override
+    public void finishUpload(UploadImageTask.UploadCodes code, String message) {
+        if(code == UploadImageTask.UploadCodes.FAIL) {
+            showDialogMessage("Error",message);
+        } else if(code == UploadImageTask.UploadCodes.SUCCESS) {
+            showDialogMessage("Success","Image Updated");
+        }
     }
 }

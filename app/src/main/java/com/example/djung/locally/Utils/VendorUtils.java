@@ -1,5 +1,12 @@
 package com.example.djung.locally.Utils;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.MediaStore;
+
+import com.example.djung.locally.AWS.AwsConfiguration;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,5 +28,31 @@ public class VendorUtils {
         ArrayList<String> filteredItems = new ArrayList<>(vendorItems);
         filteredItems.remove("PLACEHOLDER");
         return filteredItems;
+    }
+
+    /**
+     * Construct the URL of the vendor image
+     * @param vendorName name of the vendor
+     * @param marketName name of the market
+     * @return url to the vendor image
+     */
+    public static String getS3Url(String marketName, String vendorName) {
+        marketName = marketName.replace(' ','_');
+        vendorName = vendorName.replace(' ','_');
+
+        return  AwsConfiguration.AMAZON_S3_VENDOR_IMAGE + marketName + '-' + vendorName + ".jpg";
+    }
+
+    /**
+     * Construct the unique filename of the vendor image as .jpg
+     * @param vendorName name of the vendor
+     * @param marketName name of the market
+     * @return filename of the vendor image
+     */
+    public static String getS3FileNameJpeg(String marketName, String vendorName) {
+        marketName = marketName.replace(' ','_');
+        vendorName = vendorName.replace(' ','_');
+
+        return  marketName + '-' + vendorName + ".jpg";
     }
 }

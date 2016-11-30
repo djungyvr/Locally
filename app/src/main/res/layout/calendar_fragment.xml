@@ -20,11 +20,6 @@
         android:textAppearance="?android:textAppearanceLarge"
         />
 
-    <View android:id="@+id/fakeView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_centerInParent="true"
-        android:layout_alignParentBottom="true"/>
 
     <GridView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/gridview"
