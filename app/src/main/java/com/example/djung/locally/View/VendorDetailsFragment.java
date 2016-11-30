@@ -44,6 +44,11 @@ public class VendorDetailsFragment extends Fragment implements VendorDetailsView
         mainActivity.setAppBarElevation(4);
     }
 
+    @Override
+    public void setNavDrawerSelectedItem(int resID) {
+        mainActivity.setNavigationDrawerCheckedItem(resID);
+    }
+
     /**
      * Populate the RecyclerView with the produce names in the given produceList
      * @param produceList
@@ -148,6 +153,7 @@ public class VendorDetailsFragment extends Fragment implements VendorDetailsView
     public void onActivityCreated(Bundle savedInstance){
         super.onActivityCreated(savedInstance);
         vendorDetailsPresenter.setActionBar();
+        vendorDetailsPresenter.setNavDrawerSelectedItem();
         vendorDetailsPresenter.getVendor();
         vendorDetailsPresenter.setViews();
         vendorDetailsPresenter.populateProduceList();

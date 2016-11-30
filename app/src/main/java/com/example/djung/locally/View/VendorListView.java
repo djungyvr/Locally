@@ -8,5 +8,6 @@ import com.example.djung.locally.View.Adapters.VendorListAdapter;
 
 public interface VendorListView {
     void setActionBarTitle(String title);
+    void setNavDrawerSelectedItem(int resID);
     void showVendorList(VendorListAdapter vendorListAdapter);
 }

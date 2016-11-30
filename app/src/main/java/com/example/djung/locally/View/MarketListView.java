@@ -8,5 +8,6 @@ import com.example.djung.locally.View.Adapters.MarketListAdapter;
 
 public interface MarketListView {
     void setActionBarTitle(String title);
+    void setNavDrawerSelectedItem(int resID);
     void showMarketList(MarketListAdapter marketListAdapter);
 }

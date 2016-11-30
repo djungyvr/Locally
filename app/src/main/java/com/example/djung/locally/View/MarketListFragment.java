@@ -27,6 +27,11 @@ public class MarketListFragment extends android.support.v4.app.Fragment implemen
     }
 
     @Override
+    public void setNavDrawerSelectedItem(int resID) {
+        mainActivity.setNavigationDrawerCheckedItem(resID);
+    }
+
+    @Override
     public void showMarketList(MarketListAdapter marketListAdapter) {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -49,7 +54,10 @@ public class MarketListFragment extends android.support.v4.app.Fragment implemen
     public void onActivityCreated(Bundle savedInstance) {
         super.onActivityCreated(savedInstance);
         marketListPresenter.setActionBar();
+        marketListPresenter.setNavDrawerSelectedItem();
         marketListPresenter.getUserLocation();
         marketListPresenter.populateMarketList();
     }
+
+
 }

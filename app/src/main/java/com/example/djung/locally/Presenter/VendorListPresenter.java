@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.Model.Vendor;
+import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.ThreadUtils;
 import com.example.djung.locally.View.Adapters.VendorListAdapter;
 import com.example.djung.locally.View.VendorListView;
@@ -44,6 +45,10 @@ public class VendorListPresenter {
 
     public void setActionBar(){
         vendorListView.setActionBarTitle(currentMarket.getName());
+    }
+
+    public void setNavDrawerSelectedItem(){
+        vendorListView.setNavDrawerSelectedItem(R.id.market_list);
     }
 
     public void populateVendorList(){
