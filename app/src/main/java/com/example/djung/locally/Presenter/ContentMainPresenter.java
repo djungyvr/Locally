@@ -24,6 +24,7 @@ import com.example.djung.locally.View.ContentMainView;
 import com.example.djung.locally.View.EnablePermissionsCard;
 import com.example.djung.locally.View.MainActivity;
 import com.example.djung.locally.View.MarketCardSection;
+import com.example.djung.locally.View.Permissions;
 import com.example.djung.locally.View.QuickLinkCard;
 import com.example.djung.locally.View.QuickLinkCardSection;
 
@@ -70,6 +71,20 @@ public class ContentMainPresenter {
      */
     public int getContentMainDataSize() {
         return mContentMainSectionsData.size();
+    }
+
+    /**
+     * Returns the View's activity context
+     */
+    public Context getActivityContext() {
+        return mActivity;
+    }
+
+    /**
+     * Returns the current location
+     */
+    public Location getCurrentLocation() {
+        return mCurrentLocation;
     }
 
     /**
@@ -140,8 +155,9 @@ public class ContentMainPresenter {
         fetchAllMarketsData();
         populateQuickLinksCardSection();
         populateMarketsCardSection();
+        showRequestCards();
 
-        ContentMainAdapter adapter = new ContentMainAdapter(mActivity, mContentMainSectionsData, mCurrentLocation);
+        ContentMainAdapter adapter = new ContentMainAdapter(this);
         mContentMainView.showContentMain(adapter);
     }
 
@@ -149,7 +165,7 @@ public class ContentMainPresenter {
      * Initializes the quick links section which includes All Markets, Calendar,
      * Fruits & Vegetables, Your Lists
      */
-    public void populateQuickLinksCardSection() {
+    private void populateQuickLinksCardSection() {
         ArrayList<QuickLinkCard> q = new ArrayList<>();
 
         String allMarkets = "";
@@ -183,9 +199,8 @@ public class ContentMainPresenter {
 
     /**
      * Decide which markets to display in the sections
-     * TODO: for now we'll just add all the markets
      */
-    public void populateMarketsCardSection() {
+    private void populateMarketsCardSection() {
         MarketCardSection nearbySection = new MarketCardSection();
         nearbySection.setSectionTitle("Markets Nearby");
 
@@ -195,24 +210,32 @@ public class ContentMainPresenter {
                 List singleSectionItems = new ArrayList<>(mAllMarketsList);
                 singleSectionItems = MarketUtils.getClosestMarkets(singleSectionItems, mCurrentLocation);
 
-                ArrayList marketItems = new ArrayList();
-                // show the first 4 markets
-                for(int i=0; i != 4 && i != singleSectionItems.size(); ++i) {
+                ArrayList marketItems = new ArrayList<>();
+                // show the first 5 markets
+                for(int i=0; i != 5 && i != singleSectionItems.size(); ++i) {
                     marketItems.add(singleSectionItems.get(i));
                 }
-
+                marketItems.add(null); // view all button
                 nearbySection.setMarketList(marketItems);
                 mContentMainSectionsData.add(nearbySection);
-
             }
-
         }
+    }
 
-        // if location permissions denied, show the rationale
-        if (ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            mContentMainSectionsData.add(new EnablePermissionsCard(mActivity));
-
+    private void showRequestCards() {
+        LocationManager lm = (LocationManager) mActivity.getSystemService(Context.LOCATION_SERVICE);
+        if (!lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            Log.e(TAG, "Location services disabled");
+            mContentMainSectionsData.add(new EnablePermissionsCard(
+                    mActivity.getString(R.string.rationale_turn_on_location), mActivity.getString(R.string.button_refresh)));
+        }
+        else {
+            // if location permissions denied, show the rationale
+            if (ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                mContentMainSectionsData.add(new EnablePermissionsCard(
+                        mActivity.getString(R.string.rationale_enable_permissions), mActivity.getString(R.string.button_enable_permissions)));
+            }
         }
     }
 
@@ -249,6 +272,20 @@ public class ContentMainPresenter {
         String vendorItem = mVendorItemsSuggestionAdapter.getSuggestion(position);
         mContentMainView.clearSearchFocus();
         ((MainActivity) mActivity).launchVendorSearchItemFragment(vendorItem);
+    }
+
+    /**
+     * Opens the request permissions dialog
+     */
+    public void requestPermissions() {
+        ActivityCompat.requestPermissions(mActivity, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, Permissions.REQUEST_COURSE_PERMISSION);
+    }
+
+    /**
+     * Refresh content main
+     */
+    public void refreshContentMain() {
+        ((MainActivity) mActivity).launchContentMainFragment();
     }
 
 }

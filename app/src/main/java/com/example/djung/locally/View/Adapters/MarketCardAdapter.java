@@ -42,26 +42,36 @@ public class MarketCardAdapter extends RecyclerView.Adapter<MarketCardAdapter.Si
 
     @Override
     public void onBindViewHolder(SingleItemRowHolder holder, int position) {
-        Market market = marketsList.get(position);
-        holder.mTitle.setText(market.getName());
-        String imageResource = MarketUtils.getMarketUrl(market.getName());
-        if(imageResource.isEmpty()) {
-            holder.mImage.setImageResource(R.drawable.ubc);
-        } else {
-            Picasso.with(mContext).setIndicatorsEnabled(true);
-            Picasso.with(mContext).load(imageResource)
-                    .error(R.drawable.default_market_image)
-                    //.resize()
-                    //.centerCrop()
-                    .into(holder.mImage);
-        }
-        holder.mImage.setColorFilter(Color.rgb(123, 123, 123), android.graphics.PorterDuff.Mode.MULTIPLY);
-        if (currentLocation != null){
-            float distance = MarketUtils.getDistanceFromMarket(market, currentLocation);
-            holder.mDistance.setText(LocationUtils.formatDistanceInKm(distance));
+        // view all button
+        if(position == 5) {
+            String title = "View All";
+            holder.mTitle.setText(title);
+            holder.mTitle.setTextSize(18);
+            holder.mDistance.setText("");
+            holder.mImage.setImageResource(R.drawable.view_all_markets);
+            holder.mImage.setColorFilter(Color.rgb(123, 123, 123), android.graphics.PorterDuff.Mode.MULTIPLY);
         }
         else {
-            holder.mDistance.setText("");
+            Market market = marketsList.get(position);
+            holder.mTitle.setText(market.getName());
+            String imageResource = MarketUtils.getMarketUrl(market.getName());
+            if (imageResource.isEmpty()) {
+                holder.mImage.setImageResource(R.drawable.ubc);
+            } else {
+                Picasso.with(mContext).setIndicatorsEnabled(true);
+                Picasso.with(mContext).load(imageResource)
+                        .error(R.drawable.default_market_image)
+                        //.resize()
+                        //.centerCrop()
+                        .into(holder.mImage);
+            }
+            holder.mImage.setColorFilter(Color.rgb(123, 123, 123), android.graphics.PorterDuff.Mode.MULTIPLY);
+            if (currentLocation != null) {
+                float distance = MarketUtils.getDistanceFromMarket(market, currentLocation);
+                holder.mDistance.setText(LocationUtils.formatDistanceInKm(distance));
+            } else {
+                holder.mDistance.setText("");
+            }
         }
     }
 
@@ -89,7 +99,11 @@ public class MarketCardAdapter extends RecyclerView.Adapter<MarketCardAdapter.Si
         public void onClick(View view) {
             if(mContext instanceof MainActivity){
                 Market m = markets.get(getAdapterPosition());
-                ((MainActivity)mContext).launchVendorListFragment(m);
+                if(m != null) {
+                    ((MainActivity) mContext).launchVendorListFragment(m);
+                } else {
+                    ((MainActivity) mContext).launchMarketFragment();
+                }
             }
         }
     }

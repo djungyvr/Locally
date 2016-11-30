@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.djung.locally.Presenter.ContentMainPresenter;
 import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.MarketUtils;
 import com.example.djung.locally.View.EnablePermissionsCard;
@@ -24,9 +25,7 @@ import java.util.List;
  * Created by David Jung on 16/10/16.
  */
 public class ContentMainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private ArrayList<Object> mDataList;            // can either be MarketCardSection or a list of Thumbnails
-    private Context mContext;
-    private Location mCurrentLocation;
+    private ContentMainPresenter mPresenter;
     private final int THUMBNAILS = 0, MARKETCARDSECTION = 1, REQUESTPERMISSIONS = 3;
 
     public ContentMainAdapter() {
@@ -34,19 +33,10 @@ public class ContentMainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     /**
      * Constructor
-     * @param context
-     * @param dataList
-     * @param currentLocation
+     * @param presenter
      */
-    public ContentMainAdapter(Context context, ArrayList<Object> dataList, Location currentLocation) {
-        this.mContext = context;
-        this.mDataList = dataList;
-        this.mCurrentLocation = currentLocation;
-    }
-
-    public void updateData(ArrayList<Object> newData) {
-        this.mDataList = newData;
-        notifyDataSetChanged();
+    public ContentMainAdapter(ContentMainPresenter presenter) {
+        this.mPresenter = presenter;
     }
 
     /**
@@ -56,12 +46,12 @@ public class ContentMainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
      */
     @Override
     public int getItemViewType(int position) {
-        if (mDataList.get(position) instanceof QuickLinkCardSection) {
+        if (mPresenter.getContentMainData(position) instanceof QuickLinkCardSection) {
             return THUMBNAILS;
-        } else if (mDataList.get(position) instanceof MarketCardSection) {
+        } else if (mPresenter.getContentMainData(position) instanceof MarketCardSection) {
             return MARKETCARDSECTION;
         }
-        else if (mDataList.get(position) instanceof EnablePermissionsCard){
+        else if (mPresenter.getContentMainData(position) instanceof EnablePermissionsCard){
             return REQUESTPERMISSIONS;
         } else {
             return -1;
@@ -132,7 +122,7 @@ public class ContentMainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     private void configureDefaultViewHolder(RecyclerViewSimpleTextViewHolder vh, int position) {
-        vh.getLabel().setText((CharSequence) mDataList.get(position));
+        vh.getLabel().setText((CharSequence) mPresenter.getContentMainData(position));
     }
 
     /**
@@ -141,11 +131,11 @@ public class ContentMainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
      * @param position
      */
     private void configureViewHolder1(ViewHolder1 holder, int position) {
-        QuickLinkCardSection ts = (QuickLinkCardSection) mDataList.get(position);
+        QuickLinkCardSection ts = (QuickLinkCardSection) mPresenter.getContentMainData(position);
         ArrayList sectionItems = ts.getThumbnailList();
-        QuickLinkCardSectionAdapter adapter = new QuickLinkCardSectionAdapter(mContext, sectionItems);
+        QuickLinkCardSectionAdapter adapter = new QuickLinkCardSectionAdapter(mPresenter.getActivityContext(), sectionItems);
         holder.mRecyclerView.setHasFixedSize(true);
-        holder.mRecyclerView.setLayoutManager(new GridLayoutManager(mContext, 2));
+        holder.mRecyclerView.setLayoutManager(new GridLayoutManager(mPresenter.getActivityContext(), 2));
         holder.mRecyclerView.setAdapter(adapter);
     }
 
@@ -155,22 +145,16 @@ public class ContentMainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
      * @param position
      */
     private void configureViewHolder2(ViewHolder2 holder, int position) {
-        MarketCardSection m = (MarketCardSection) mDataList.get(position);
+        MarketCardSection m = (MarketCardSection) mPresenter.getContentMainData(position);
         final String sectionName = m.getSectionTitle();
 
-        List singleSectionItems = m.getMarketList();
-        singleSectionItems = MarketUtils.getClosestMarkets(singleSectionItems, mCurrentLocation);
+        ArrayList singleSectionItems = m.getMarketList();
 
-        ArrayList marketItems = new ArrayList();
-        // show the first 4 markets
-        for(int i=0; i != 4 && i != singleSectionItems.size(); ++i) {
-            marketItems.add(singleSectionItems.get(i));
-        }
-
-        MarketCardAdapter itemListDataAdapter = new MarketCardAdapter(mContext, marketItems, mCurrentLocation);
+        MarketCardAdapter itemListDataAdapter = new MarketCardAdapter(
+                mPresenter.getActivityContext(), singleSectionItems, mPresenter.getCurrentLocation());
         holder.mItemTitle.setText(sectionName);
         holder.mRecyclerView.setHasFixedSize(true);
-        holder.mRecyclerView.setLayoutManager(new GridLayoutManager(mContext, 2));
+        holder.mRecyclerView.setLayoutManager(new GridLayoutManager(mPresenter.getActivityContext(), 2));
         holder.mRecyclerView.setAdapter(itemListDataAdapter);
     }
 
@@ -180,14 +164,15 @@ public class ContentMainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
      * @param position
      */
     private void configureViewHolder3(ViewHolder3 holder, int position) {
-        EnablePermissionsCard card = (EnablePermissionsCard) mDataList.get(position);
-        holder.mContext = card.getContext();
+        EnablePermissionsCard card = (EnablePermissionsCard) mPresenter.getContentMainData(position);
+        holder.mButton.setText(card.getmButtonText());
+        holder.mTextView.setText(card.getRationale());
     }
 
 
     @Override
     public int getItemCount() {
-        return (mDataList != null ? mDataList.size() : 0);
+        return (mPresenter != null ? mPresenter.getContentMainDataSize() : 0);
     }
 
     // 2 Viewholder classes:
@@ -223,18 +208,21 @@ public class ContentMainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
      */
     public class ViewHolder3 extends RecyclerView.ViewHolder implements View.OnClickListener{
         protected Button mButton;
-        protected Context mContext;
+        protected TextView mTextView;
 
         public ViewHolder3(View view) {
             super(view);
-
+            this.mTextView = (TextView) view.findViewById(R.id.rationale_text);
             this.mButton = (Button) view.findViewById(R.id.button_enable_permissions);
             mButton.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            ((MainActivity) mContext).requestPermissions();
+            if(mButton.getText().equals("Refresh"))
+                mPresenter.refreshContentMain();
+            else
+                mPresenter.requestPermissions();
         }
     }
 

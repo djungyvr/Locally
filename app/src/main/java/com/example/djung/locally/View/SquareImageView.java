@@ -26,7 +26,10 @@ public class SquareImageView extends ImageView {
 
     @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, widthMeasureSpec); // This is the key that will make the height equivalent to its width
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        int width = getMeasuredWidth();
+        setMeasuredDimension(width, width);
     }
 }
 

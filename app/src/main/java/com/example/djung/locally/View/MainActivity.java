@@ -469,10 +469,5 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    /**
-     * Opens the request permissions dialog
-     */
-    public void requestPermissions() {
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, Permissions.REQUEST_COURSE_PERMISSION);
-    }
+
 }

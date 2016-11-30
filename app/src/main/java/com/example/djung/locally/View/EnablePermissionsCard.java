@@ -7,13 +7,19 @@ import android.content.Context;
  */
 
 public class EnablePermissionsCard {
-    private Context mContext;
+    private String mRationale;
+    private String mButtonText;
 
-    public EnablePermissionsCard(Context mContext) {
-        this.mContext = mContext;
+    public EnablePermissionsCard(String rationale, String buttonText) {
+        this.mRationale = rationale;
+        this.mButtonText = buttonText;
     }
 
-    public Context getContext() {
-        return mContext;
+    public String getRationale() {
+        return mRationale;
+    }
+
+    public String getmButtonText() {
+        return mButtonText;
     }
 }
