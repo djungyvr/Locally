@@ -67,8 +67,6 @@ public class MainActivity extends AppCompatActivity
         if(mPresenter == null)
             mPresenter = new MainActivityPresenter(this);
 
-        mPresenter.initializeAWSModel();
-
         initializeBaseViews();
 
         // getUserLocation();
@@ -78,12 +76,6 @@ public class MainActivity extends AppCompatActivity
         }
 
         launchContentMainFragment();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mPresenter.onResume();
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.example.djung.locally.Presenter;
 
 
-import com.example.djung.locally.AWS.AWSMobileClient;
 import com.example.djung.locally.R;
 import com.example.djung.locally.View.MainActivityView;
 
@@ -26,24 +25,6 @@ public class MainActivityPresenter {
         mView = null;
     }
 
-    public void onResume() {
-        final AWSMobileClient awsMobileClient = AWSMobileClient.defaultMobileClient();
-    }
-
-    /**
-     * Connect to AWS database
-     */
-    public void initializeAWSModel() {
-        // Obtain a reference to the mobile client. It is created in the Application class,
-        // but in case a custom Application class is not used, we initialize it here if necessary.
-        AWSMobileClient.initializeMobileClientIfNecessary(mView.getActivityContext());
-
-//        // Obtain a reference to the mobile client. It is created in the Application class.
-//        final AWSMobileClient awsMobileClient = AWSMobileClient.defaultMobileClient();
-//
-//        // Obtain a reference to the identity manager.
-//        identityManager = awsMobileClient.getIdentityManager();
-    }
 
     /**
      * Process user input i.e. back press
