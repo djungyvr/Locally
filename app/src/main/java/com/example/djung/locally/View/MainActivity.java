@@ -219,6 +219,16 @@ public class MainActivity extends AppCompatActivity
         ft.commit();
     }
 
+    public void launchAboutUsFragment(){
+        SettingsFragment settingsFragment = new SettingsFragment();
+
+        // Replace the container with the fragment
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.main_layout, settingsFragment, String.valueOf(R.id.nav_manage));
+        ft.addToBackStack(String.valueOf(R.id.nav_manage));
+        ft.commit();
+    }
+
 
     /**
      * Launches the Settings fragment

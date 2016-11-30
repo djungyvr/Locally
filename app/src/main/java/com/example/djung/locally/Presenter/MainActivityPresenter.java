@@ -61,7 +61,8 @@ public class MainActivityPresenter {
                 mView.launchMarketFragment();
                 break;
             case R.id.nav_manage:
-                mView.launchSettingsFragment();
+                mView.launchAboutUsFragment();
+                //mView.launchSettingsFragment();
                 break;
             case R.id.nav_use_as_vendor:
                 mView.startLoginActivityIntent();

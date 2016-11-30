@@ -58,6 +58,4 @@ public class MarketListFragment extends android.support.v4.app.Fragment implemen
         marketListPresenter.getUserLocation();
         marketListPresenter.populateMarketList();
     }
-
-
 }
