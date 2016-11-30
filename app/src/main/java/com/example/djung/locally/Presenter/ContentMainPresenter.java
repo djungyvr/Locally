@@ -57,6 +57,11 @@ public class ContentMainPresenter {
         mAllMarketsList = new ArrayList<>();
     }
 
+    public void onDestroyView() {
+        mActivity = null;
+        mContentMainView = null;
+    }
+
     /**
      * Gets the data for content main at the given position
      * @param position

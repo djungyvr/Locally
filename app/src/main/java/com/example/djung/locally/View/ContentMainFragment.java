@@ -78,6 +78,15 @@ public class ContentMainFragment extends android.support.v4.app.Fragment impleme
         clearSearchFocus();
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mPresenter.onDestroyView();
+        mMainActivity = null;
+        mRecyclerView = null;
+        mSearchView = null;
+    }
+
     private void initializeSearchView() {
         SearchManager searchManager = (SearchManager) mMainActivity.getSystemService(Context.SEARCH_SERVICE);
         mSearchView.setSearchableInfo(searchManager.getSearchableInfo(mMainActivity.getComponentName()));
