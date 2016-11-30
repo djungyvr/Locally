@@ -69,9 +69,9 @@ public class VendorPresenter {
      *
      * Returns true if succesfully updated, false otherwise
      */
-    public boolean updateVendorProducts(String marketName, String vendorName, Set<String> vendorItems,String description) throws ExecutionException, InterruptedException {
+    public boolean updateVendorProducts(String marketName, String vendorName, Set<String> vendorItems) throws ExecutionException, InterruptedException {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<Boolean> future = executor.submit(new UpdateVendorProducts(marketName,vendorName, vendorItems,description));
+        Future<Boolean> future = executor.submit(new UpdateVendorProducts(marketName,vendorName, vendorItems));
 
         executor.shutdown(); // Important!
 
@@ -229,13 +229,11 @@ public class VendorPresenter {
         private String marketName;
         private String vendorName;
         private Set<String> productCodes;
-        private String description;
 
-        UpdateVendorProducts(String marketName, String vendorName, Set<String> productCodes, String description) {
+        UpdateVendorProducts(String marketName, String vendorName, Set<String> productCodes) {
             this.marketName = marketName;
             this.vendorName = vendorName;
             this.productCodes = productCodes;
-            this.description = description;
         }
 
         @Override
@@ -281,10 +279,7 @@ public class VendorPresenter {
                 vendorToFind = vendors.get(0);
                 if(productCodes.isEmpty())
                     productCodes.add("PLACEHOLDER");
-                if(description.isEmpty() || description == null)
-                    description = "Description";
                 vendorToFind.setItemSet(productCodes);
-                vendorToFind.setDescription(description);
                 mapper.save(vendorToFind);
                 Log.e(TAG,"Succesfully updated vendor items");
                 return true;
