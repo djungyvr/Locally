@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fitsSystemWindows="true"
     tools:context="com.example.djung.locally.View.VendorActivity">
@@ -33,12 +34,9 @@
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 
-
-<include
-        android:id="@+id/include_content_vendor"
-        android:layout_height="match_parent"
+    <FrameLayout
         android:layout_width="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        layout="@layout/content_vendor" />
-
-</android.support.design.widget.CoordinatorLayout>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:id="@+id/content_vendor"/>
+</LinearLayout>

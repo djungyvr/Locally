@@ -47,24 +47,23 @@ import java.util.concurrent.ExecutionException;
 
 /**
  * Activity for vendors
- *
+ * <p>
  * To see how search for items was implemented see here:
  * https://github.com/android/platform_development/tree/master/samples/SearchableDictionary
- *
+ * <p>
  * https://www.youtube.com/watch?v=9OWmnYPX1uc
  */
 public class VendorActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener, SearchView.OnSuggestionListener, View.OnClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener, SearchView.OnSuggestionListener {
 
     private final String TAG = "VendorActivity";
 
     private AlertDialog userDialog;
+    private Dialog waitDialog;
 
     // View objects
     private TextView mTextViewVendorName;
-    private VendorItemRecyclerView mRecyclerViewVendorItems;
     private SearchView mSearchView;
-    private FloatingActionButton mFabSaveList;
 
     // Cognito user objects
     private CognitoUser user;
@@ -72,22 +71,19 @@ public class VendorActivity extends AppCompatActivity
     private CognitoUserDetails details;
 
     // User details
-    private String mUsername;
-    private ProgressDialog waitDialog;
     private String mMarketName;
     private String mVendorName;
     private String mVendorEmail;
     private String mVendorPhoneNumber;
     private Vendor mCurrentVendor;
+    private String mUsername;
 
     // Adapters
     private SuggestionAdapter mVendorItemsSuggestionAdapter;
     private VendorItemAdapter mVendorItemAdapter;
 
-    private Dialog mVendorSaveDialog;
-
     // Fragment for editing vendor details
-    private Fragment mEditVendorDetailsFragment;
+    private Fragment mContentVendor;
     private FragmentManager mFragmentManager;
 
     @Override
@@ -106,12 +102,9 @@ public class VendorActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.vendor_nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        View headerView =  navigationView.getHeaderView(0);
-        mTextViewVendorName = (TextView)headerView.findViewById(R.id.text_view_nav_vendor_name);
+        View headerView = navigationView.getHeaderView(0);
+        mTextViewVendorName = (TextView) headerView.findViewById(R.id.text_view_nav_vendor_name);
         initialize();
-
-        mFabSaveList = (FloatingActionButton) findViewById(R.id.fab_save_vendor_list);
-        mFabSaveList.setOnClickListener(this);
 
         initializeSearch();
 
@@ -148,25 +141,26 @@ public class VendorActivity extends AppCompatActivity
 
     /**
      * Searches the vendor items and displays results for the given query.
+     *
      * @param query The search query
      */
     private void showResults(String query) {
 
         Cursor cursor = managedQuery(VendorItemsProvider.CONTENT_URI, null, null,
-                new String[] {query}, null);
+                new String[]{query}, null);
 
         if (cursor == null) {
         } else {
             // Specify the columns we want to display in the result
-            String[] from = new String[] {VendorItemDatabase.KEY_VENDOR_ITEM_NAME,
+            String[] from = new String[]{VendorItemDatabase.KEY_VENDOR_ITEM_NAME,
                     VendorItemDatabase.KEY_VENDOR_ITEM_INFO};
 
             // Specify the corresponding layout elements where we want the columns to go
-            int[] to = new int[] { R.id.vendor_item_name_search_result,
-                    R.id.vendor_item_info_search_result };
+            int[] to = new int[]{R.id.vendor_item_name_search_result,
+                    R.id.vendor_item_info_search_result};
 
             // Create a simple cursor adapter for vendor
-            mVendorItemsSuggestionAdapter = new SuggestionAdapter(this,cursor);
+            mVendorItemsSuggestionAdapter = new SuggestionAdapter(this, cursor);
 
             mSearchView.setSuggestionsAdapter(mVendorItemsSuggestionAdapter);
         }
@@ -194,16 +188,7 @@ public class VendorActivity extends AppCompatActivity
                 launchEditDetailsFragment();
                 break;
             case R.id.nav_edit_goods_list:
-                mSearchView.setVisibility(View.VISIBLE);
-                mFabSaveList.setVisibility(View.VISIBLE);
-                if (mFragmentManager != null) {
-                    if (mEditVendorDetailsFragment != null) {
-                        mFragmentManager.beginTransaction().remove(mEditVendorDetailsFragment).commit();
-                    }
-                    for (int i = 0; i < mFragmentManager.getBackStackEntryCount(); i++) {
-                        mFragmentManager.popBackStack();
-                    }
-                }
+                launchEditGoodsFragment();
                 break;
             case R.id.nav_signout:
                 user.signOut();
@@ -212,43 +197,44 @@ public class VendorActivity extends AppCompatActivity
 
         }
 
+        if (mFragmentManager == null)
+            mFragmentManager = getSupportFragmentManager();
+        // Replace the container with the fragment
+        mFragmentManager.beginTransaction().replace(R.id.content_vendor, mContentVendor).commit();
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.vendor_drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
+    private void launchEditGoodsFragment() {
+        mContentVendor = new VendorFragment();
+        mSearchView.setVisibility(View.VISIBLE);
+        Bundle bundle = new Bundle();
+        bundle.putString("vendor_name", mCurrentVendor.getName());
+        bundle.putString("market_name", mCurrentVendor.getMarketName());
+        bundle.putStringArrayList("vendor_items", new ArrayList<>(mCurrentVendor.getItemSet()));
+        mContentVendor.setArguments(bundle);
+    }
+
     private void launchEditDetailsFragment() {
-        if(mEditVendorDetailsFragment == null) {
-            mEditVendorDetailsFragment = new EditVendorDetailsFragment();
-            Bundle bundle = new Bundle();
-            bundle.putString("vendor_name", mCurrentVendor.getName());
-            bundle.putString("market_name", mCurrentVendor.getMarketName());
-            bundle.putString("vendor_description", mCurrentVendor.getDescription());
-            bundle.putString("vendor_phone_number",mCurrentVendor.getPhoneNumber());
-            bundle.putString("vendor_email",mCurrentVendor.getEmail());
-            bundle.putString("vendor_photo_url",mCurrentVendor.getPhotoUrl());
-
-            mEditVendorDetailsFragment.setArguments(bundle);
-        }
-        if(mFragmentManager == null)
-            mFragmentManager = getSupportFragmentManager();
-
-        // Hide the searchbar
-        // TODO: FIX THIS HACK
+        mContentVendor = new EditVendorDetailsFragment();
         mSearchView.setVisibility(View.INVISIBLE);
-        mFabSaveList.setVisibility(View.INVISIBLE);
-
-        // Replace the container with the fragment
-        mFragmentManager.beginTransaction().replace(R.id.include_content_vendor, mEditVendorDetailsFragment).addToBackStack(null).commit();
-        //mFragmentManager.beginTransaction().add(R.id.frame_container,mEditVendorDetailsFragment).commit();
+        Bundle bundle = new Bundle();
+        bundle.putString("vendor_name", mCurrentVendor.getName());
+        bundle.putString("market_name", mCurrentVendor.getMarketName());
+        bundle.putString("vendor_description", mCurrentVendor.getDescription());
+        bundle.putString("vendor_phone_number", mCurrentVendor.getPhoneNumber());
+        bundle.putString("vendor_email", mCurrentVendor.getEmail());
+        bundle.putString("vendor_photo_url", mCurrentVendor.getPhotoUrl());
+        mContentVendor.setArguments(bundle);
     }
 
     /**
-     *  Initialize this activity
-      */
+     * Initialize this activity
+     */
     private void initialize() {
         // Get the user name
-        Bundle extras = getIntent().getExtras();
         mUsername = AppHelper.getUser();
         user = AppHelper.getCognitoUserPool().getUser(mUsername);
         getDetails();
@@ -270,41 +256,21 @@ public class VendorActivity extends AppCompatActivity
             // Fetch the items
             Vendor vendor = vendorPresenter.fetchVendor(mMarketName, mVendorName);
             // Check if we found a matching vendor in the database
-            if(vendor != null) {
+            if (vendor != null) {
                 mCurrentVendor = vendor;
             } else {
                 // Add the vendor to the database since we can't find it
-                mCurrentVendor = vendorPresenter.addVendor(mMarketName, mVendorName,mVendorEmail,mVendorPhoneNumber);
+                mCurrentVendor = vendorPresenter.addVendor(mMarketName, mVendorName, mVendorEmail, mVendorPhoneNumber);
             }
         }
         // IllegalArgumentException means we didn't find a vendor so we add it
         catch (final IllegalArgumentException | InterruptedException | ExecutionException findException) {
             try {
                 // Add the vendor to the database since we can't find it
-                mCurrentVendor = vendorPresenter.addVendor(mMarketName, mVendorName,mVendorEmail,mVendorPhoneNumber);
+                mCurrentVendor = vendorPresenter.addVendor(mMarketName, mVendorName, mVendorEmail, mVendorPhoneNumber);
             } catch (final InterruptedException | ExecutionException exception) {
-                showDialogMessage("Error Adding Vendor",exception.getMessage(),false);
+                showDialogMessage("Error Adding Vendor", exception.getMessage(), false);
             }
-        }
-
-        initializeAdapter();
-    }
-
-    private void initializeAdapter() {
-        if(mCurrentVendor != null) {
-            mRecyclerViewVendorItems = (VendorItemRecyclerView) findViewById(R.id.recycler_view_vendor_items);
-
-            mRecyclerViewVendorItems.setHasFixedSize(true);
-
-            ArrayList<String> filteredList = VendorUtils.filterPlaceholderText(new ArrayList<>(mCurrentVendor.getItemSet()));
-
-            mVendorItemAdapter = new VendorItemAdapter(filteredList, this);
-
-            mRecyclerViewVendorItems.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-
-            mRecyclerViewVendorItems.setAdapter(mVendorItemAdapter);
-
-            mRecyclerViewVendorItems.setEmptyView(findViewById(R.id.recycler_view_vendor_items_empty));
         }
     }
 
@@ -320,8 +286,8 @@ public class VendorActivity extends AppCompatActivity
             mMarketName = AppHelper.getUserDetails().getAttributes().getAttributes().get("custom:market_name");
             mVendorEmail = AppHelper.getUserDetails().getAttributes().getAttributes().get("email");
             mVendorPhoneNumber = AppHelper.getUserDetails().getAttributes().getAttributes().get("custom:gitphone_number");
-            Log.e(TAG,"Details of : " + mVendorName);
-            if(mVendorName != null && mTextViewVendorName != null) {
+            Log.e(TAG, "Details of : " + mVendorName);
+            if (mVendorName != null && mTextViewVendorName != null) {
                 mTextViewVendorName.setText(mVendorName);
                 populateContentMain();
             }
@@ -333,13 +299,6 @@ public class VendorActivity extends AppCompatActivity
             showDialogMessage("Could not fetch user details!", AppHelper.formatException(exception), true);
         }
     };
-
-    /**
-     * Populates the adapter with the vendor items
-     */
-    private void populateRecycler() {
-        Set<String> itemIds = mCurrentVendor.getItemSet();
-    }
 
     // Dialog stuff
     private void showDialogMessage(String title, String body, final boolean exit) {
@@ -399,40 +358,11 @@ public class VendorActivity extends AppCompatActivity
     @Override
     public boolean onSuggestionClick(int position) {
         String vendorItem = mVendorItemsSuggestionAdapter.getSuggestion(position);
-        Log.e(TAG,"Selected suggestion: " + vendorItem);
-        mVendorItemAdapter.addItem(vendorItem);
-        return true;
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.fab_save_vendor_list:
-                VendorPresenter vendorPresenter = new VendorPresenter(this);
-                try {
-                    vendorPresenter.updateVendorProducts(mCurrentVendor.getMarketName(), mCurrentVendor.getName(),new HashSet<String>(mVendorItemAdapter.getItemNames()), mCurrentVendor.getDescription());
-                    Toast.makeText(this,"Updating list",Toast.LENGTH_SHORT).show();
-                } catch (ExecutionException | InterruptedException e) {
-                    showDialogMessage("Save Error", "Failed to save item list");
-                    Log.e(TAG,e.getMessage());
-                }
-                break;
+        Log.e(TAG, "Selected suggestion: " + vendorItem);
+        if (mContentVendor instanceof VendorFragment) {
+            VendorFragment fragment = (VendorFragment) mContentVendor;
+            fragment.addItem(vendorItem);
         }
-    }
-
-    private void showDialogMessage(String title, String body) {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(title).setMessage(body).setNeutralButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                try {
-                    mVendorSaveDialog.dismiss();
-                } catch (Exception e) {
-                    //
-                }
-            }
-        });
-        mVendorSaveDialog = builder.create();
-        mVendorSaveDialog.show();
+        return true;
     }
 }
