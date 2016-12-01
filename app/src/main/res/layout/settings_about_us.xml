@@ -17,8 +17,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:src="@drawable/splash_screen_logo"
-            android:layout_gravity="center"
-            android:paddingBottom="10dp"/>
+            android:layout_gravity="center" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/app_slogan"
+            android:textColor="@color/white"
+            android:textStyle="italic"
+            android:gravity="center"
+            android:textSize="15sp"
+            android:paddingBottom="20dp"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -27,7 +36,7 @@
             android:textColor="@color/white"
             android:gravity="center"
             android:textSize="15sp"
-            android:paddingBottom="15dp"/>
+            android:paddingBottom="10dp"/>
 
         <TextView
             android:layout_width="match_parent"

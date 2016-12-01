@@ -16,6 +16,7 @@ public interface MainActivityView {
     void launchMapFragment();
     void launchMarketFragment();
     void launchSettingsFragment();
+    void launchAboutUsFragment();
     void launchGroceryFragment();
     void launchCalendarFragment();
     void startLoginActivityIntent();
