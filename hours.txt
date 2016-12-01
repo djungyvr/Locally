@@ -17,7 +17,9 @@ David
 17.11.16 - 1 hour  - Make placeholder fragment for syncing market schedules to Google Calendar
 18.11.16 - 1 hour  - Clean up project, integrate grocery list and sync markets feature, update DynamoDB so primary key for market table is the market name
 20.11.16 - 2 hours - Complete calendar syncing, add phone number and email field to vendors, add seasons to vendor items
-
+25.11.16 - 3 hours - Move processes to AsyncTasks, write more tests
+28.11.16 - 4 hours - Add vendor photo uploads
+29.11.16 - 3 hours - Refactor vendor related code
 Anna
 Week of October 3, 2016 - 4 hours - Product vision, project planning and use case analysis documentation
 Week of October 10, 2016 - 7 hours - UI prototypes for Calendar, project design planning, Android Studio Lessons
