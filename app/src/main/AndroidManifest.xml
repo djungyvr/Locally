@@ -9,7 +9,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <permission
         android:name="com.example.permission.MAPS_RECEIVE"
@@ -20,12 +20,12 @@
         android:protectionLevel="signature" />
 
     <application
+        android:name="android.support.multidex.MultiDexApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_app_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:name="android.support.multidex.MultiDexApplication">
+        android:theme="@style/AppTheme">
         <uses-library android:name="com.google.android.maps" />
 
         <service
@@ -39,30 +39,32 @@
         <activity
             android:name=".View.MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.SplashScreen"
-            android:screenOrientation="portrait"
             android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.SplashScreen"
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.SEARCH"/>
-                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.SEARCH" />
+                <action android:name="android.intent.action.VIEW" />
             </intent-filter>
             <!-- Points to searchable metadata -->
-            <meta-data android:name="android.app.searchable"
+            <meta-data
+                android:name="android.app.searchable"
                 android:value="@xml/searchable" />
         </activity>
         <activity
             android:name=".View.LoginActivity"
             android:label="@string/title_activity_login"
+            android:launchMode="singleTop"
             android:parentActivityName=".View.MainActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:launchMode="singleTop">
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.djung.locally.View.MainActivity" />
@@ -70,10 +72,10 @@
         <activity
             android:name=".View.ForgotPasswordActivity"
             android:label="@string/title_activity_reset"
+            android:launchMode="singleTop"
             android:parentActivityName=".View.LoginActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:launchMode="singleTop">
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.djung.locally.View.LoginActivity" />
@@ -81,10 +83,10 @@
         <activity
             android:name=".View.VerifyActivity"
             android:label="@string/title_activity_verify"
+            android:launchMode="singleTop"
             android:parentActivityName=".View.LoginActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:launchMode="singleTop">
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.djung.locally.View.LoginActivity" />
@@ -92,10 +94,10 @@
         <activity
             android:name=".View.RegisterActivity"
             android:label="@string/title_activity_register"
+            android:launchMode="singleTop"
             android:parentActivityName=".View.LoginActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:launchMode="singleTop">
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.djung.locally.View.LoginActivity" />
@@ -103,22 +105,28 @@
         <activity
             android:name=".View.VendorActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
-
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.SEARCH"/>
-                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.SEARCH" />
+                <action android:name="android.intent.action.VIEW" />
             </intent-filter>
 
             <!-- Points to searchable metadata -->
-            <meta-data android:name="android.app.searchable"
+            <meta-data
+                android:name="android.app.searchable"
                 android:value="@xml/searchable" />
         </activity>
         <!-- Provides search suggestions for words and their definitions. -->
-        <provider android:name=".DB.VendorItemsProvider"
+        <provider
+            android:name=".DB.VendorItemsProvider"
             android:authorities="com.example.djung.locally.DB.VendorItemsProvider" />
+
+        <activity
+            android:name=".View.AboutUsActivity"
+            android:label="@string/title_activity_about_us"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
