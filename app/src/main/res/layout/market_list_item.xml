@@ -22,8 +22,8 @@
             <ImageView
                 android:id="@+id/market_list_item_image"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scaleType="fitCenter"
+                android:layout_height="200dp"
+                android:scaleType="centerCrop"
                 android:adjustViewBounds="true"
                 android:src="@drawable/ubc" />
 

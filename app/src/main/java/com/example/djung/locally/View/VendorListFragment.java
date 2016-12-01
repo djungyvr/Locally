@@ -29,6 +29,11 @@ public class VendorListFragment extends Fragment implements VendorListView{
     }
 
     @Override
+    public void setNavDrawerSelectedItem(int resID) {
+        mainActivity.setNavigationDrawerCheckedItem(resID);
+    }
+
+    @Override
     public void showVendorList(VendorListAdapter vendorListAdapter) {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -51,6 +56,7 @@ public class VendorListFragment extends Fragment implements VendorListView{
     public void onActivityCreated(Bundle savedInstance){
         super.onActivityCreated(savedInstance);
         vendorListPresenter.setActionBar();
+        vendorListPresenter.setNavDrawerSelectedItem();
         vendorListPresenter.populateVendorList();
     }
 }

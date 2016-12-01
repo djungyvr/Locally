@@ -56,6 +56,10 @@ public class MarketListPresenter {
         marketListView.setActionBarTitle("Market List");
     }
 
+    public void setNavDrawerSelectedItem(){
+        marketListView.setNavDrawerSelectedItem(R.id.market_list);
+    }
+
     public void getUserLocation(){
         LocationManager lm = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&

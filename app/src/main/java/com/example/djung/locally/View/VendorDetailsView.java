@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface VendorDetailsView {
     void setActionBarTitle(String title);
+    void setNavDrawerSelectedItem(int resID);
     void showProduceList(List<String> produceList);
     void showVendorName(String vendorName);
     void showVendorDescription(String vendorDescription);
