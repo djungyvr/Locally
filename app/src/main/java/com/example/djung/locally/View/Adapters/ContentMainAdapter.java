@@ -165,7 +165,6 @@ public class ContentMainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
      */
     private void configureViewHolder3(ViewHolder3 holder, int position) {
         EnablePermissionsCard card = (EnablePermissionsCard) mPresenter.getContentMainData(position);
-        holder.mButton.setText(card.getmButtonText());
         holder.mTextView.setText(card.getRationale());
     }
 
@@ -206,23 +205,12 @@ public class ContentMainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     /**
      * ViewHolder class for Enable Permissions rationale
      */
-    public class ViewHolder3 extends RecyclerView.ViewHolder implements View.OnClickListener{
-        protected Button mButton;
+    public class ViewHolder3 extends RecyclerView.ViewHolder{
         protected TextView mTextView;
 
         public ViewHolder3(View view) {
             super(view);
             this.mTextView = (TextView) view.findViewById(R.id.rationale_text);
-            this.mButton = (Button) view.findViewById(R.id.button_enable_permissions);
-            mButton.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View view) {
-            if(mButton.getText().equals("Refresh"))
-                mPresenter.refreshContentMain();
-            else
-                mPresenter.requestPermissions();
         }
     }
 
