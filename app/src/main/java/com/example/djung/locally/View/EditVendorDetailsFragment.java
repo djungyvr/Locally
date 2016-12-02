@@ -178,9 +178,7 @@ public class EditVendorDetailsFragment extends Fragment implements View.OnClickL
         // Load the image
         Picasso.with(getContext()).setIndicatorsEnabled(true);
         Picasso.with(getContext()).setLoggingEnabled(true);
-        Picasso.with(getContext()).setLoggingEnabled(true);
         Picasso.with(getContext()).load(vendorPhotoUrl)
-                .memoryPolicy(MemoryPolicy.NO_CACHE)
                 .networkPolicy(NetworkPolicy.NO_CACHE)
                 .error(R.drawable.ic_broken_image)
                 .into(mImageViewVendor);
