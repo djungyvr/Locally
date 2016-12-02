@@ -7,7 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.djung.locally.Presenter.VendorDetailsPresenter;
@@ -25,13 +26,17 @@ public class VendorDetailsFragment extends Fragment implements VendorDetailsView
     private MainActivity mainActivity;
     private RecyclerView recyclerView;
 
-    private Button hoursButton;
-    private Button descriptionButton;
-    private Button produceListButton;
-    private Button phoneButton;
-    private Button emailButton;
-    private Button vendorLocationButton;
+    private ImageView vendorImage;
 
+    private LinearLayout produceListButton;
+    private LinearLayout descriptionButton;
+    private LinearLayout hoursButton;
+    private LinearLayout phoneButton;
+    private LinearLayout emailButton;
+
+    private TextView vendorCallView;
+    private TextView vendorEmailView;
+    private TextView vendorLocationView;
     private TextView vendorNameView;
     private TextView vendorDescriptionView;
     private TextView vendorStatusView;
@@ -77,7 +82,7 @@ public class VendorDetailsFragment extends Fragment implements VendorDetailsView
 
     @Override
     public void showVendorLocation(String vendorLocation) {
-        vendorLocationButton.setText(vendorLocation);
+        vendorLocationView.setText(vendorLocation);
     }
 
     @Override
@@ -91,22 +96,40 @@ public class VendorDetailsFragment extends Fragment implements VendorDetailsView
     }
 
     @Override
+    public void showVendorPhoneNumber(String vendorPhoneNumber) {
+        vendorCallView.setText(vendorPhoneNumber);
+    }
+
+    @Override
+    public void showVendorEmail(String vendorEmail) {
+        vendorEmailView.setText(vendorEmail);
+    }
+
+    @Override
+    public ImageView getVendorImageView() {
+        return vendorImage;
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.vendor_details, container, false);
 
         vendorDetailsPresenter = new VendorDetailsPresenter(getActivity(), this, getArguments());
         this.mainActivity = (MainActivity) getActivity();
         this.recyclerView = (RecyclerView) view.findViewById(R.id.produce_list);
+        this.vendorImage = (ImageView) view.findViewById(R.id.vendor_detail_image);
 
         //Set up Text Views
         this.vendorNameView = (TextView) view.findViewById(R.id.vendor_detail_banner_name);
         this.vendorDescriptionView = (TextView) view.findViewById(R.id.vendor_detail_description);
-        this.vendorLocationButton = (Button) view.findViewById(R.id.vendor_detail_location_button);
+        this.vendorCallView = (TextView) view.findViewById(R.id.vendor_detail_call_view);
+        this.vendorEmailView = (TextView) view.findViewById(R.id.vendor_detail_email_view);
+        this.vendorLocationView = (TextView) view.findViewById(R.id.vendor_detail_location_text);
         this.vendorStatusView = (TextView) view.findViewById(R.id.vendor_detail_banner_status);
         this.vendorHoursView = (TextView) view.findViewById(R.id.vendor_detail_hours);
 
-        //Set up Buttons
-        this.hoursButton = (Button) view.findViewById(R.id.vendor_detail_hours_button);
+        //Set up OnClickListeners
+        this.hoursButton = (LinearLayout) view.findViewById(R.id.vendor_detail_hours_button);
         hoursButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -114,7 +137,7 @@ public class VendorDetailsFragment extends Fragment implements VendorDetailsView
             }
         });
 
-        this.descriptionButton = (Button) view.findViewById(R.id.vendor_detail_description_button);
+        this.descriptionButton = (LinearLayout) view.findViewById(R.id.vendor_detail_description_button);
         descriptionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -122,7 +145,7 @@ public class VendorDetailsFragment extends Fragment implements VendorDetailsView
             }
         });
 
-        this.produceListButton = (Button) view.findViewById(R.id.vendor_detail_produce_list_button);
+        this.produceListButton = (LinearLayout) view.findViewById(R.id.vendor_detail_produce_list_button);
         produceListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -130,7 +153,7 @@ public class VendorDetailsFragment extends Fragment implements VendorDetailsView
             }
         });
 
-        this.phoneButton = (Button) view.findViewById(R.id.vendor_detail_phone_button);
+        this.phoneButton = (LinearLayout) view.findViewById(R.id.vendor_detail_phone_button);
         phoneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -138,7 +161,7 @@ public class VendorDetailsFragment extends Fragment implements VendorDetailsView
             }
         });
 
-        this.emailButton = (Button) view.findViewById(R.id.vendor_detail_email_button);
+        this.emailButton = (LinearLayout) view.findViewById(R.id.vendor_detail_email_button);
         emailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -155,7 +178,7 @@ public class VendorDetailsFragment extends Fragment implements VendorDetailsView
         vendorDetailsPresenter.setActionBar();
         vendorDetailsPresenter.setNavDrawerSelectedItem();
         vendorDetailsPresenter.getVendor();
-        vendorDetailsPresenter.setViews();
+        vendorDetailsPresenter.setViews(vendorImage);
         vendorDetailsPresenter.populateProduceList();
     }
 

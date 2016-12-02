@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.djung.locally.Model.Vendor;
@@ -15,6 +16,7 @@ import com.example.djung.locally.Utils.MarketUtils;
 import com.example.djung.locally.Utils.ThreadUtils;
 import com.example.djung.locally.Utils.VendorUtils;
 import com.example.djung.locally.View.VendorDetailsView;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,10 +57,12 @@ public class VendorDetailsPresenter {
         vendorDetailsView.setNavDrawerSelectedItem(R.id.market_list);
     }
 
-    public void setViews(){
+    public void setViews(ImageView imageView){
         vendorDetailsView.showVendorName(currentVendor.getName());
         vendorDetailsView.showVendorDescription(currentVendor.getDescription());
         vendorDetailsView.showVendorLocation(vendorAddress);
+        vendorDetailsView.showVendorPhoneNumber(currentVendor.getPhoneNumber());
+        vendorDetailsView.showVendorEmail(currentVendor.getEmail());
 
         if (MarketUtils.isMarketCurrentlyOpen(vendorDatesOpen, vendorHours)){
             vendorDetailsView.showVendorStatus("Open Now!");
@@ -68,6 +72,17 @@ public class VendorDetailsPresenter {
         }
 
         vendorDetailsView.showVendorHours(DateUtils.parseHours(vendorHours));
+
+        String imageResource = currentVendor.getPhotoUrl();
+        if (imageResource == null){
+            vendorDetailsView.getVendorImageView().setImageResource(R.drawable.ubc);
+        }
+        else if(imageResource.isEmpty() || imageResource.equals("PLACEHOLDER")) {
+            vendorDetailsView.getVendorImageView().setImageResource(R.drawable.ubc);
+        } else {
+            Picasso.with(activity).setIndicatorsEnabled(true);
+            Picasso.with(activity).load(imageResource).into(vendorDetailsView.getVendorImageView());
+        }
     }
 
     /**

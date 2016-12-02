@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/white"
     android:clickable="true"
+    android:paddingBottom="15dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
@@ -17,6 +17,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/vendor_detail_image"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:scaleType="centerCrop"
+                android:adjustViewBounds="true"
+                android:src="@drawable/ubc"/>
 
             <LinearLayout
                 android:id="@+id/vendor_detail_banner"
@@ -48,120 +56,292 @@
                     android:textSize="15dp" />
             </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="8dp" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/grey_300" />
 
-            <Button
-                android:id="@+id/vendor_detail_phone_button"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#fff"
-                android:drawableLeft="@drawable/ic_action_phone_start_black"
-                android:gravity="center_vertical"
-                android:padding="10dp"
-                android:text="Call Vendor " />
+                android:orientation="horizontal"
+                android:padding="15dp"
+                android:clickable="true"
+                android:background="?android:attr/selectableItemBackground"
+                android:id="@+id/vendor_detail_phone_button">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="8dp" />
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_action_phone_start_black" />
 
-            <Button
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="8"
+                    android:orientation="vertical"
+                    android:paddingLeft="10dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:text="Call Vendor"
+                        android:textSize="16sp"/>
+
+                    <TextView
+                        android:id="@+id/vendor_detail_call_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Vendor Phone Number"
+                        android:textSize="14sp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/grey_300" />
+
+            <LinearLayout
                 android:id="@+id/vendor_detail_email_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#fff"
-                android:drawableLeft="@drawable/ic_action_mail"
-                android:gravity="center_vertical"
-                android:padding="10dp"
-                android:text="Email Vendor " />
+                android:orientation="horizontal"
+                android:padding="15dp"
+                android:clickable="true"
+                android:background="?android:attr/selectableItemBackground">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="8dp" />
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_action_mail"/>
 
-            <Button
-                android:id="@+id/vendor_detail_location_button"
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="8"
+                    android:orientation="vertical"
+                    android:paddingLeft="10dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:text="Email Vendor"
+                        android:textSize="16sp"/>
+
+                    <TextView
+                        android:id="@+id/vendor_detail_email_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Vendor Email"
+                        android:textSize="14sp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/grey_300" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#fff"
-                android:drawableLeft="@drawable/ic_action_location"
-                android:gravity="center_vertical"
-                android:padding="10dp"
-                android:text="Location" />
+                android:orientation="horizontal"
+                android:padding="15dp"
+                android:clickable="true"
+                android:background="?android:attr/selectableItemBackground">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="8dp" />
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_action_location" />
 
-            <Button
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="8"
+                    android:orientation="vertical"
+                    android:paddingLeft="10dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:text="Address"
+                        android:textSize="16sp"/>
+
+                    <TextView
+                        android:id="@+id/vendor_detail_location_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Vendor Address"
+                        android:textSize="14sp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/grey_300" />
+
+
+            <LinearLayout
                 android:id="@+id/vendor_detail_hours_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#fff"
-                android:drawableLeft="@drawable/ic_action_clock"
-                android:drawableRight="@drawable/ic_expand_more"
-                android:gravity="center_vertical"
-                android:padding="10dp"
-                android:text="Hours" />
+                android:orientation="horizontal"
+                android:padding="15dp"
+                android:clickable="true"
+                android:background="?android:attr/selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_action_clock" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="8"
+                    android:orientation="vertical"
+                    android:paddingLeft="10dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/black"
+                        android:text="Hours"
+                        android:gravity="center_vertical"
+                        android:textSize="16sp"/>
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_expand_more" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/vendor_detail_hours"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
                 android:text="Hours"
                 android:textColor="#000000"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="8dp" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/grey_300" />
 
-            <Button
+            <LinearLayout
                 android:id="@+id/vendor_detail_description_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#fff"
-                android:drawableLeft="@drawable/ic_action_document"
-                android:drawableRight="@drawable/ic_expand_more"
-                android:gravity="center_vertical"
-                android:padding="10dp"
-                android:text="Description" />
+                android:orientation="horizontal"
+                android:padding="15dp"
+                android:clickable="true"
+                android:background="?android:attr/selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_action_document" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="8"
+                    android:orientation="vertical"
+                    android:paddingLeft="10dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/black"
+                        android:text="Description"
+                        android:gravity="center_vertical"
+                        android:textSize="16sp"/>
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_expand_more" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/vendor_detail_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
                 android:text="Description"
                 android:textColor="#000000"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="8dp" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/grey_300" />
 
-            <Button
+            <LinearLayout
                 android:id="@+id/vendor_detail_produce_list_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#fff"
-                android:drawableLeft="@drawable/ic_action_list"
-                android:drawableRight="@drawable/ic_expand_more"
-                android:gravity="center_vertical"
-                android:padding="10dp"
-                android:text="Produce List" />
+                android:orientation="horizontal"
+                android:padding="15dp"
+                android:clickable="true"
+                android:background="?android:attr/selectableItemBackground">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="8dp" />
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_action_list" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="8"
+                    android:orientation="vertical"
+                    android:paddingLeft="10dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/black"
+                        android:text="Produce List"
+                        android:gravity="center_vertical"
+                        android:textSize="16sp"/>
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_expand_more" />
+            </LinearLayout>
 
             <android.support.v7.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:padding="10dp"
                 android:id="@+id/produce_list">
             </android.support.v7.widget.RecyclerView>
-
         </LinearLayout>
     </ScrollView>
-
 </LinearLayout>
