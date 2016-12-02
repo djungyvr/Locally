@@ -197,11 +197,6 @@ public class VendorActivity extends AppCompatActivity
 
         }
 
-        if (mFragmentManager == null)
-            mFragmentManager = getSupportFragmentManager();
-        // Replace the container with the fragment
-        mFragmentManager.beginTransaction().replace(R.id.content_vendor, mContentVendor).commit();
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.vendor_drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -215,6 +210,11 @@ public class VendorActivity extends AppCompatActivity
         bundle.putString("market_name", mCurrentVendor.getMarketName());
         bundle.putStringArrayList("vendor_items", new ArrayList<>(mCurrentVendor.getItemSet()));
         mContentVendor.setArguments(bundle);
+
+        if (mFragmentManager == null)
+            mFragmentManager = getSupportFragmentManager();
+        // Replace the container with the fragment
+        mFragmentManager.beginTransaction().replace(R.id.content_vendor, mContentVendor).commit();
     }
 
     private void launchEditDetailsFragment() {
@@ -228,6 +228,11 @@ public class VendorActivity extends AppCompatActivity
         bundle.putString("vendor_email", mCurrentVendor.getEmail());
         bundle.putString("vendor_photo_url", mCurrentVendor.getPhotoUrl());
         mContentVendor.setArguments(bundle);
+
+        if (mFragmentManager == null)
+            mFragmentManager = getSupportFragmentManager();
+        // Replace the container with the fragment
+        mFragmentManager.beginTransaction().replace(R.id.content_vendor, mContentVendor).commit();
     }
 
     /**
@@ -285,11 +290,12 @@ public class VendorActivity extends AppCompatActivity
             mVendorName = AppHelper.getUserDetails().getAttributes().getAttributes().get("custom:vendor_name");
             mMarketName = AppHelper.getUserDetails().getAttributes().getAttributes().get("custom:market_name");
             mVendorEmail = AppHelper.getUserDetails().getAttributes().getAttributes().get("email");
-            mVendorPhoneNumber = AppHelper.getUserDetails().getAttributes().getAttributes().get("custom:gitphone_number");
+            mVendorPhoneNumber = AppHelper.getUserDetails().getAttributes().getAttributes().get("custom:phone_number");
             Log.e(TAG, "Details of : " + mVendorName);
             if (mVendorName != null && mTextViewVendorName != null) {
                 mTextViewVendorName.setText(mVendorName);
                 populateContentMain();
+                launchEditGoodsFragment();
             }
         }
 
