@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Locally</string>
+    <string name="app_slogan">Keeping it farm fresh since 2016</string>
     <string name="title_activity_main">MainActivity</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -43,4 +44,5 @@
     <string name="rationale_turn_on_location">We use your location data to customize your experience. Please turn on location services and refresh for additional functionality.</string>
     <string name="button_enable_permissions">Enable Permissions</string>
     <string name="button_refresh">Refresh</string>
+    <string name="title_activity_about_us">AboutUsActivity</string>
 </resources>

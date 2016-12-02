@@ -1,7 +1,7 @@
 package com.example.djung.locally.View;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,12 +64,7 @@ public class SettingsFragment extends android.support.v4.app.Fragment implements
     }
 
     public void launchAboutUsFragment(){
-        AboutUsFragment aboutUsFragment = new AboutUsFragment();
-
-        // Replace the container with the fragment
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.main_layout, aboutUsFragment, String.valueOf(R.id.nav_manage));
-        ft.addToBackStack(String.valueOf(R.id.nav_manage));
-        ft.commit();
+        Intent aboutUsIntent = new Intent(getActivity(), AboutUsActivity.class);
+        startActivity(aboutUsIntent);
     }
 }
