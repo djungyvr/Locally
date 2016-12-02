@@ -110,7 +110,7 @@ public class ContentMainPresenter {
         LocationManager lm = (LocationManager) mActivity.getSystemService(Context.LOCATION_SERVICE);
         if (!lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
             Log.e(TAG, "Location services disabled");
-            Toast.makeText(mActivity, "Enable location services for additional functionality", Toast.LENGTH_LONG).show();
+            // Toast.makeText(mActivity, "Enable location services for additional functionality", Toast.LENGTH_LONG).show();
         }
         if (ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
