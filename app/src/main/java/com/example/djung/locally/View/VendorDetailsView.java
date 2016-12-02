@@ -1,5 +1,7 @@
 package com.example.djung.locally.View;
 
+import android.widget.ImageView;
+
 import java.util.List;
 
 /**
@@ -15,4 +17,7 @@ public interface VendorDetailsView {
     void showVendorLocation(String vendorLocation);
     void showVendorStatus(String vendorStatus);
     void showVendorHours(String vendorHours);
+    void showVendorPhoneNumber(String vendorPhoneNumber);
+    void showVendorEmail(String vendorEmail);
+    ImageView getVendorImageView();
 }
