@@ -10,10 +10,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/market_name"
-        android:textSize="20sp"
-        android:padding="7dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
         android:paddingTop="8dp"
-        android:textColor="#03A9F4"
+        android:paddingBottom="8dp"
+        android:textSize="20sp"
+        android:textColor="#4c516d"
         />
 
     <TextView
@@ -21,7 +23,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="15sp"
-        android:padding="7dp"
+        android:paddingLeft="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
         android:textStyle="bold"
         android:textColor="#4c516d"
         />
@@ -31,9 +35,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/market_days"
+        android:paddingLeft="16dp"
+        android:paddingTop="8dp"
         android:textSize="15sp"
-        android:paddingTop="7dp"
-        android:paddingLeft="7dp"
         android:textStyle="bold"
         android:textColor="#4c516d"
         />
@@ -44,8 +48,8 @@
         android:layout_height="wrap_content"
         android:text="@string/market_dates"
         android:textSize="15sp"
-        android:paddingTop="0dp"
-        android:paddingLeft="7dp"
+        android:paddingLeft="16dp"
+        android:paddingBottom="8dp"
         android:textStyle="bold"
         android:textColor="#4c516d"
         />
@@ -54,9 +58,9 @@
         android:id="@+id/market_description"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginRight="8dp"
+        android:layout_marginLeft="8dp"
         android:text="@string/market_description"
-        android:paddingTop="10dp"
-        android:padding="4dp"
         android:textColor="#4c516d"
         />
 
@@ -66,7 +70,10 @@
         android:layout_height="wrap_content"
         android:text="@string/market_location"
         android:textSize="15sp"
-        android:paddingLeft="7dp"
+        android:paddingLeft="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingRight="16dp"
         android:textStyle="bold"
         android:textColor="#4c516d"
         />

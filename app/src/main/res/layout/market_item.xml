@@ -19,13 +19,13 @@
     <TextView
         android:id="@+id/market_location"
         android:text="@string/market_location"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="#546e7a"
         android:layout_marginLeft="5dip"
         android:layout_marginRight="5dip"
         android:gravity="center"
-        android:textSize="14sp" />
+        android:textSize="13sp" />
 
     <TextView
         android:id="@+id/market_dates"
@@ -36,7 +36,7 @@
         android:layout_marginRight="5dip"
         android:textColor="#546e7a"
         android:gravity="center"
-        android:textSize="14sp" />
+        android:textSize="13sp" />
 
     <TextView
         android:id="@+id/market_days"
@@ -47,6 +47,6 @@
         android:layout_marginRight="5dip"
         android:textColor="#546e7a"
         android:gravity="center"
-        android:textSize="14sp" />
+        android:textSize="13sp" />
 
 </TableLayout>
