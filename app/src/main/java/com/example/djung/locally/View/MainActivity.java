@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity
     private NavigationView mNavigationView;
     private AppBarLayout mAppBarLayout;
     private DrawerLayout mDrawerLayout;
+    private MarketPageFragment mMarketPageFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -269,20 +270,33 @@ public class MainActivity extends AppCompatActivity
         ft.commit();
     }
 
-    /**
-     * Launches the Calendar fragment
-     */
-    public void launchCalendarFragment() {
-        // Replace the container with the fragment
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.main_layout, new CalendarFragment(), String.valueOf(R.id.nav_calendar));
-        ft.addToBackStack(String.valueOf(R.id.nav_calendar));
-        ft.commit();
-    }
-
     @Override
     public void onMarketListItemClick(Market market) {
         launchVendorListFragment(market);
+    }
+
+    @Override
+    public void onMarketListItemDetailsClick(Market market) {
+        launchMarketDetailsFragment(market);
+    }
+
+    public void launchMarketDetailsFragment(Market market) {
+        if (mMarketPageFragment == null) {
+            mMarketPageFragment = new MarketPageFragment();
+
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("currentMarket", market);
+            mMarketPageFragment.setArguments(bundle);
+        } else {
+            Bundle b = mMarketPageFragment.getArguments();
+            b.putSerializable("currentMarket", market);
+        }
+
+        // Replace the container with the fragment
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.main_layout, mMarketPageFragment);
+        ft.addToBackStack(getString(R.string.title_fragment_market_description));
+        ft.commit();
     }
 
     /**

@@ -36,13 +36,24 @@ public class MarketPageFragment extends android.support.v4.app.Fragment{
         View view = inflater.inflate(R.layout.content_market_fragment, container, false);
         ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.title_fragment_market_description));
         ((MainActivity) getActivity()).setAppBarElevation(4);
+
+        Market market = (Market) getArguments().getSerializable("currentMarket");
+        ArrayList<Market> displayMarket = new ArrayList<>();
+        displayMarket.add(market);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.market_page);
+        recyclerView.setHasFixedSize(true);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
+        MarketPageAdapter marketAdapter = new MarketPageAdapter(displayMarket,getContext());
+        recyclerView.setAdapter(marketAdapter);
         return view;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstance) {
         super.onActivityCreated(savedInstance);
-        populateMarketPageView();
+        //populateMarketPageView();
     }
 
     public void populateMarketPageView() {
@@ -63,9 +74,7 @@ public class MarketPageFragment extends android.support.v4.app.Fragment{
             recyclerView.setLayoutManager(layoutManager);
             MarketPageAdapter marketAdapter = new MarketPageAdapter(new ArrayList<Market>(displayMarket),this.getContext());
             recyclerView.setAdapter(marketAdapter);
-        } catch (ExecutionException e) {
-            Log.e(TAG,e.getMessage());
-        } catch (InterruptedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             Log.e(TAG,e.getMessage());
         }
     }

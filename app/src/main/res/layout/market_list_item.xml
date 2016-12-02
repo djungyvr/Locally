@@ -98,7 +98,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:background="?android:attr/selectableItemBackground"
-                    android:text="Notifications"
+                    android:text="Visit Page"
                     android:textColor="#03A9F4" />
 
                 <Button

@@ -48,7 +48,6 @@ public class CalendarFragment extends android.support.v4.app.Fragment{
         super.onActivityCreated(savedInstance);
         ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.title_fragment_calendar));
         ((MainActivity) getActivity()).setAppBarElevation(4);
-        ((MainActivity) getActivity()).setNavigationDrawerCheckedItem(R.id.nav_calendar);
         populateCalendarView();
     }
 

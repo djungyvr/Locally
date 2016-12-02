@@ -50,6 +50,7 @@ public class MarketListPresenter {
 
     public interface onMarketListItemClick {
         void onMarketListItemClick(Market market);
+        void onMarketListItemDetailsClick(Market market);
     }
 
     public void setActionBar(){
@@ -172,17 +173,19 @@ public class MarketListPresenter {
 
     public void onNotificationsButtonClick(int position){
         Market market = marketList.get(position);
-        Log.e(TAG, "Building market list item notification now");
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(activity);
-        builder.setSmallIcon(R.mipmap.ic_app_launcher);
+//        Log.e(TAG, "Building market list item notification now");
+//        NotificationCompat.Builder builder = new NotificationCompat.Builder(activity);
+//        builder.setSmallIcon(R.mipmap.ic_app_launcher);
+//
+//        NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
+//        bigText.bigText(market.getName() + " is about to open! Do not miss it!");
+//        bigText.setBigContentTitle("Market Notification");
+//        builder.setStyle(bigText);
+//
+//        Notification notification = builder.build();
+//        NotificationManagerCompat.from(activity).notify(0,notification);
 
-        NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
-        bigText.bigText(market.getName() + " is about to open! Do not miss it!");
-        bigText.setBigContentTitle("Market Notification");
-        builder.setStyle(bigText);
-
-        Notification notification = builder.build();
-        NotificationManagerCompat.from(activity).notify(0,notification);
+        mCallback.onMarketListItemDetailsClick(market);
     }
 
     public void onMarketListItemClick(int position){

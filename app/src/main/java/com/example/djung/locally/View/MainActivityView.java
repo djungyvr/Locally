@@ -18,7 +18,6 @@ public interface MainActivityView {
     void launchSettingsFragment();
     void launchAboutUsFragment();
     void launchGroceryFragment();
-    void launchCalendarFragment();
     void startLoginActivityIntent();
     void clearFragmentBackStack();
 }

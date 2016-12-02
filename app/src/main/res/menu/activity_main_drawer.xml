@@ -13,10 +13,12 @@
             android:id="@+id/market_list"
             android:icon="@drawable/ic_action_list"
             android:title="Market List" />
+        <!--
         <item
             android:id="@+id/nav_calendar"
             android:icon="@drawable/ic_action_calendar_day"
             android:title="Market Calendar" />
+            -->
         <item
             android:id="@+id/nav_grocery_list"
             android:icon="@drawable/ic_action_document"

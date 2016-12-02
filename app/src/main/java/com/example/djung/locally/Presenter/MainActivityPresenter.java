@@ -67,9 +67,6 @@ public class MainActivityPresenter {
             case R.id.nav_use_as_vendor:
                 mView.startLoginActivityIntent();
                 break;
-            case R.id.nav_calendar:
-                mView.launchCalendarFragment();
-                break;
         }
         mView.closeNavigationDrawer();
     }
