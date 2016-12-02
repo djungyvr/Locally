@@ -12,3 +12,6 @@ Obtain api_keys.xml from the developers and place it inside the res/values/ dire
 1. Either fork or clone  the repo into a desired directory or on Android Studio use new project from Git.
 2. If forking and cloning select New Project from Existing Source in Android Studio.
 3. Get the AwsConfiguration.java and api_keys.xml from the developers. Place the AwsConfiguration.java file in the AWS package and the api_keys.xml file inside the res/values/ directory.
+
+### Installing the Application
+WIP updated once alpha release completed.
