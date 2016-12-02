@@ -4,6 +4,7 @@ import android.app.SearchManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
@@ -91,6 +92,14 @@ public class GroceryListDatabase {
         initialValues.put(KEY_GROCERY_ITEM_NAME,item);
         initialValues.put(KEY_GROCERY_ITEM_INFO,"INFO");
         return mGroceryItemOpenHelper.getWritableDatabase().insert(FTS_VIRTUAL_TABLE, null,initialValues);
+    }
+
+    /**
+     * Fetches the number of items in the grocery list
+     * @return number of items
+     */
+    public long getNumItems() {
+        return DatabaseUtils.queryNumEntries(mGroceryItemOpenHelper.getReadableDatabase(),FTS_VIRTUAL_TABLE);
     }
 
     /**

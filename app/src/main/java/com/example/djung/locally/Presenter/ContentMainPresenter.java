@@ -13,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.djung.locally.AsyncTasks.GroceryListCountTask;
 import com.example.djung.locally.DB.VendorItemDatabase;
 import com.example.djung.locally.DB.VendorItemsProvider;
 import com.example.djung.locally.Model.Market;
@@ -44,6 +45,7 @@ public class ContentMainPresenter {
     private ArrayList<Market> mAllMarketsList;
     private SuggestionAdapter mVendorItemsSuggestionAdapter;
     private static final String TAG = "ContentMainPresenter";
+    private String mGroceryCountSubHeading;
 
     /**
      * Constructor
@@ -153,11 +155,34 @@ public class ContentMainPresenter {
     }
 
     /**
+     * Gets the subheading of the markets
+     */
+    private void fetchGroceryListCount() {
+        long count = 0;
+        try {
+            count = new GroceryListCountTask(mActivity).execute().get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        String message = "";
+
+        if(count == 1) {
+            message = "1 saved item";
+        } else {
+            message = count + " saved items";
+        }
+
+        mGroceryCountSubHeading = message;
+    }
+
+    /**
      * Populates content main including quick link cards section, nearby/recently viewed markets,
      * and a message asking the user to enable permissions if currently off
      */
     public void populateContentMain() {
         fetchAllMarketsData();
+        fetchGroceryListCount();
         populateQuickLinksCardSection();
         populateMarketsCardSection();
         showRequestCards();
@@ -191,12 +216,18 @@ public class ContentMainPresenter {
             }
         }
 
+        String groceryCountSubHeading = "";
+
+        if(mGroceryCountSubHeading != null && !mGroceryCountSubHeading.isEmpty()) {
+            groceryCountSubHeading = mGroceryCountSubHeading;
+        }
+
 //       TODO: get number of items on the user's grocery list
 
         q.add(new QuickLinkCard(R.drawable.ubc, "All Markets", allMarkets));
         q.add(new QuickLinkCard(R.drawable.thumbnail2, "Calendar", marketsOpen));
         q.add(new QuickLinkCard(R.drawable.thumbnail3, "In Season Produce", "16 items"));
-        q.add(new QuickLinkCard(R.drawable.thumbnail4, "Your Grocery List", "3 saved items"));
+        q.add(new QuickLinkCard(R.drawable.thumbnail4, "Your Grocery List", groceryCountSubHeading));
 
         QuickLinkCardSection qs = new QuickLinkCardSection(q);
         mContentMainSectionsData.add(qs);
