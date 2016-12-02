@@ -39,6 +39,7 @@ import com.example.djung.locally.Utils.FileUtils;
 import com.example.djung.locally.Utils.VendorUtils;
 import com.google.firebase.FirebaseApiNotAvailableException;
 import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -176,8 +177,11 @@ public class EditVendorDetailsFragment extends Fragment implements View.OnClickL
 
         // Load the image
         Picasso.with(getContext()).setIndicatorsEnabled(true);
+        Picasso.with(getContext()).setLoggingEnabled(true);
+        Picasso.with(getContext()).setLoggingEnabled(true);
         Picasso.with(getContext()).load(vendorPhotoUrl)
                 .memoryPolicy(MemoryPolicy.NO_CACHE)
+                .networkPolicy(NetworkPolicy.NO_CACHE)
                 .error(R.drawable.default_market_image)
                 .into(mImageViewVendor);
         return view;
@@ -245,7 +249,6 @@ public class EditVendorDetailsFragment extends Fragment implements View.OnClickL
      * @param resultCode result code of selecting image
      * @param data contains the Uri of the selected image
      */
-    //TODO ONLY UPLOAD IMAGE WHEN CHANGED
     @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
