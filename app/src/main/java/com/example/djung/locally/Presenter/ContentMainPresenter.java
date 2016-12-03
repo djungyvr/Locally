@@ -222,8 +222,8 @@ public class ContentMainPresenter {
             groceryCountSubHeading = mGroceryCountSubHeading;
         }
 
-        q.add(new QuickLinkCard(R.drawable.thumbnail2, "All Markets", allMarkets));
-        q.add(new QuickLinkCard(R.drawable.map2, "Map", marketsOpen));
+        q.add(new QuickLinkCard(R.drawable.thumbnail1, "All Markets", allMarkets));
+        q.add(new QuickLinkCard(R.drawable.thumbnail2, "Map", marketsOpen));
         q.add(new QuickLinkCard(R.drawable.thumbnail3, "In Season Produce", "16 items"));
         q.add(new QuickLinkCard(R.drawable.thumbnail4, "Your Grocery List", groceryCountSubHeading));
 
