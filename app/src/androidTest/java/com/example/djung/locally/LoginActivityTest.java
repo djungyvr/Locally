@@ -7,9 +7,12 @@ import android.support.test.espresso.NoMatchingViewException;
 import android.support.test.espresso.ViewAssertion;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.support.v7.widget.RecyclerView;
 import android.test.suitebuilder.annotation.LargeTest;
 import android.util.Log;
+import android.widget.EditText;
 
+import com.example.djung.locally.HelperAction.CustomViewAction;
 import com.example.djung.locally.View.LoginActivity;
 import com.example.djung.locally.View.VendorActivity;
 
@@ -23,14 +26,19 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.typeText;
+import static android.support.test.espresso.action.ViewActions.typeTextIntoFocusedView;
 import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.withChild;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.core.AllOf.allOf;
 import static org.hamcrest.core.IsNot.not;
 
 /**
@@ -125,5 +133,38 @@ public class LoginActivityTest {
                 onView(withId(R.id.fab_save_vendor_list)).check(matches(isDisplayed()));
             }
         }
+    }
+
+    private void login() {
+        // Type username.
+        onView(withId(R.id.edit_text_username)).perform(typeText("test"),
+                closeSoftKeyboard());
+        // Type password.
+        onView(withId(R.id.edit_text_password)).perform(typeText("Test1234!"),
+                closeSoftKeyboard());
+
+        onView(withId(R.id.button_login)).perform(click());
+    }
+
+    // Should be called after failed logins
+    // Should sign out after each test
+    @Test
+    public void testAddItem() {
+
+        login();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Add crab apples
+        onView(isAssignableFrom(EditText.class)).perform(typeText("crab appl"),closeSoftKeyboard());
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        onView(withText(containsString("crab appl"))).perform(click());
     }
 }

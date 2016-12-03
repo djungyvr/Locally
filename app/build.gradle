@@ -40,8 +40,6 @@ dependencies {
     })
 
     compile 'com.android.support:appcompat-v7:23.4.0'
-    //compile 'com.amazonaws:aws-android-sdk-core:2.2.+'
-    //compile 'com.amazonaws:aws-android-sdk-s3:2.2.+'
     compile 'com.amazonaws:aws-android-sdk-ddb:2.3.2'
     compile 'com.amazonaws:aws-android-sdk-ddb-mapper:2.3.2'
     compile 'com.amazonaws:aws-android-sdk-cognitoidentityprovider:2.3.2'
@@ -50,7 +48,6 @@ dependencies {
     compile 'com.google.android.gms:play-services-maps:9.6.1'
     compile 'com.google.android.gms:play-services-location:9.6.1'
     compile 'com.google.android.gms:play-services-auth:9.6.1'
-    compile 'com.android.support.test.espresso:espresso-idling-resource:2.2.2'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'pub.devrel:easypermissions:0.1.5'
     compile('com.google.api-client:google-api-client-android:1.22.0') {
