@@ -222,10 +222,8 @@ public class ContentMainPresenter {
             groceryCountSubHeading = mGroceryCountSubHeading;
         }
 
-//       TODO: get number of items on the user's grocery list
-
-        q.add(new QuickLinkCard(R.drawable.ubc, "All Markets", allMarkets));
-        q.add(new QuickLinkCard(R.drawable.thumbnail2, "Calendar", marketsOpen));
+        q.add(new QuickLinkCard(R.drawable.thumbnail2, "All Markets", allMarkets));
+        q.add(new QuickLinkCard(R.drawable.map2, "Map", marketsOpen));
         q.add(new QuickLinkCard(R.drawable.thumbnail3, "In Season Produce", "16 items"));
         q.add(new QuickLinkCard(R.drawable.thumbnail4, "Your Grocery List", groceryCountSubHeading));
 
