@@ -1,6 +1,0 @@
-<resources>
-    <integer name="apples">0</integer>
-    <integer name="squash">1</integer>
-    <integer name="tomatoes">2</integer>
-    <integer name="blue_berries">3</integer>
-</resources>

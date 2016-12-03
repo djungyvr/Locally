@@ -15,3 +15,6 @@ Obtain api_keys.xml from the developers and place it inside the res/values/ dire
 
 ### Installing the Application
 WIP updated once alpha release completed.
+
+### Documents 
+All CPEN 321 Documents are located on the 'documents' branch.
