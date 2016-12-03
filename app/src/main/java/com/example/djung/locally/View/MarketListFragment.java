@@ -46,7 +46,7 @@ public class MarketListFragment extends android.support.v4.app.Fragment implemen
         View view = inflater.inflate(R.layout.market_list, container, false);
         marketListPresenter = new MarketListPresenter(getActivity(), this);
         this.mainActivity = (MainActivity) getActivity();
-        this.recyclerView = (RecyclerView) view.findViewById(R.id.market_list);
+        this.recyclerView = (RecyclerView) view.findViewById(R.id.nav_market_list);
         return view;
     }
 

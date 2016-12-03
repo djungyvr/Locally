@@ -4,8 +4,6 @@ package com.example.djung.locally.Presenter;
 import com.example.djung.locally.R;
 import com.example.djung.locally.View.MainActivityView;
 
-import java.lang.ref.WeakReference;
-
 /**
  * Created by Angy Chung on 2016-11-28.
  */
@@ -57,7 +55,7 @@ public class MainActivityPresenter {
             case R.id.nav_map:
                 mView.launchMapFragment();
                 break;
-            case R.id.market_list:
+            case R.id.nav_market_list:
                 mView.launchMarketFragment();
                 break;
             case R.id.nav_manage:

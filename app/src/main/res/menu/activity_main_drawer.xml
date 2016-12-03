@@ -10,7 +10,7 @@
             android:icon="@drawable/ic_home"
             android:title="Home" />
         <item
-            android:id="@+id/market_list"
+            android:id="@+id/nav_market_list"
             android:icon="@drawable/ic_action_list"
             android:title="Market List" />
         <!--

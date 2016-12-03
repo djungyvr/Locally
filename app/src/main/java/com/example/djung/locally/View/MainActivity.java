@@ -216,8 +216,8 @@ public class MainActivity extends AppCompatActivity
      */
     public void launchMarketFragment() {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.main_layout, new MarketListFragment(), String.valueOf(R.id.market_list));
-        ft.addToBackStack(String.valueOf(R.id.market_list));
+        ft.replace(R.id.main_layout, new MarketListFragment(), String.valueOf(R.id.nav_market_list));
+        ft.addToBackStack(String.valueOf(R.id.nav_market_list));
         ft.commit();
     }
 
@@ -316,7 +316,7 @@ public class MainActivity extends AppCompatActivity
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.main_layout, mVendorListFragment, "");
-        ft.addToBackStack(String.valueOf(R.id.market_list));
+        ft.addToBackStack(String.valueOf(R.id.nav_market_list));
         ft.commit();
     }
 
@@ -348,7 +348,7 @@ public class MainActivity extends AppCompatActivity
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.main_layout, mVendorDetailsFragment, "");
-        ft.addToBackStack(String.valueOf(R.id.market_list));
+        ft.addToBackStack(String.valueOf(R.id.nav_market_list));
         ft.commit();
     }
 

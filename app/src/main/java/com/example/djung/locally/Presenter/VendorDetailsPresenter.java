@@ -54,7 +54,7 @@ public class VendorDetailsPresenter {
     }
 
     public void setNavDrawerSelectedItem(){
-        vendorDetailsView.setNavDrawerSelectedItem(R.id.market_list);
+        vendorDetailsView.setNavDrawerSelectedItem(R.id.nav_market_list);
     }
 
     public void setViews(ImageView imageView){

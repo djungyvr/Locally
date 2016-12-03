@@ -2,7 +2,6 @@ package com.example.djung.locally.Presenter;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.Notification;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -10,9 +9,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -58,7 +55,7 @@ public class MarketListPresenter {
     }
 
     public void setNavDrawerSelectedItem(){
-        marketListView.setNavDrawerSelectedItem(R.id.market_list);
+        marketListView.setNavDrawerSelectedItem(R.id.nav_market_list);
     }
 
     public void getUserLocation(){
