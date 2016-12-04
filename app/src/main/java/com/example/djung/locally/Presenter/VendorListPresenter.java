@@ -13,7 +13,7 @@ import com.example.djung.locally.Model.Vendor;
 import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.ThreadUtils;
 import com.example.djung.locally.View.Adapters.VendorListAdapter;
-import com.example.djung.locally.View.VendorListView;
+import com.example.djung.locally.View.Interfaces.VendorListView;
 
 import java.util.ArrayList;
 import java.util.List;

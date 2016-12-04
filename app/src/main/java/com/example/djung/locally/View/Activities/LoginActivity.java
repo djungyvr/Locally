@@ -1,11 +1,8 @@
-package com.example.djung.locally.View;
+package com.example.djung.locally.View.Activities;
 
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -22,8 +19,6 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.ForgotPas
 import com.example.djung.locally.AWS.AppHelper;
 import com.example.djung.locally.AsyncTasks.LoginTask;
 import com.example.djung.locally.R;
-
-import java.util.Locale;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, LoginTask.LoginTaskCallback {
     private final String TAG = "LoginActivity";

@@ -1,5 +1,6 @@
 package com.example.djung.locally;
 
+
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.contrib.DrawerActions;
 import android.support.test.espresso.contrib.NavigationViewActions;
@@ -9,7 +10,7 @@ import android.test.suitebuilder.annotation.LargeTest;
 
 import com.example.djung.locally.HelperAction.RecyclerViewMatcher;
 import com.example.djung.locally.HelperAction.ToolbarMatcher;
-import com.example.djung.locally.View.MainActivity;
+import com.example.djung.locally.View.Activities.MainActivity;
 
 import org.junit.Rule;
 import org.junit.Test;

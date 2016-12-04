@@ -1,18 +1,15 @@
-package com.example.djung.locally.View;
+package com.example.djung.locally.View.Activities;
 
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
@@ -24,7 +21,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserDetails;
@@ -36,13 +32,12 @@ import com.example.djung.locally.DB.VendorItemsProvider;
 import com.example.djung.locally.Model.Vendor;
 import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
-import com.example.djung.locally.Utils.VendorUtils;
 import com.example.djung.locally.View.Adapters.SuggestionAdapter;
 import com.example.djung.locally.View.Adapters.VendorItemAdapter;
+import com.example.djung.locally.View.Fragments.EditVendorDetailsFragment;
+import com.example.djung.locally.View.Fragments.VendorFragment;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 /**

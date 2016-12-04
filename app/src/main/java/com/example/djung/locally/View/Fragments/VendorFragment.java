@@ -1,4 +1,4 @@
-package com.example.djung.locally.View;
+package com.example.djung.locally.View.Fragments;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -18,6 +18,7 @@ import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.VendorUtils;
 import com.example.djung.locally.View.Adapters.VendorItemAdapter;
+import com.example.djung.locally.View.VendorItemRecyclerView;
 
 import java.util.ArrayList;
 import java.util.HashSet;

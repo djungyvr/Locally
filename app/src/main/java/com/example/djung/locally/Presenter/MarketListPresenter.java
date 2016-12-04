@@ -19,7 +19,7 @@ import com.example.djung.locally.Utils.LocationUtils;
 import com.example.djung.locally.Utils.MarketUtils;
 import com.example.djung.locally.Utils.ThreadUtils;
 import com.example.djung.locally.View.Adapters.MarketListAdapter;
-import com.example.djung.locally.View.MarketListView;
+import com.example.djung.locally.View.Interfaces.MarketListView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

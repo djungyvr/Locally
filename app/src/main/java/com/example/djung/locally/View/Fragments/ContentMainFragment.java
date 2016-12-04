@@ -1,9 +1,8 @@
-package com.example.djung.locally.View;
+package com.example.djung.locally.View.Fragments;
 
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,12 +11,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.djung.locally.DB.VendorItemDatabase;
-import com.example.djung.locally.DB.VendorItemsProvider;
 import com.example.djung.locally.Presenter.ContentMainPresenter;
 import com.example.djung.locally.R;
+import com.example.djung.locally.View.Activities.MainActivity;
 import com.example.djung.locally.View.Adapters.ContentMainAdapter;
 import com.example.djung.locally.View.Adapters.SuggestionAdapter;
+import com.example.djung.locally.View.Interfaces.ContentMainView;
 
 /**
  * Created by Angy Chung on 2016-11-27.

@@ -6,7 +6,7 @@
     android:layout_marginLeft="@dimen/activity_horizontal_margin"
     android:layout_marginRight="@dimen/activity_horizontal_margin"
     android:layout_marginTop="@dimen/activity_vertical_margin"
-    tools:context=".View.VerifyActivity"
+    tools:context=".View.Activities.VerifyActivity"
     android:orientation="vertical"
     tools:showIn="@layout/activity_verify">
 

@@ -1,4 +1,4 @@
-package com.example.djung.locally.View;
+package com.example.djung.locally.View.Fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,12 +10,15 @@ import android.widget.Toast;
 
 import com.example.djung.locally.Presenter.SettingsPresenter;
 import com.example.djung.locally.R;
+import com.example.djung.locally.View.Activities.AboutUsActivity;
+import com.example.djung.locally.View.Activities.MainActivity;
+import com.example.djung.locally.View.Interfaces.SettingsView;
 
 /**
  * Created by Andy Lin on 2016-11-29.
  */
 
-public class SettingsFragment extends android.support.v4.app.Fragment implements SettingsView{
+public class SettingsFragment extends android.support.v4.app.Fragment implements SettingsView {
     private SettingsPresenter settingsPresenter;
     private MainActivity mainActivity;
     private LinearLayout contactUsSection;

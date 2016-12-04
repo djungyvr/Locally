@@ -1,4 +1,4 @@
-package com.example.djung.locally.View;
+package com.example.djung.locally.View.Fragments;
 
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,13 +9,15 @@ import android.view.ViewGroup;
 
 import com.example.djung.locally.Presenter.MarketListPresenter;
 import com.example.djung.locally.R;
+import com.example.djung.locally.View.Activities.MainActivity;
 import com.example.djung.locally.View.Adapters.MarketListAdapter;
+import com.example.djung.locally.View.Interfaces.MarketListView;
 
 /**
  * Created by Andy Lin on 2016-11-08.
  */
 
-public class MarketListFragment extends android.support.v4.app.Fragment implements MarketListView{
+public class MarketListFragment extends android.support.v4.app.Fragment implements MarketListView {
     private MarketListPresenter marketListPresenter;
     private MainActivity mainActivity;
     private RecyclerView recyclerView;

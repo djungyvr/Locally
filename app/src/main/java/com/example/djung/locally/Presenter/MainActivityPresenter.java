@@ -2,7 +2,7 @@ package com.example.djung.locally.Presenter;
 
 
 import com.example.djung.locally.R;
-import com.example.djung.locally.View.MainActivityView;
+import com.example.djung.locally.View.Interfaces.MainActivityView;
 
 /**
  * Created by Angy Chung on 2016-11-28.
