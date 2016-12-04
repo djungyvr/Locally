@@ -85,13 +85,15 @@ public class QuickLinkCardSectionAdapter extends
                 int position = getAdapterPosition();
                 switch(position) {
                     case 0: ((MainActivity) mContext).launchMarketFragment();
-                        break;
+                            break;
                     case 1:
-                        //TODO still need to update the photo
-                        ((MainActivity) mContext).launchMapFragment();
-                        break;
-                    case 2: break;
+                            //TODO still need to update the photo
+                            ((MainActivity) mContext).launchMapFragment();
+                            break;
+                    case 2: ((MainActivity) mContext).launchInSeasonFragment();
+                            break;
                     case 3: ((MainActivity) mContext).launchGroceryFragment();
+                            break;
                     default:
                         break;
                 }

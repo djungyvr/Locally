@@ -31,6 +31,7 @@ import com.example.djung.locally.Presenter.VendorListPresenter;
 import com.example.djung.locally.R;
 import com.example.djung.locally.View.Fragments.ContentMainFragment;
 import com.example.djung.locally.View.Fragments.GroceryListFragment;
+import com.example.djung.locally.View.Fragments.InSeasonListFragment;
 import com.example.djung.locally.View.Interfaces.MainActivityView;
 import com.example.djung.locally.View.Fragments.MapFragment;
 import com.example.djung.locally.View.Fragments.MarketListFragment;
@@ -66,6 +67,9 @@ public class MainActivity extends AppCompatActivity
 
     // Fragment for display vendor item search result
     private Fragment mVendorSearchItemFragment;
+
+    // Fragment for displaying the seasonal produce list
+    private Fragment mInSeasonFragment;
 
     private NavigationView mNavigationView;
     private AppBarLayout mAppBarLayout;
@@ -280,6 +284,21 @@ public class MainActivity extends AppCompatActivity
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.main_layout, new GroceryListFragment(), String.valueOf(R.id.nav_grocery_list));
         ft.addToBackStack(String.valueOf(R.id.nav_grocery_list));
+        ft.commit();
+    }
+
+    /**
+     * Launches the In Season Fragment
+     */
+
+    public void launchInSeasonFragment() {
+        if (mInSeasonFragment == null)
+            mInSeasonFragment = new InSeasonListFragment();
+
+        // Replace the container with the fragment
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.main_layout, mInSeasonFragment);
+        ft.addToBackStack(getString(R.string.title_fragment_in_season));
         ft.commit();
     }
 
