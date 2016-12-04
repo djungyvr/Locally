@@ -1,5 +1,7 @@
 package com.example.djung.locally.Utils;
 
+import com.google.api.client.util.DateTime;
+
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.ParseException;
@@ -110,5 +112,24 @@ public class DateUtils {
     public static String month_InttoString(String month){
         String monthString = new DateFormatSymbols().getMonths()[Integer.valueOf(month)-1];
         return monthString;
+    }
+
+    /**
+     * Returns the current season by month
+     * @return season as an int "spring:1,summer:2,fall:3,winter:4"
+     */
+    public static int getCurrentSeason(){
+        Calendar c = Calendar.getInstance();
+        int month = c.get(Calendar.MONTH);
+
+        if(2 <= month && month <= 4) {
+            return 1;
+        } else if(5 <= month && month <= 7) {
+            return 2;
+        } else if(8 <= month && month <= 10) {
+            return 3;
+        } else {
+            return 4;
+        }
     }
 }

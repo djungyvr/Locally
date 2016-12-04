@@ -2,9 +2,15 @@ package com.example.djung.locally.Presenter;
 
 import android.app.Activity;
 import android.content.res.AssetManager;
+import android.database.Cursor;
+import android.provider.BaseColumns;
 import android.util.Log;
 
+import com.example.djung.locally.DB.VendorItemDatabase;
+import com.example.djung.locally.DB.VendorItemsProvider;
+import com.example.djung.locally.R;
 import com.example.djung.locally.View.Adapters.InSeasonListAdapter;
+import com.example.djung.locally.View.Adapters.SuggestionAdapter;
 import com.example.djung.locally.View.Interfaces.InSeasonListView;
 
 import java.io.BufferedReader;
@@ -36,30 +42,26 @@ public class InSeasonListPresenter {
         mInSeasonListView.setActionBarTitle("In Season List");
     }
 
-    public void populateInSeasonList() {
+    public void populateInSeasonList(String season) {
         Log.e(TAG, "Populating the in season list");
+        mProduceList.clear();
 
-        //TODO: Change this to query the database instead
+        VendorItemDatabase db = new VendorItemDatabase(mActivity);
+        String[] columns = new String[] {
+                BaseColumns._ID,
+                db.KEY_VENDOR_ITEM_NAME,
+                db.KEY_VENDOR_ITEM_INFO
+        };
+        Cursor cursor = db.getSeasonMatches(season,columns);
 
-        AssetManager am = mActivity.getAssets();
-        BufferedReader buffer = null;
-
-        try {
-            buffer = new BufferedReader(new InputStreamReader(am.open("vendor_items.txt")));
-            String line;
-            while((line=buffer.readLine()) != null) {
-                String[] vendorItem = line.trim().split(",");
-                mProduceList.add(vendorItem[0]);
-                mSeasonList.add(vendorItem[1]);
+        if (cursor == null) {
+        } else {
+            cursor.moveToFirst();
+            // Specify the columns we want to display in the result
+            while(cursor.moveToNext()) {
+                mProduceList.add(cursor.getString(cursor.getColumnIndex(VendorItemDatabase.KEY_VENDOR_ITEM_NAME)));
             }
-            buffer.close();
         }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        //END of TODO
-
 
         InSeasonListAdapter adapter = new InSeasonListAdapter(this);
         mInSeasonListView.showInSeasonList(adapter);

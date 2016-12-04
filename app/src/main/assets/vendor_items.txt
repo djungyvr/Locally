@@ -1,33 +1,33 @@
-kale,all
-mushrooms,all
-bay leaves,all
-cilantro,all
-rosemary,all
-sage,all
-winter savory,all
-thyme,all
-clams,all
-Pacific cod,all
-crab,all
-Dungeness crab,all
-Pacific flounder,all
-mussels,all
-Pacific oysters,all
-sablefish,all
-scallops,all
-West Coast shrimp,all
-Side Stripe shrimp,all
-turkey,all
-dairy products,all
-eggs,all
-beef,all
-buffalo,all
-chicken,all
-duck,all
-goat,all
-lamb,all
-pork,all
-rabbit,all
+kale,allseason
+mushrooms,allseason
+bay leaves,allseason
+cilantro,allseason
+rosemary,allseason
+sage,allseason
+winter savory,allseason
+thyme,allseason
+clams,allseason
+Pacific cod,allseason
+crab,allseason
+Dungeness crab,allseason
+Pacific flounder,allseason
+mussels,allseason
+Pacific oysters,allseason
+sablefish,allseason
+scallops,allseason
+West Coast shrimp,allseason
+Side Stripe shrimp,allseason
+turkey,allseason
+dairy products,allseason
+eggs,allseason
+beef,allseason
+buffalo,allseason
+chicken,allseason
+duck,allseason
+goat,allseason
+lamb,allseason
+pork,allseason
+rabbit,allseason
 apples,fall
 artichokes,fall
 Brussel sprouts,fall
