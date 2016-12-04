@@ -1,4 +1,6 @@
-package com.example.djung.locally.View;
+package com.example.djung.locally.View.AdapterViewItems;
+
+import com.example.djung.locally.View.AdapterViewItems.QuickLinkCard;
 
 import java.util.ArrayList;
 

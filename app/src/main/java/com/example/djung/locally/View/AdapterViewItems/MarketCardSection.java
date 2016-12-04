@@ -1,4 +1,4 @@
-package com.example.djung.locally.View;
+package com.example.djung.locally.View.AdapterViewItems;
 
 import com.example.djung.locally.Model.Market;
 

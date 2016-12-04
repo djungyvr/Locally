@@ -21,12 +21,12 @@ import com.example.djung.locally.Utils.MarketUtils;
 import com.example.djung.locally.View.Adapters.ContentMainAdapter;
 import com.example.djung.locally.View.Adapters.SuggestionAdapter;
 import com.example.djung.locally.View.Interfaces.ContentMainView;
-import com.example.djung.locally.View.EnablePermissionsCard;
+import com.example.djung.locally.View.AdapterViewItems.EnablePermissionsCard;
 import com.example.djung.locally.View.Activities.MainActivity;
-import com.example.djung.locally.View.MarketCardSection;
-import com.example.djung.locally.View.Permissions;
-import com.example.djung.locally.View.QuickLinkCard;
-import com.example.djung.locally.View.QuickLinkCardSection;
+import com.example.djung.locally.View.AdapterViewItems.MarketCardSection;
+import com.example.djung.locally.Utils.Permissions;
+import com.example.djung.locally.View.AdapterViewItems.QuickLinkCard;
+import com.example.djung.locally.View.AdapterViewItems.QuickLinkCardSection;
 
 import java.util.ArrayList;
 import java.util.List;

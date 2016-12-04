@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.example.djung.locally.R;
 import com.example.djung.locally.View.Activities.MainActivity;
-import com.example.djung.locally.View.QuickLinkCard;
+import com.example.djung.locally.View.AdapterViewItems.QuickLinkCard;
 import com.example.djung.locally.View.SquareImageView;
 
 import java.util.ArrayList;

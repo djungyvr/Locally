@@ -9,9 +9,9 @@ import android.widget.TextView;
 
 import com.example.djung.locally.Presenter.ContentMainPresenter;
 import com.example.djung.locally.R;
-import com.example.djung.locally.View.EnablePermissionsCard;
-import com.example.djung.locally.View.MarketCardSection;
-import com.example.djung.locally.View.QuickLinkCardSection;
+import com.example.djung.locally.View.AdapterViewItems.EnablePermissionsCard;
+import com.example.djung.locally.View.AdapterViewItems.MarketCardSection;
+import com.example.djung.locally.View.AdapterViewItems.QuickLinkCardSection;
 
 import java.util.ArrayList;
 
