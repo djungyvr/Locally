@@ -17,7 +17,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.Utils.ThreadUtils;
@@ -184,7 +183,6 @@ public class MapFragment extends Fragment
                     case SUCCESS:
                         // All location settings are satisfied. The client can initialize location
                         // requests here.
-                        requestPermissions();
                         setLastLocation();
                         setLastPosition();
                         moveCameraFocus(mLastLocation, INITIAL_ZOOM);
@@ -249,14 +247,12 @@ public class MapFragment extends Fragment
             // Should we show an explanation
             if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                     Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                Log.e(TAG, "Show request permission rationale");
-                Toast.makeText(getActivity(), "Please allow location permissions for additional functionality", Toast.LENGTH_LONG).show();
+               // Toast.makeText(getActivity(), "Please allow location permissions for additional functionality", Toast.LENGTH_LONG).show();
                 ActivityCompat.requestPermissions(getActivity(),
                         new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                         Permissions.REQUEST_COURSE_PERMISSION);
             } else {
                 // No explanation needed, we can request the permission.
-                Log.e(TAG, "No explanation, Request permission");
                 ActivityCompat.requestPermissions(getActivity(),
                         new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                         Permissions.REQUEST_COURSE_PERMISSION);
@@ -269,7 +265,7 @@ public class MapFragment extends Fragment
                 ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions();
         } else {
-            Log.e(TAG, "Permission granted");
+            Log.d(TAG, "Location permission granted");
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, (LocationListener) this);
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         }
@@ -382,7 +378,7 @@ public class MapFragment extends Fragment
                     setLastPosition();
                     moveCameraFocus(mLastLocation, INITIAL_ZOOM);
                 } else {
-                    Toast.makeText(getActivity(), "Please turn on location permissions in App Settings for additional functionality.", Toast.LENGTH_LONG).show();
+                 //   Toast.makeText(getActivity(), "Please turn on location permissions in App Settings for additional functionality.", Toast.LENGTH_LONG).show();
                     Log.d(TAG, "Course Location Permission not granted");
                 }
                 return;
