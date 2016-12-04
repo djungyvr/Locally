@@ -1,4 +1,4 @@
-package com.example.djung.locally.View;
+package com.example.djung.locally.View.Fragments;
 
 import android.accounts.AccountManager;
 import android.app.Dialog;
@@ -26,6 +26,7 @@ import android.view.ViewTreeObserver;
 
 import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.R;
+import com.example.djung.locally.View.Activities.MainActivity;
 import com.example.djung.locally.View.Adapters.MarketSyncAdapter;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;

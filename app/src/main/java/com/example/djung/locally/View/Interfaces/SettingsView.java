@@ -1,4 +1,4 @@
-package com.example.djung.locally.View;
+package com.example.djung.locally.View.Interfaces;
 
 /**
  * Created by Andy Lin on 2016-11-29.

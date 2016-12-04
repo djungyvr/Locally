@@ -1,4 +1,4 @@
-package com.example.djung.locally.View;
+package com.example.djung.locally.View.Interfaces;
 
 import com.example.djung.locally.View.Adapters.VendorListAdapter;
 

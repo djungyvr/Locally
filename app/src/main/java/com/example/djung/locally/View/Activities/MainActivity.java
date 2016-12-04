@@ -1,4 +1,4 @@
-package com.example.djung.locally.View;
+package com.example.djung.locally.View.Activities;
 
 import android.Manifest;
 import android.content.Context;
@@ -29,6 +29,18 @@ import com.example.djung.locally.Presenter.MarketListPresenter;
 import com.example.djung.locally.Presenter.MarketPresenter;
 import com.example.djung.locally.Presenter.VendorListPresenter;
 import com.example.djung.locally.R;
+import com.example.djung.locally.View.Fragments.ContentMainFragment;
+import com.example.djung.locally.View.Fragments.GroceryListFragment;
+import com.example.djung.locally.View.Interfaces.MainActivityView;
+import com.example.djung.locally.View.Fragments.MapFragment;
+import com.example.djung.locally.View.Fragments.MarketListFragment;
+import com.example.djung.locally.View.Fragments.MarketPageFragment;
+import com.example.djung.locally.View.Permissions;
+import com.example.djung.locally.View.Fragments.SettingsFragment;
+import com.example.djung.locally.View.Fragments.SyncCalendarFragment;
+import com.example.djung.locally.View.Fragments.VendorDetailsFragment;
+import com.example.djung.locally.View.Fragments.VendorListFragment;
+import com.example.djung.locally.View.Fragments.VendorSearchItemFragment;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;

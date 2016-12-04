@@ -1,4 +1,4 @@
-package com.example.djung.locally.View;
+package com.example.djung.locally.View.Fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,7 +13,9 @@ import android.widget.TextView;
 
 import com.example.djung.locally.Presenter.VendorDetailsPresenter;
 import com.example.djung.locally.R;
+import com.example.djung.locally.View.Activities.MainActivity;
 import com.example.djung.locally.View.Adapters.VendorProduceListAdapter;
+import com.example.djung.locally.View.Interfaces.VendorDetailsView;
 
 import java.util.List;
 
@@ -21,7 +23,7 @@ import java.util.List;
  * Created by Andy Lin on 2016-11-07.
  */
 
-public class VendorDetailsFragment extends Fragment implements VendorDetailsView{
+public class VendorDetailsFragment extends Fragment implements VendorDetailsView {
     private VendorDetailsPresenter vendorDetailsPresenter;
     private MainActivity mainActivity;
     private RecyclerView recyclerView;

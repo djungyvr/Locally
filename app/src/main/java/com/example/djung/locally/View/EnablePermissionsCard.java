@@ -1,6 +1,5 @@
 package com.example.djung.locally.View;
 
-import android.content.Context;
 
 /**
  * Created by Angy Chung on 2016-11-19.

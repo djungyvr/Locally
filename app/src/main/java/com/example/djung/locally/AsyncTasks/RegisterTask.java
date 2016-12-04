@@ -1,15 +1,12 @@
 package com.example.djung.locally.AsyncTasks;
 
 import android.os.AsyncTask;
-import android.widget.TextView;
 
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserAttributes;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserCodeDeliveryDetails;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.SignUpHandler;
 import com.example.djung.locally.AWS.AppHelper;
-import com.example.djung.locally.R;
-import com.example.djung.locally.View.RegisterActivity;
 
 /**
  * Created by David Jung on 25/11/16.

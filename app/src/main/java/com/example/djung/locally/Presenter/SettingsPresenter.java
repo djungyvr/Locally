@@ -3,7 +3,7 @@ package com.example.djung.locally.Presenter;
 import android.app.Activity;
 
 import com.example.djung.locally.R;
-import com.example.djung.locally.View.SettingsView;
+import com.example.djung.locally.View.Interfaces.SettingsView;
 
 /**
  * Created by Andy Lin on 2016-11-29.

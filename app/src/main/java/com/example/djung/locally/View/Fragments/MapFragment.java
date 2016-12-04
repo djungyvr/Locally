@@ -1,4 +1,4 @@
-package com.example.djung.locally.View;
+package com.example.djung.locally.View.Fragments;
 
 import android.Manifest;
 import android.app.Activity;
@@ -22,6 +22,8 @@ import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.Utils.ThreadUtils;
 import com.example.djung.locally.Presenter.MarketPresenter;
 import com.example.djung.locally.R;
+import com.example.djung.locally.View.Activities.MainActivity;
+import com.example.djung.locally.View.Permissions;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;

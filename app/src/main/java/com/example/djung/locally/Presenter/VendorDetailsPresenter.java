@@ -15,7 +15,7 @@ import com.example.djung.locally.Utils.DateUtils;
 import com.example.djung.locally.Utils.MarketUtils;
 import com.example.djung.locally.Utils.ThreadUtils;
 import com.example.djung.locally.Utils.VendorUtils;
-import com.example.djung.locally.View.VendorDetailsView;
+import com.example.djung.locally.View.Interfaces.VendorDetailsView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

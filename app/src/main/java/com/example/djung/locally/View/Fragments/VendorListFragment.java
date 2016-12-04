@@ -1,4 +1,4 @@
-package com.example.djung.locally.View;
+package com.example.djung.locally.View.Fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,14 +10,16 @@ import android.view.ViewGroup;
 
 import com.example.djung.locally.Presenter.VendorListPresenter;
 import com.example.djung.locally.R;
+import com.example.djung.locally.View.Activities.MainActivity;
 import com.example.djung.locally.View.Adapters.VendorListAdapter;
+import com.example.djung.locally.View.Interfaces.VendorListView;
 
 
 /**
  * Created by Andy Lin on 2016-11-04.
  */
 
-public class VendorListFragment extends Fragment implements VendorListView{
+public class VendorListFragment extends Fragment implements VendorListView {
     private VendorListPresenter vendorListPresenter;
     private MainActivity mainActivity;
     private RecyclerView recyclerView;
