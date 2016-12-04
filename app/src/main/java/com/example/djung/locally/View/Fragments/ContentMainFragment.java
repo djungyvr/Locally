@@ -74,7 +74,6 @@ public class ContentMainFragment extends android.support.v4.app.Fragment impleme
         mPresenter.setActionBar();
         mPresenter.getUserLocation();
         mPresenter.populateContentMain();
-        clearSearchFocus();
     }
 
     @Override
