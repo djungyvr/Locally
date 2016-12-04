@@ -1,4 +1,4 @@
-package com.example.djung.locally.View;
+package com.example.djung.locally.View.AdapterViewItems;
 
 /**
  * Created by David Jung on 16/10/16.

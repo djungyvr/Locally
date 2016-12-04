@@ -35,7 +35,7 @@ import com.example.djung.locally.View.Interfaces.MainActivityView;
 import com.example.djung.locally.View.Fragments.MapFragment;
 import com.example.djung.locally.View.Fragments.MarketListFragment;
 import com.example.djung.locally.View.Fragments.MarketPageFragment;
-import com.example.djung.locally.View.Permissions;
+import com.example.djung.locally.Utils.Permissions;
 import com.example.djung.locally.View.Fragments.SettingsFragment;
 import com.example.djung.locally.View.Fragments.SyncCalendarFragment;
 import com.example.djung.locally.View.Fragments.VendorDetailsFragment;

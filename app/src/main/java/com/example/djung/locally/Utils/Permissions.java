@@ -1,4 +1,4 @@
-package com.example.djung.locally.View;
+package com.example.djung.locally.Utils;
 
 /**
  * Enum of the in app permissions used in the app
