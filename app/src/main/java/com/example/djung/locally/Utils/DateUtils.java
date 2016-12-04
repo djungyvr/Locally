@@ -132,4 +132,12 @@ public class DateUtils {
             return 4;
         }
     }
+
+    public static final String[] seasons = {
+            "Year Round",
+            "Spring",
+            "Summer",
+            "Fall",
+            "Winter"
+    };
 }

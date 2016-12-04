@@ -12,6 +12,8 @@ import android.provider.BaseColumns;
 import android.util.Log;
 
 import com.amazonaws.auth.policy.Resource;
+import com.example.djung.locally.Utils.DateUtils;
+import com.example.djung.locally.View.Fragments.InSeasonListFragment;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -118,6 +120,18 @@ public class VendorItemDatabase {
          *     SELECT <columns> FROM <table> WHERE <KEY_WORD> LIKE 'query*'
          */
     }
+
+    // Gets the number of items specifically to a season
+    public int getInSeasonCount() {
+        String query = DateUtils.seasons[DateUtils.getCurrentSeason()];
+        String[] columns = new String[] {
+                BaseColumns._ID,
+                KEY_VENDOR_ITEM_NAME,
+                KEY_VENDOR_ITEM_INFO
+        };
+        return getSeasonMatches(query, columns).getCount();
+    }
+
 
     /**
      * Performs a database query.

@@ -31,14 +31,6 @@ public class InSeasonListFragment extends Fragment implements InSeasonListView ,
     private RecyclerView mRecyclerView;
     private Spinner mSpinnerSeasons;
 
-    private final String[] seasons = {
-            "Year Round",
-            "Spring",
-            "Summer",
-            "Fall",
-            "Winter"
-    };
-
     @Override
     public void setActionBarTitle(String title) {
         mMainActivity.setActionBarTitle(title);
@@ -66,7 +58,7 @@ public class InSeasonListFragment extends Fragment implements InSeasonListView ,
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 getContext(),
                 android.R.layout.simple_spinner_dropdown_item,
-                seasons
+                DateUtils.seasons
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSpinnerSeasons.setAdapter(adapter);
@@ -86,7 +78,7 @@ public class InSeasonListFragment extends Fragment implements InSeasonListView ,
      */
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-        String query = seasons[position].toLowerCase();
+        String query = DateUtils.seasons[position].toLowerCase();
         if(position == 0) {
             query = "allseason";
         }
