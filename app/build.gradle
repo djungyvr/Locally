@@ -41,7 +41,9 @@ dependencies {
 
     // Espresso support
     androidTestCompile('com.android.support.test.espresso:espresso-contrib:2.2.2', {
+        // Necessary to avoid version conflicts
         exclude group: 'com.android.support'
+        exclude module: 'recyclerview-v7'
     })
 
 

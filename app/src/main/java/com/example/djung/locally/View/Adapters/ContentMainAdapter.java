@@ -183,7 +183,7 @@ public class ContentMainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         public ViewHolder1(View view) {
             super(view);
-            this.mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_list);
+            this.mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_quick_links_list);
         }
     }
 
@@ -198,7 +198,7 @@ public class ContentMainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             super(view);
 
             this.mItemTitle = (TextView) view.findViewById(R.id.text_view_item_title);
-            this.mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_list);
+            this.mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_market_cards_list);
         }
     }
 
