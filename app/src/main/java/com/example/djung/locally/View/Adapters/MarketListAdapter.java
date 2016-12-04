@@ -44,10 +44,10 @@ public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.Vi
         holder.marketListItemMarketDistance.setText(marketListPresenter.getDistance(position));
         marketListPresenter.setImage(position, holder.marketListItemImage);
 
-        holder.marketListItemNotificationButton.setOnClickListener(new View.OnClickListener() {
+        holder.marketListItemVisitMarketButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                marketListPresenter.onNotificationsButtonClick(position);
+                marketListPresenter.onVisitMarketPageClick(position);
             }
         });
 
@@ -99,7 +99,7 @@ public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.Vi
         public TextView marketListItemMarketDates;
         public TextView marketListItemMarketStatus;
         public Button marketListItemSupportTextButton;
-        public Button marketListItemNotificationButton;
+        public Button marketListItemVisitMarketButton;
         public LinearLayout marketListItemSupportText;
 
         public ViewHolder(View itemView) {
@@ -113,7 +113,7 @@ public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.Vi
             this.marketListItemImage = (ImageView) itemView.findViewById(R.id.market_list_item_image);
             this.marketListItemSupportTextButton = (Button) itemView.findViewById(R.id.market_list_item_details_button);
             this.marketListItemSupportText = (LinearLayout) itemView.findViewById(R.id.market_list_item_support_text);
-            this.marketListItemNotificationButton = (Button) itemView.findViewById(R.id.market_list_item_notifications_button);
+            this.marketListItemVisitMarketButton = (Button) itemView.findViewById(R.id.market_list_item_visit_market_button);
         }
     }
 }

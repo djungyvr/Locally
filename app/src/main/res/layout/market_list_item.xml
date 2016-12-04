@@ -93,7 +93,7 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/market_list_item_notifications_button"
+                    android:id="@+id/market_list_item_visit_market_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

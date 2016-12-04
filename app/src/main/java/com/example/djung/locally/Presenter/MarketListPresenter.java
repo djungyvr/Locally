@@ -2,6 +2,7 @@ package com.example.djung.locally.Presenter;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Notification;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -9,6 +10,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.widget.ImageView;
@@ -168,21 +171,24 @@ public class MarketListPresenter {
         }
     }
 
+    public void onVisitMarketPageClick(int position){
+        Market market = marketList.get(position);
+        mCallback.onMarketListItemDetailsClick(market);
+    }
+
     public void onNotificationsButtonClick(int position){
         Market market = marketList.get(position);
-//        Log.e(TAG, "Building market list item notification now");
-//        NotificationCompat.Builder builder = new NotificationCompat.Builder(activity);
-//        builder.setSmallIcon(R.mipmap.ic_app_launcher);
-//
-//        NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
-//        bigText.bigText(market.getName() + " is about to open! Do not miss it!");
-//        bigText.setBigContentTitle("Market Notification");
-//        builder.setStyle(bigText);
-//
-//        Notification notification = builder.build();
-//        NotificationManagerCompat.from(activity).notify(0,notification);
+        Log.e(TAG, "Building market list item notification now");
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(activity);
+        builder.setSmallIcon(R.mipmap.ic_app_launcher);
 
-        mCallback.onMarketListItemDetailsClick(market);
+        NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
+        bigText.bigText(market.getName() + " is about to open! Do not miss it!");
+        bigText.setBigContentTitle("Market Notification");
+        builder.setStyle(bigText);
+
+        Notification notification = builder.build();
+        NotificationManagerCompat.from(activity).notify(0,notification);
     }
 
     public void onMarketListItemClick(int position){
