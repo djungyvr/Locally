@@ -44,6 +44,13 @@ public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.Vi
         holder.marketListItemMarketDistance.setText(marketListPresenter.getDistance(position));
         marketListPresenter.setImage(position, holder.marketListItemImage);
 
+        holder.marketListItemCalendarButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                marketListPresenter.addMarketToCalendar(position);
+            }
+        });
+
         holder.marketListItemVisitMarketButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -82,11 +89,11 @@ public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.Vi
     public void toggleSupportText(MarketListAdapter.ViewHolder view){
         if (view.marketListItemSupportText.getVisibility() == View.VISIBLE){
             view.marketListItemSupportText.setVisibility(View.GONE);
-            view.marketListItemSupportTextButton.setText("More Details");
+            view.marketListItemSupportTextButton.setText("More");
         }
         else {
             view. marketListItemSupportText.setVisibility(View.VISIBLE);
-            view.marketListItemSupportTextButton.setText("Less Details");
+            view.marketListItemSupportTextButton.setText("Less");
         }
     }
 
@@ -98,6 +105,7 @@ public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.Vi
         public TextView marketListItemMarketDistance;
         public TextView marketListItemMarketDates;
         public TextView marketListItemMarketStatus;
+        public Button marketListItemCalendarButton;
         public Button marketListItemSupportTextButton;
         public Button marketListItemVisitMarketButton;
         public LinearLayout marketListItemSupportText;
@@ -114,6 +122,7 @@ public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.Vi
             this.marketListItemSupportTextButton = (Button) itemView.findViewById(R.id.market_list_item_details_button);
             this.marketListItemSupportText = (LinearLayout) itemView.findViewById(R.id.market_list_item_support_text);
             this.marketListItemVisitMarketButton = (Button) itemView.findViewById(R.id.market_list_item_visit_market_button);
+            this.marketListItemCalendarButton = (Button) itemView.findViewById(R.id.market_list_item_calendar_button);
         }
     }
 }

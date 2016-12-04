@@ -4,17 +4,20 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.Notification;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.djung.locally.Model.Market;
 import com.example.djung.locally.R;
@@ -26,6 +29,7 @@ import com.example.djung.locally.View.Interfaces.MarketListView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -168,6 +172,77 @@ public class MarketListPresenter {
         } else {
             Picasso.with(activity).setIndicatorsEnabled(true);
             Picasso.with(activity).load(imageResource).into(imageView);
+        }
+    }
+
+    public void addMarketToCalendar(int position){
+        Market market = marketList.get(position);
+        Log.e(TAG, "Adding market " + market.getName() + " to calendar");
+
+        Calendar startTime = Calendar.getInstance();
+        Calendar endTime = Calendar.getInstance();
+
+        String hoursOpen = market.getDailyHours();
+        int dayOfWeek = 0;
+        String timeRange = "";
+        String[] dailyHours = hoursOpen.split(",");
+        for (int i = 0; i < dailyHours.length; i++){
+            if (dailyHours[i].equals("00:00-00:00")){
+                continue;
+            }
+            else {
+                dayOfWeek = i + 1;
+                timeRange = dailyHours[i];
+            }
+        }
+
+        String[] times = timeRange.split("-");
+        String[] startHours = times[0].split(":");
+        String[] endHours = times[1].split(":");
+
+        switch(dayOfWeek){
+            case 1: startTime.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+                    endTime.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+                    break;
+            case 2: startTime.set(Calendar.DAY_OF_WEEK, Calendar.TUESDAY);
+                    endTime.set(Calendar.DAY_OF_WEEK, Calendar.TUESDAY);
+                    break;
+            case 3: startTime.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
+                    endTime.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
+                    break;
+            case 4: startTime.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY);
+                    endTime.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY);
+                    break;
+            case 5: startTime.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
+                    endTime.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
+                    break;
+            case 6: startTime.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
+                    endTime.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
+                    break;
+            case 7: startTime.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+                    endTime.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+                    break;
+        }
+
+        startTime.set(Calendar.HOUR_OF_DAY, Integer.parseInt(startHours[0]));
+        startTime.set(Calendar.MINUTE, Integer.parseInt(startHours[1]));
+
+        endTime.set(Calendar.HOUR_OF_DAY, Integer.parseInt(endHours[0]));
+        endTime.set(Calendar.MINUTE, Integer.parseInt(endHours[1]));
+
+        Intent calendarIntent = new Intent(Intent.ACTION_INSERT)
+                .setData(CalendarContract.Events.CONTENT_URI)
+                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, startTime.getTimeInMillis())
+                .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endTime.getTimeInMillis())
+                .putExtra(CalendarContract.Events.TITLE, market.getName() + " Opening")
+                .putExtra(CalendarContract.Events.DESCRIPTION, market.getName() + " is opening now! Do not miss it! -Locally")
+                .putExtra(CalendarContract.Events.EVENT_LOCATION, market.getAddress())
+                .putExtra(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_BUSY);
+
+        try {
+            activity.startActivity(calendarIntent);
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(activity, "There is no calendar application installed.", Toast.LENGTH_SHORT).show();
         }
     }
 
