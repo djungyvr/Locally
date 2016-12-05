@@ -3,15 +3,19 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_vendor_home"
+            android:icon="@drawable/ic_home"
+            android:title="Home" />
+        <item
             android:id="@+id/nav_edit_goods_list"
             android:icon="@drawable/ic_action_list"
             android:title="Edit List" />
         <item
-            android:id="@+id/nav_manage"
+            android:id="@+id/nav_edit_details"
             android:icon="@drawable/ic_menu_manage"
             android:title="Manage Info" />
         <item
-            android:id="@+id/nav_signout"
+            android:id="@+id/nav_sign_out"
             android:icon="@drawable/ic_exit_to_app"
             android:title="Sign Out" />
     </group>

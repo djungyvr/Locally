@@ -1,16 +1,13 @@
 package com.example.djung.locally.View.Activities;
 
 import android.app.Dialog;
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -27,15 +24,13 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserDetails
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserSession;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.GetDetailsHandler;
 import com.example.djung.locally.AWS.AppHelper;
-import com.example.djung.locally.DB.VendorItemDatabase;
-import com.example.djung.locally.DB.VendorItemsProvider;
 import com.example.djung.locally.Model.Vendor;
 import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
-import com.example.djung.locally.View.Adapters.SuggestionAdapter;
 import com.example.djung.locally.View.Adapters.VendorItemAdapter;
-import com.example.djung.locally.View.Fragments.EditVendorDetailsFragment;
-import com.example.djung.locally.View.Fragments.VendorFragment;
+import com.example.djung.locally.View.Fragments.VendorEditDetailsFragment;
+import com.example.djung.locally.View.Fragments.VendorDashboardFragment;
+import com.example.djung.locally.View.Fragments.VendorEditStockFragment;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
@@ -49,7 +44,7 @@ import java.util.concurrent.ExecutionException;
  * https://www.youtube.com/watch?v=9OWmnYPX1uc
  */
 public class VendorActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener, SearchView.OnSuggestionListener {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     private final String TAG = "VendorActivity";
 
@@ -58,7 +53,6 @@ public class VendorActivity extends AppCompatActivity
 
     // View objects
     private TextView mTextViewVendorName;
-    private SearchView mSearchView;
 
     // Cognito user objects
     private CognitoUser user;
@@ -73,19 +67,24 @@ public class VendorActivity extends AppCompatActivity
     private Vendor mCurrentVendor;
     private String mUsername;
 
-    // Adapters
-    private SuggestionAdapter mVendorItemsSuggestionAdapter;
-    private VendorItemAdapter mVendorItemAdapter;
-
     // Fragment for editing vendor details
     private Fragment mContentVendor;
     private FragmentManager mFragmentManager;
+
+    private AppBarLayout mAppBarLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vendor);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        initializeBaseViews();
+
+        initialize();
+    }
+
+    public void initializeBaseViews() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_vendor);
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.vendor_drawer_layout);
@@ -99,11 +98,28 @@ public class VendorActivity extends AppCompatActivity
 
         View headerView = navigationView.getHeaderView(0);
         mTextViewVendorName = (TextView) headerView.findViewById(R.id.text_view_nav_vendor_name);
-        initialize();
 
-        initializeSearch();
+    }
 
-        handleIntent(getIntent());
+    public void setAppBarElevation(float elevation){
+        if(mAppBarLayout == null) {
+            mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout_vendor);
+        }
+        if(android.os.Build.VERSION.SDK_INT >= 21) {
+//            Log.e(TAG, "Setting app bar elevation=" + elevation);
+            mAppBarLayout.setStateListAnimator(null);
+            mAppBarLayout.setElevation(elevation);
+        } else {
+            mAppBarLayout.setTargetElevation(0);
+        }
+    }
+
+    /**
+     * Sets the action bar title as the given string
+     * @param title
+     */
+    public void setActionBarTitle(String title) {
+        getSupportActionBar().setTitle(title);
     }
 
     @Override
@@ -112,54 +128,15 @@ public class VendorActivity extends AppCompatActivity
         // to deliver the intent if this activity is currently the foreground activity when
         // invoked again (when the user executes a search from this activity, we don't create
         // a new instance of this activity, so the system delivers the search intent here)
-        handleIntent(intent);
-    }
-
-    private void initializeSearch() {
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        mSearchView = (SearchView) findViewById(R.id.search_view_vendor_items);
-        mSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        mSearchView.setIconifiedByDefault(false);
-        mSearchView.setOnQueryTextListener(this);
-        mSearchView.setOnSuggestionListener(this);
-    }
-
-    private void handleIntent(Intent intent) {
-        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-            Log.e(TAG, intent.getAction());
-        } else if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            // handles a search query
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            showResults(query);
+        if (mContentVendor instanceof VendorEditStockFragment) {
+            VendorEditStockFragment fragment = (VendorEditStockFragment) mContentVendor;
+            fragment.handleIntent(intent);
+        }
+        else{
+            super.onNewIntent(intent);
         }
     }
 
-    /**
-     * Searches the vendor items and displays results for the given query.
-     *
-     * @param query The search query
-     */
-    private void showResults(String query) {
-
-        Cursor cursor = managedQuery(VendorItemsProvider.CONTENT_URI, null, null,
-                new String[]{query}, null);
-
-        if (cursor == null) {
-        } else {
-            // Specify the columns we want to display in the result
-            String[] from = new String[]{VendorItemDatabase.KEY_VENDOR_ITEM_NAME,
-                    VendorItemDatabase.KEY_VENDOR_ITEM_INFO};
-
-            // Specify the corresponding layout elements where we want the columns to go
-            int[] to = new int[]{R.id.vendor_item_name_search_result,
-                    R.id.vendor_item_info_search_result};
-
-            // Create a simple cursor adapter for vendor
-            mVendorItemsSuggestionAdapter = new SuggestionAdapter(this, cursor);
-
-            mSearchView.setSuggestionsAdapter(mVendorItemsSuggestionAdapter);
-        }
-    }
 
     @Override
     public void onBackPressed() {
@@ -167,7 +144,12 @@ public class VendorActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            moveTaskToBack(true);
+          //  moveTaskToBack(true);
+            if(mContentVendor instanceof VendorDashboardFragment) {
+                signOut();
+            } else {
+                launchVendorDashboardFragment();
+            }
         }
     }
 
@@ -179,15 +161,17 @@ public class VendorActivity extends AppCompatActivity
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.nav_manage:
+            case R.id.nav_vendor_home:
+                launchVendorDashboardFragment();
+                break;
+            case R.id.nav_edit_details:
                 launchEditDetailsFragment();
                 break;
             case R.id.nav_edit_goods_list:
                 launchEditGoodsFragment();
                 break;
-            case R.id.nav_signout:
-                user.signOut();
-                exit();
+            case R.id.nav_sign_out:
+                signOut();
                 break;
 
         }
@@ -197,9 +181,22 @@ public class VendorActivity extends AppCompatActivity
         return true;
     }
 
-    private void launchEditGoodsFragment() {
-        mContentVendor = new VendorFragment();
-        mSearchView.setVisibility(View.VISIBLE);
+    private void launchVendorDashboardFragment() {
+        mContentVendor = new VendorDashboardFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("vendor_username", mUsername);
+        bundle.putString("vendor_name", mCurrentVendor.getName());
+        bundle.putString("market_name", mCurrentVendor.getMarketName());
+        bundle.putString("vendor_photo_url", mCurrentVendor.getPhotoUrl());
+        mContentVendor.setArguments(bundle);
+
+        if(mFragmentManager == null)
+            mFragmentManager = getSupportFragmentManager();
+        mFragmentManager.beginTransaction().replace(R.id.content_vendor, mContentVendor).commit();
+    }
+
+    public void launchEditGoodsFragment() {
+        mContentVendor = new VendorEditStockFragment();
         Bundle bundle = new Bundle();
         bundle.putString("vendor_name", mCurrentVendor.getName());
         bundle.putString("market_name", mCurrentVendor.getMarketName());
@@ -212,9 +209,8 @@ public class VendorActivity extends AppCompatActivity
         mFragmentManager.beginTransaction().replace(R.id.content_vendor, mContentVendor).commit();
     }
 
-    private void launchEditDetailsFragment() {
-        mContentVendor = new EditVendorDetailsFragment();
-        mSearchView.setVisibility(View.INVISIBLE);
+    public void launchEditDetailsFragment() {
+        mContentVendor = new VendorEditDetailsFragment();
         Bundle bundle = new Bundle();
         bundle.putString("vendor_name", mCurrentVendor.getName());
         bundle.putString("market_name", mCurrentVendor.getMarketName());
@@ -228,6 +224,11 @@ public class VendorActivity extends AppCompatActivity
             mFragmentManager = getSupportFragmentManager();
         // Replace the container with the fragment
         mFragmentManager.beginTransaction().replace(R.id.content_vendor, mContentVendor).commit();
+    }
+
+    public void signOut() {
+        user.signOut();
+        exit();
     }
 
     /**
@@ -290,7 +291,8 @@ public class VendorActivity extends AppCompatActivity
             if (mVendorName != null && mTextViewVendorName != null) {
                 mTextViewVendorName.setText(mVendorName);
                 populateContentMain();
-                launchEditGoodsFragment();
+                launchVendorDashboardFragment();
+               // launchEditGoodsFragment();
             }
         }
 
@@ -337,33 +339,5 @@ public class VendorActivity extends AppCompatActivity
         Intent mainActivity = new Intent(this, MainActivity.class);
         startActivity(mainActivity);
         finish();
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        showResults(query);
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        showResults(newText);
-        return false;
-    }
-
-    @Override
-    public boolean onSuggestionSelect(int position) {
-        return true;
-    }
-
-    @Override
-    public boolean onSuggestionClick(int position) {
-        String vendorItem = mVendorItemsSuggestionAdapter.getSuggestion(position);
-        Log.e(TAG, "Selected suggestion: " + vendorItem);
-        if (mContentVendor instanceof VendorFragment) {
-            VendorFragment fragment = (VendorFragment) mContentVendor;
-            fragment.addItem(vendorItem);
-        }
-        return true;
     }
 }

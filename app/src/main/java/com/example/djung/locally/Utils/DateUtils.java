@@ -111,4 +111,21 @@ public class DateUtils {
         String monthString = new DateFormatSymbols().getMonths()[Integer.valueOf(month)-1];
         return monthString;
     }
+
+    /**
+     * Returns time-specific greeting
+     */
+    public static String getTimeGreeting() {
+        Calendar c = Calendar.getInstance();
+        int time = c.get(Calendar.HOUR_OF_DAY);
+
+        if(time >= 0 && time < 12) {        // Morning from midnight to noon
+            return "Good morning";
+        }
+        if(time >= 12 && time < 5) {        // Afternoon from noon to 5pm
+            return "Good afternoon";
+        }
+        return "Good evening";              // Evening past then
+
+    }
 }

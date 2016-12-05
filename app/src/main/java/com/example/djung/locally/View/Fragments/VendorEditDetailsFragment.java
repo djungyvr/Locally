@@ -37,6 +37,7 @@ import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.FileUtils;
 import com.example.djung.locally.Utils.VendorUtils;
+import com.example.djung.locally.View.Activities.VendorActivity;
 import com.google.firebase.FirebaseApiNotAvailableException;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.NetworkPolicy;
@@ -56,7 +57,7 @@ import pub.devrel.easypermissions.EasyPermissions;
  * Created by David Jung on 09/11/16.
  */
 
-public class EditVendorDetailsFragment extends Fragment implements View.OnClickListener, EasyPermissions.PermissionCallbacks, UploadImageTask.UploadImageCallback{
+public class VendorEditDetailsFragment extends Fragment implements View.OnClickListener, EasyPermissions.PermissionCallbacks, UploadImageTask.UploadImageCallback{
     private static final int REQUEST_READ_EXTERNAL_FILES_KIT_KAT = 2001;
     private static final int REQUEST_READ_EXTERNAL_FILES = 2002;
 
@@ -75,7 +76,7 @@ public class EditVendorDetailsFragment extends Fragment implements View.OnClickL
     private String mImageUrl;
     private boolean mImageChanged = false;
 
-    public EditVendorDetailsFragment() {
+    public VendorEditDetailsFragment() {
     }
 
     @Override
@@ -188,6 +189,8 @@ public class EditVendorDetailsFragment extends Fragment implements View.OnClickL
     @Override
     public void onActivityCreated(Bundle savedInstance){
         super.onActivityCreated(savedInstance);
+        ((VendorActivity) getActivity()).setActionBarTitle("Edit Details");
+        ((VendorActivity) getActivity()).setAppBarElevation(4);
     }
 
     @Override

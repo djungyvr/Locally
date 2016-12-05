@@ -148,6 +148,8 @@ public class GroceryListFragment extends Fragment implements View.OnClickListene
         String vendorItem = mGroceryItemsSuggestionAdapter.getSuggestion(position);
         Log.e(TAG, "Selected suggestion: " + vendorItem);
         mGroceryListAdapter.addItem(vendorItem);
+        mSearchView.setQuery("", false);
+        mSearchView.clearFocus();
         return true;
     }
 
