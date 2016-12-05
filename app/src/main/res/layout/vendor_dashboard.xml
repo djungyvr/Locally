@@ -65,6 +65,7 @@
                 app:cardElevation="2dp"
                 app:cardUseCompatPadding="true"
                 android:clickable="true"
+                android:foreground="?android:attr/selectableItemBackground"
                 android:id="@+id/vendor_dashboard_card_edit_info">
 
                 <LinearLayout
@@ -100,6 +101,8 @@
                 android:layout_marginRight="2dp"
                 app:cardElevation="2dp"
                 app:cardUseCompatPadding="true"
+                android:clickable="true"
+                android:foreground="?android:attr/selectableItemBackground"
                 android:id="@+id/vendor_dashboard_card_edit_list">
 
                 <LinearLayout
@@ -138,6 +141,8 @@
                 android:layout_marginEnd="2dp"
                 app:cardElevation="2dp"
                 app:cardUseCompatPadding="true"
+                android:clickable="true"
+                android:foreground="?android:attr/selectableItemBackground"
                 android:id="@+id/vendor_dashboard_card_sign_out">
 
                 <LinearLayout
@@ -149,7 +154,7 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_power_settings_new_black_48dp"
+                        android:src="@drawable/ic_exit_black_48dp_54opacity"
                         android:layout_gravity="center"
                         android:layout_marginBottom="6dp"
                         />
@@ -168,15 +173,4 @@
         </LinearLayout>
 
     </LinearLayout>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:clickable="true"
-        android:src="@drawable/ic_photo_camera_white_24dp"
-        app:layout_anchor="@id/vendor_dashboard_photo"
-        app:layout_anchorGravity="bottom|right|end"/>
-
 </android.support.design.widget.CoordinatorLayout>

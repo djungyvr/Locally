@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.djung.locally.R;
+import com.example.djung.locally.View.Fragments.VendorEditStockFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,6 +86,7 @@ public class VendorItemAdapter extends RecyclerView.Adapter<VendorItemAdapter.Ve
             itemNames.remove(position);
             notifyItemRemoved(position);
             notifyItemRangeChanged(position, itemNames.size());
+            // TODO: list changed variable in fragment
         }
     }
 }

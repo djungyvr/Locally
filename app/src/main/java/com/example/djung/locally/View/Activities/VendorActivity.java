@@ -25,12 +25,15 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserSession
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.GetDetailsHandler;
 import com.example.djung.locally.AWS.AppHelper;
 import com.example.djung.locally.Model.Vendor;
+import com.example.djung.locally.Presenter.VendorActivityPresenter;
 import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
+import com.example.djung.locally.Utils.EnumTypes;
 import com.example.djung.locally.View.Adapters.VendorItemAdapter;
 import com.example.djung.locally.View.Fragments.VendorEditDetailsFragment;
 import com.example.djung.locally.View.Fragments.VendorDashboardFragment;
 import com.example.djung.locally.View.Fragments.VendorEditStockFragment;
+import com.example.djung.locally.View.Interfaces.VendorActivityView;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
@@ -44,7 +47,7 @@ import java.util.concurrent.ExecutionException;
  * https://www.youtube.com/watch?v=9OWmnYPX1uc
  */
 public class VendorActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, VendorActivityView {
 
     private final String TAG = "VendorActivity";
 
@@ -72,25 +75,36 @@ public class VendorActivity extends AppCompatActivity
     private FragmentManager mFragmentManager;
 
     private AppBarLayout mAppBarLayout;
+    private DrawerLayout mDrawerLayout;
+    private VendorActivityPresenter mPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vendor);
 
+        if(mPresenter == null)
+            mPresenter = new VendorActivityPresenter(this);
         initializeBaseViews();
 
         initialize();
+        Log.e(TAG, "OnCreate");
+    }
+
+    @Override
+    public void onDestroy() {
+        mPresenter.onDestroyView();
+        super.onDestroy();
     }
 
     public void initializeBaseViews() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_vendor);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.vendor_drawer_layout);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.vendor_drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+                this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mDrawerLayout.setDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.vendor_nav_view);
@@ -122,6 +136,24 @@ public class VendorActivity extends AppCompatActivity
         getSupportActionBar().setTitle(title);
     }
 
+    /**
+     * Checks if the navigation drawer is currently open
+     * @return
+     */
+    @Override
+    public boolean isNavigationDrawerOpen() {
+        return (mDrawerLayout.isDrawerOpen(GravityCompat.START));
+    }
+
+    /**
+     * Closes the navigation drawer
+     */
+    @Override
+    public void closeNavigationDrawer() {
+        mDrawerLayout.closeDrawer(GravityCompat.START);
+    }
+
+
     @Override
     protected void onNewIntent(Intent intent) {
         // Because this activity has set launchMode="singleTop", the system calls this method
@@ -140,17 +172,7 @@ public class VendorActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.vendor_drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-          //  moveTaskToBack(true);
-            if(mContentVendor instanceof VendorDashboardFragment) {
-                signOut();
-            } else {
-                launchVendorDashboardFragment();
-            }
-        }
+        mPresenter.onBackPressed();
     }
 
 
@@ -159,29 +181,12 @@ public class VendorActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-        switch (id) {
-            case R.id.nav_vendor_home:
-                launchVendorDashboardFragment();
-                break;
-            case R.id.nav_edit_details:
-                launchEditDetailsFragment();
-                break;
-            case R.id.nav_edit_goods_list:
-                launchEditGoodsFragment();
-                break;
-            case R.id.nav_sign_out:
-                signOut();
-                break;
-
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.vendor_drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        mPresenter.onNavigationItemSelected(id);
         return true;
     }
 
-    private void launchVendorDashboardFragment() {
+    @Override
+    public void launchVendorDashboardFragment() {
         mContentVendor = new VendorDashboardFragment();
         Bundle bundle = new Bundle();
         bundle.putString("vendor_username", mUsername);
@@ -195,6 +200,7 @@ public class VendorActivity extends AppCompatActivity
         mFragmentManager.beginTransaction().replace(R.id.content_vendor, mContentVendor).commit();
     }
 
+    @Override
     public void launchEditGoodsFragment() {
         mContentVendor = new VendorEditStockFragment();
         Bundle bundle = new Bundle();
@@ -209,6 +215,7 @@ public class VendorActivity extends AppCompatActivity
         mFragmentManager.beginTransaction().replace(R.id.content_vendor, mContentVendor).commit();
     }
 
+    @Override
     public void launchEditDetailsFragment() {
         mContentVendor = new VendorEditDetailsFragment();
         Bundle bundle = new Bundle();
@@ -226,9 +233,61 @@ public class VendorActivity extends AppCompatActivity
         mFragmentManager.beginTransaction().replace(R.id.content_vendor, mContentVendor).commit();
     }
 
+    @Override
+    public Fragment getCurrentContentFragment() {
+        return mContentVendor;
+    }
+
+    @Override
     public void signOut() {
         user.signOut();
         exit();
+    }
+
+    @Override
+    public void showSignOutDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        // Add the buttons
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                mPresenter.onSignOutDialogClick(EnumTypes.DialogInput.OK);
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                mPresenter.onSignOutDialogClick(EnumTypes.DialogInput.CANCEL);
+            }
+        });
+        // Set other dialog properties
+        builder.setMessage(R.string.dialog_message_sign_out);
+        // Create the AlertDialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void showSaveChangesDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        // Add the buttons
+        builder.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                mPresenter.onSaveChangesDialogClick(EnumTypes.SaveRequest.SAVE);
+            }
+        });
+        builder.setNegativeButton(R.string.dont_save, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                mPresenter.onSaveChangesDialogClick(EnumTypes.SaveRequest.DONT_SAVE);
+            }
+        });
+        builder.setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
+           public void onClick(DialogInterface dialog, int id) {
+               mPresenter.onSaveChangesDialogClick(EnumTypes.SaveRequest.CANCEL);
+        }
+        });
+        // Set other dialog properties
+        builder.setMessage(R.string.dialog_message_save_changes);
+        // Create the AlertDialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     /**

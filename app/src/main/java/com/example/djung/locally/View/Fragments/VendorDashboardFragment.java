@@ -1,7 +1,9 @@
 package com.example.djung.locally.View.Fragments;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +15,7 @@ import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.DateUtils;
 import com.example.djung.locally.Utils.VendorUtils;
 import com.example.djung.locally.View.Activities.VendorActivity;
+import com.example.djung.locally.View.Interfaces.VendorSaveView;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
@@ -20,7 +23,7 @@ import com.squareup.picasso.Picasso;
  * Created by Angy Chung on 2016-12-04.
  */
 
-public class VendorDashboardFragment extends Fragment {
+public class VendorDashboardFragment extends Fragment implements VendorSaveView {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -86,9 +89,19 @@ public class VendorDashboardFragment extends Fragment {
         cv3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((VendorActivity) getActivity()).signOut();
+                ((VendorActivity) getActivity()).showSignOutDialog();
             }
         });
+    }
+
+   @Override
+    public boolean needSave() {
+       return false;
+   }
+
+    @Override
+    public void saveChanges() {
+        // do nothing
     }
 }
 

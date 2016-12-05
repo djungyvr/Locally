@@ -18,6 +18,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,6 +39,7 @@ import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.FileUtils;
 import com.example.djung.locally.Utils.VendorUtils;
 import com.example.djung.locally.View.Activities.VendorActivity;
+import com.example.djung.locally.View.Interfaces.VendorSaveView;
 import com.google.firebase.FirebaseApiNotAvailableException;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.NetworkPolicy;
@@ -57,7 +59,8 @@ import pub.devrel.easypermissions.EasyPermissions;
  * Created by David Jung on 09/11/16.
  */
 
-public class VendorEditDetailsFragment extends Fragment implements View.OnClickListener, EasyPermissions.PermissionCallbacks, UploadImageTask.UploadImageCallback{
+public class VendorEditDetailsFragment extends Fragment implements View.OnClickListener,
+        EasyPermissions.PermissionCallbacks, UploadImageTask.UploadImageCallback, VendorSaveView{
     private static final int REQUEST_READ_EXTERNAL_FILES_KIT_KAT = 2001;
     private static final int REQUEST_READ_EXTERNAL_FILES = 2002;
 
@@ -75,6 +78,7 @@ public class VendorEditDetailsFragment extends Fragment implements View.OnClickL
     private Uri mImageUri;
     private String mImageUrl;
     private boolean mImageChanged = false;
+    private boolean mDescriptionChanged = false;
 
     public VendorEditDetailsFragment() {
     }
@@ -152,6 +156,22 @@ public class VendorEditDetailsFragment extends Fragment implements View.OnClickL
             }
         });
 
+        mEditTextDescription.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                mDescriptionChanged = true;
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
         mVendorName = getArguments().getString("vendor_name");
         mMarketName = getArguments().getString("market_name");
 
@@ -202,30 +222,36 @@ public class VendorEditDetailsFragment extends Fragment implements View.OnClickL
     public void onClick(View view) {
         switch(view.getId()) {
             case R.id.fab_save_vendor_details:
-                String description = mEditTextDescription.getText().toString();
-                String phoneNumber = mEditTextPhoneNumber.getText().toString();
-                String email = mEditTextEmail.getText().toString();
-                mImageUrl = VendorUtils.getS3Url(mMarketName,mVendorName);
-                if(mImageChanged)
-                    readFile();
-
-                VendorPresenter vendorPresenter = new VendorPresenter(getContext());
-                try {
-                    boolean successfullyAdded = vendorPresenter.updateVendorDetails(mMarketName,mVendorName,description,phoneNumber,email, mImageUrl);
-                    if(successfullyAdded)
-                        Toast.makeText(getContext(),"Updated Information",Toast.LENGTH_SHORT).show();
-                } catch (ExecutionException | InterruptedException e) {
-                    //TODO: Figure out what's causing this exception
-                    showDialogMessage("Error", AppHelper.formatException(e));
-                    //showDialogMessage("Error", "Failed to update description");
-                    Log.e(TAG,"Couldn't update : " + mImageUrl);
-                    Log.e(TAG,"Couldn't update : " + mVendorName);
-                }
+                saveVendorDetails();
                 break;
             case R.id.image_view_edit_vendor_image:
                 fetchImage();
                 break;
         }
+    }
+
+    public void saveVendorDetails() {
+        String description = mEditTextDescription.getText().toString();
+        String phoneNumber = mEditTextPhoneNumber.getText().toString();
+        String email = mEditTextEmail.getText().toString();
+        mImageUrl = VendorUtils.getS3Url(mMarketName,mVendorName);
+        if(mImageChanged)
+            readFile();
+
+        VendorPresenter vendorPresenter = new VendorPresenter(getContext());
+        try {
+            boolean successfullyAdded = vendorPresenter.updateVendorDetails(mMarketName,mVendorName,description,phoneNumber,email, mImageUrl);
+            if(successfullyAdded)
+                Toast.makeText(getContext(),"Updated Information",Toast.LENGTH_SHORT).show();
+        } catch (ExecutionException | InterruptedException e) {
+            //TODO: Figure out what's causing this exception
+            showDialogMessage("Error", AppHelper.formatException(e));
+            //showDialogMessage("Error", "Failed to update description");
+            Log.e(TAG,"Couldn't update : " + mImageUrl);
+            Log.e(TAG,"Couldn't update : " + mVendorName);
+        }
+        mImageChanged = false;
+        mDescriptionChanged = false;
     }
 
     @SuppressLint("NewApi")
@@ -370,9 +396,21 @@ public class VendorEditDetailsFragment extends Fragment implements View.OnClickL
     @Override
     public void finishUpload(UploadImageTask.UploadCodes code, String message) {
         if(code == UploadImageTask.UploadCodes.FAIL) {
-            showDialogMessage("Error",message);
+          //  showDialogMessage("Error",message);
+            Log.e(TAG, "Error: " + message);
         } else if(code == UploadImageTask.UploadCodes.SUCCESS) {
-            showDialogMessage("Success","Image Updated");
+          //  showDialogMessage("Success","Image Updated");
+            Log.e(TAG, "Success: Image updated");
         }
+    }
+
+    @Override
+    public boolean needSave(){
+        return (mImageChanged || mDescriptionChanged);
+    }
+
+    @Override
+    public void saveChanges() {
+        saveVendorDetails();
     }
 }

@@ -28,6 +28,7 @@ import com.example.djung.locally.Utils.VendorUtils;
 import com.example.djung.locally.View.Activities.VendorActivity;
 import com.example.djung.locally.View.Adapters.SuggestionAdapter;
 import com.example.djung.locally.View.Adapters.VendorItemAdapter;
+import com.example.djung.locally.View.Interfaces.VendorSaveView;
 import com.example.djung.locally.View.VendorItemRecyclerView;
 
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ import java.util.concurrent.ExecutionException;
  */
 
 public class VendorEditStockFragment extends Fragment implements View.OnClickListener,
-        SearchView.OnQueryTextListener, SearchView.OnSuggestionListener{
+        SearchView.OnQueryTextListener, SearchView.OnSuggestionListener, VendorSaveView {
     private static final String TAG = "VendorEditStockFragment";
     //TODO COMPLETE CLASS
     // Dialogs
@@ -61,6 +62,8 @@ public class VendorEditStockFragment extends Fragment implements View.OnClickLis
     private List<String> mVendorItemSet;
     private String mMarketName;
     private String mVendorName;
+
+    private boolean mListChanged = false;
 
     @Nullable
     @Override
@@ -95,16 +98,21 @@ public class VendorEditStockFragment extends Fragment implements View.OnClickLis
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.fab_save_vendor_edit_stock:
-                VendorPresenter vendorPresenter = new VendorPresenter(getContext());
-                try {
-                    vendorPresenter.updateVendorProducts(mMarketName, mVendorName,new HashSet<String>(mVendorItemAdapter.getItemNames()));
-                    Toast.makeText(getContext(),"Updating list",Toast.LENGTH_SHORT).show();
-                } catch (ExecutionException | InterruptedException e) {
-                    showDialogMessage("Save Error", "Failed to save item list");
-                    Log.e(TAG,e.getMessage());
-                }
+                saveVendorStock();
                 break;
         }
+    }
+
+    public void saveVendorStock() {
+        VendorPresenter vendorPresenter = new VendorPresenter(getContext());
+        try {
+            vendorPresenter.updateVendorProducts(mMarketName, mVendorName,new HashSet<String>(mVendorItemAdapter.getItemNames()));
+            Toast.makeText(getContext(),"Updating list",Toast.LENGTH_SHORT).show();
+        } catch (ExecutionException | InterruptedException e) {
+            showDialogMessage("Save Error", "Failed to save item list");
+            Log.e(TAG,e.getMessage());
+        }
+        mListChanged = false;
     }
 
     private void initializeSearch(View view) {
@@ -176,6 +184,7 @@ public class VendorEditStockFragment extends Fragment implements View.OnClickLis
         String vendorItem = mVendorItemsSuggestionAdapter.getSuggestion(position);
         Log.e(TAG, "Selected suggestion: " + vendorItem);
         mVendorItemAdapter.addItem(vendorItem);
+        mListChanged = true;
         mSearchView.setQuery("", false);
         mSearchView.clearFocus();
         return true;
@@ -209,5 +218,15 @@ public class VendorEditStockFragment extends Fragment implements View.OnClickLis
         });
         mVendorSaveDialog = builder.create();
         mVendorSaveDialog.show();
+    }
+
+    @Override
+    public boolean needSave(){
+        return mListChanged;
+    }
+
+    @Override
+    public void saveChanges() {
+        saveVendorStock();
     }
 }

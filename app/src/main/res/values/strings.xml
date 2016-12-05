@@ -40,9 +40,18 @@
     <string name="title_fragment_vendors_search_results_list">Search Results</string>
     <string name="title_fragment_settings">Settings</string>
 
+    <!--For the enable permission/turn on location card on content main-->
     <string name="rationale_enable_permissions">We use your location data to customize your experience. Please allow location permissions in App Settings for additional functionality.</string>
     <string name="rationale_turn_on_location">We use your location data to customize your experience. Please turn on location services for additional functionality.</string>
     <string name="button_enable_permissions">Enable Permissions</string>
     <string name="button_refresh">Refresh</string>
     <string name="title_activity_about_us">AboutUsActivity</string>
+
+    <!--Dialog strings for vendor screens-->
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="dialog_message_sign_out">Are you sure you want to sign out?</string>
+    <string name="dialog_message_save_changes">Do you want to save your changes?</string>
+    <string name="save">Save</string>
+    <string name="dont_save">Don\'t save</string>
 </resources>
