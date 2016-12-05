@@ -27,12 +27,4 @@
             android:paddingLeft="16dp"
             android:paddingRight="16dp"/>
     </LinearLayout>
-
-    <android.support.design.widget.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:id="@+id/fab_save_vendor_edit_stock"
-        android:src ="@drawable/ic_save"/>
 </android.support.design.widget.CoordinatorLayout>

@@ -21,6 +21,9 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -66,7 +69,6 @@ public class VendorEditDetailsFragment extends Fragment implements View.OnClickL
 
     private final String TAG = "EditDetailsFragment";
 
-    private FloatingActionButton mFabSaveDetails;
     private TextInputEditText mEditTextDescription;
     private TextInputEditText mEditTextEmail;
     private TextInputEditText mEditTextPhoneNumber;
@@ -86,14 +88,13 @@ public class VendorEditDetailsFragment extends Fragment implements View.OnClickL
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.edit_vendor_details_fragment, container, false);
-        mFabSaveDetails = (FloatingActionButton) view.findViewById(R.id.fab_save_vendor_details);
-        mFabSaveDetails.setOnClickListener(this);
 
         mEditTextDescription = (TextInputEditText) view.findViewById(R.id.edit_text_vendor_description);
         mEditTextEmail = (TextInputEditText) view.findViewById(R.id.edit_text_edit_email);
         mEditTextPhoneNumber = (TextInputEditText) view.findViewById(R.id.edit_text_edit_phone);
         mImageViewVendor = (ImageView) view.findViewById(R.id.image_view_edit_vendor_image);
-        mImageViewVendor.setOnClickListener(this);
+        FloatingActionButton changeImage = (FloatingActionButton) view.findViewById(R.id.fab_vendor_change_photo);
+        changeImage.setOnClickListener(this);
 
         // For phone number formatting see here http://stackoverflow.com/a/34907607
         mEditTextPhoneNumber.addTextChangedListener(new PhoneNumberFormattingTextWatcher() {
@@ -211,6 +212,30 @@ public class VendorEditDetailsFragment extends Fragment implements View.OnClickL
         super.onActivityCreated(savedInstance);
         ((VendorActivity) getActivity()).setActionBarTitle("Edit Details");
         ((VendorActivity) getActivity()).setAppBarElevation(4);
+        setHasOptionsMenu(true);
+    }
+
+    /**
+     * the menu layout has the 'save' menu item
+     */
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+        menuInflater.inflate(R.menu.fragment_action_bar_save, menu);
+        super.onCreateOptionsMenu(menu, menuInflater);
+    }
+
+    /**
+     * react to the user tapping/selecting an options menu item
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_item_save:
+                saveVendorDetails();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -221,10 +246,7 @@ public class VendorEditDetailsFragment extends Fragment implements View.OnClickL
     @Override
     public void onClick(View view) {
         switch(view.getId()) {
-            case R.id.fab_save_vendor_details:
-                saveVendorDetails();
-                break;
-            case R.id.image_view_edit_vendor_image:
+            case R.id.fab_vendor_change_photo:
                 fetchImage();
                 break;
         }

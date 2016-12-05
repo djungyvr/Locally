@@ -16,6 +16,9 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -43,7 +46,7 @@ import java.util.concurrent.ExecutionException;
  * Created by David Jung on 29/11/16.
  */
 
-public class VendorEditStockFragment extends Fragment implements View.OnClickListener,
+public class VendorEditStockFragment extends Fragment implements
         SearchView.OnQueryTextListener, SearchView.OnSuggestionListener, VendorSaveView {
     private static final String TAG = "VendorEditStockFragment";
     //TODO COMPLETE CLASS
@@ -53,7 +56,6 @@ public class VendorEditStockFragment extends Fragment implements View.OnClickLis
 
     // Views inside the fragment
     private RecyclerView mRecyclerViewVendorItems;
-    private FloatingActionButton mFabSaveList;
     private VendorItemAdapter mVendorItemAdapter;
     private SearchView mSearchView;
     private SuggestionAdapter mVendorItemsSuggestionAdapter;
@@ -75,7 +77,6 @@ public class VendorEditStockFragment extends Fragment implements View.OnClickLis
             mVendorItemSet = bundle.getStringArrayList("vendor_items");
             mVendorName = bundle.getString("vendor_name");
             mMarketName = bundle.getString("market_name");
-            initializeFab(view);
             initializeSearch(view);
             initializeAdapter(view);
         }
@@ -87,19 +88,29 @@ public class VendorEditStockFragment extends Fragment implements View.OnClickLis
         super.onActivityCreated(savedInstance);
         ((VendorActivity) getActivity()).setActionBarTitle("Items You're Selling");
         ((VendorActivity) getActivity()).setAppBarElevation(0);
+        setHasOptionsMenu(true);
     }
 
-    private void initializeFab(View view) {
-        mFabSaveList = (FloatingActionButton) view.findViewById(R.id.fab_save_vendor_edit_stock);
-        mFabSaveList.setOnClickListener(this);
-    }
-
+    /**
+     * the menu layout has the 'save' menu item
+     */
     @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.fab_save_vendor_edit_stock:
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+        menuInflater.inflate(R.menu.fragment_action_bar_save, menu);
+        super.onCreateOptionsMenu(menu, menuInflater);
+    }
+
+    /**
+     * react to the user tapping/selecting an options menu item
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_item_save:
                 saveVendorStock();
-                break;
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
