@@ -224,9 +224,4 @@ public class VendorEditStockFragment extends Fragment implements View.OnClickLis
     public boolean needSave(){
         return mListChanged;
     }
-
-    @Override
-    public void saveChanges() {
-        saveVendorStock();
-    }
 }

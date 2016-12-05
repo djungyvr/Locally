@@ -6,5 +6,4 @@ package com.example.djung.locally.View.Interfaces;
 
 public interface VendorSaveView {
     boolean needSave();
-    void saveChanges();
 }

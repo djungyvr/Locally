@@ -12,7 +12,7 @@ public interface VendorActivityView {
     Fragment getCurrentContentFragment();
     void signOut();
     void showSignOutDialog();
-    void showSaveChangesDialog();
+    void showDiscardChangesDialog();
     void launchVendorDashboardFragment();
     void launchEditGoodsFragment();
     void launchEditDetailsFragment();

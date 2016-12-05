@@ -28,8 +28,6 @@ import com.example.djung.locally.Model.Vendor;
 import com.example.djung.locally.Presenter.VendorActivityPresenter;
 import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
-import com.example.djung.locally.Utils.EnumTypes;
-import com.example.djung.locally.View.Adapters.VendorItemAdapter;
 import com.example.djung.locally.View.Fragments.VendorEditDetailsFragment;
 import com.example.djung.locally.View.Fragments.VendorDashboardFragment;
 import com.example.djung.locally.View.Fragments.VendorEditStockFragment;
@@ -250,12 +248,12 @@ public class VendorActivity extends AppCompatActivity
         // Add the buttons
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                mPresenter.onSignOutDialogClick(EnumTypes.DialogInput.OK);
+                mPresenter.onSignOutDialogClick(true);
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                mPresenter.onSignOutDialogClick(EnumTypes.DialogInput.CANCEL);
+                mPresenter.onSignOutDialogClick(false);
             }
         });
         // Set other dialog properties
@@ -265,26 +263,21 @@ public class VendorActivity extends AppCompatActivity
         dialog.show();
     }
 
-    public void showSaveChangesDialog() {
+    public void showDiscardChangesDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         // Add the buttons
-        builder.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.discard, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                mPresenter.onSaveChangesDialogClick(EnumTypes.SaveRequest.SAVE);
+                mPresenter.onDiscardChangesDialogClick(true);
             }
         });
-        builder.setNegativeButton(R.string.dont_save, new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                mPresenter.onSaveChangesDialogClick(EnumTypes.SaveRequest.DONT_SAVE);
+                mPresenter.onDiscardChangesDialogClick(false);
             }
-        });
-        builder.setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
-           public void onClick(DialogInterface dialog, int id) {
-               mPresenter.onSaveChangesDialogClick(EnumTypes.SaveRequest.CANCEL);
-        }
         });
         // Set other dialog properties
-        builder.setMessage(R.string.dialog_message_save_changes);
+        builder.setMessage(R.string.dialog_message_discard_changes);
         // Create the AlertDialog
         AlertDialog dialog = builder.create();
         dialog.show();

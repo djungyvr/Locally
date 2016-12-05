@@ -51,7 +51,7 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="dialog_message_sign_out">Are you sure you want to sign out?</string>
-    <string name="dialog_message_save_changes">Do you want to save your changes?</string>
-    <string name="save">Save</string>
-    <string name="dont_save">Don\'t save</string>
+    <string name="dialog_message_discard_changes">Discard your changes and quit editing?</string>
+    <string name="discard">Discard</string>
+    <string name="keep_editing">Keep editing</string>
 </resources>

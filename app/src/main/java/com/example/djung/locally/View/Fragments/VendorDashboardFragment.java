@@ -99,9 +99,5 @@ public class VendorDashboardFragment extends Fragment implements VendorSaveView 
        return false;
    }
 
-    @Override
-    public void saveChanges() {
-        // do nothing
-    }
 }
 

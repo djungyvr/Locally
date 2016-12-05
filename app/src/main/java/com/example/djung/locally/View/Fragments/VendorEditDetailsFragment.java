@@ -396,21 +396,14 @@ public class VendorEditDetailsFragment extends Fragment implements View.OnClickL
     @Override
     public void finishUpload(UploadImageTask.UploadCodes code, String message) {
         if(code == UploadImageTask.UploadCodes.FAIL) {
-          //  showDialogMessage("Error",message);
-            Log.e(TAG, "Error: " + message);
+            showDialogMessage("Error",message);
         } else if(code == UploadImageTask.UploadCodes.SUCCESS) {
-          //  showDialogMessage("Success","Image Updated");
-            Log.e(TAG, "Success: Image updated");
+            showDialogMessage("Success","Image Updated");
         }
     }
 
     @Override
     public boolean needSave(){
         return (mImageChanged || mDescriptionChanged);
-    }
-
-    @Override
-    public void saveChanges() {
-        saveVendorDetails();
     }
 }

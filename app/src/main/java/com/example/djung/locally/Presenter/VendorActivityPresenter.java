@@ -1,11 +1,6 @@
 package com.example.djung.locally.Presenter;
 
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-
 import com.example.djung.locally.R;
-import com.example.djung.locally.Utils.EnumTypes;
-import com.example.djung.locally.View.Activities.VendorActivity;
 import com.example.djung.locally.View.Fragments.VendorDashboardFragment;
 import com.example.djung.locally.View.Fragments.VendorEditDetailsFragment;
 import com.example.djung.locally.View.Fragments.VendorEditStockFragment;
@@ -45,7 +40,7 @@ public class VendorActivityPresenter {
                 if(mView.getCurrentContentFragment() instanceof VendorDashboardFragment)
                     break;
                 if(((VendorSaveView)mView.getCurrentContentFragment()).needSave()) {
-                    mView.showSaveChangesDialog();
+                    mView.showDiscardChangesDialog();
                     break;
                 }
             case R.id.nav_edit_details:
@@ -79,7 +74,7 @@ public class VendorActivityPresenter {
         }
         else if (((VendorSaveView)mView.getCurrentContentFragment()).needSave()) {
             // otherwise it's the edit screen so we check if it needs to be saved
-            mView.showSaveChangesDialog();
+            mView.showDiscardChangesDialog();
         } else {
             // don't need save so go to dashboard screen
             mView.launchVendorDashboardFragment();
@@ -88,28 +83,21 @@ public class VendorActivityPresenter {
 
     /**
      * Responds to user input from the save changes dialog
-     * @param input - EnumType.SaveRequest
+     * @param discard - true if changes should be discarded, false if keep editing
      */
-    public void onSaveChangesDialogClick(EnumTypes.SaveRequest input) {
-        switch(input) {
-            case SAVE: // have to save our changes first before loading dashboard
-                ((VendorSaveView) mView.getCurrentContentFragment()).saveChanges();
-            case DONT_SAVE:
-                mView.launchVendorDashboardFragment();
-                break;
-            case CANCEL:    // don't do anything in this case
-                break;
-        }
+    public void onDiscardChangesDialogClick(boolean discard) {
+        if(discard)
+            mView.launchVendorDashboardFragment();
+        // else do nothing
     }
 
     /**
      * Responds to user input frm sign out dialog
-     * @param input - EnumType.DialogInput
+     * @param signout - true if should sign out, false if not
      */
-    public void onSignOutDialogClick(EnumTypes.DialogInput input) {
-        if(input == EnumTypes.DialogInput.OK) {
+    public void onSignOutDialogClick(boolean signout) {
+        if(signout)
             mView.signOut();
-        }
         // else do nothing since they clicked cancelled
     }
 
