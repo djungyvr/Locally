@@ -63,6 +63,7 @@ public class MapFragment extends Fragment
     private Marker mLastPositionMarker;
     private static final float INITIAL_ZOOM = 12.0f;
     private ArrayList<Market> mMarketsList;
+    private static final String TAG = "MapFragment";
 
     // Returns the view of the fragment
     @Override
@@ -237,13 +238,19 @@ public class MapFragment extends Fragment
         requestLocation();
     }
 
-    private void setLastLocation() {
+    /**
+     * Requests runtime permissions
+     */
+    private void requestPermissions() {
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Should we show an explanation
             if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                     Manifest.permission.ACCESS_COARSE_LOCATION)) {
-
+               // Toast.makeText(getActivity(), "Please allow location permissions for additional functionality", Toast.LENGTH_LONG).show();
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                        Permissions.REQUEST_COURSE_PERMISSION);
             } else {
                 // No explanation needed, we can request the permission.
                 ActivityCompat.requestPermissions(getActivity(),
@@ -251,8 +258,17 @@ public class MapFragment extends Fragment
                         Permissions.REQUEST_COURSE_PERMISSION);
             }
         }
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, (LocationListener) this);
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+    }
+
+    private void setLastLocation() {
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions();
+        } else {
+            Log.d(TAG, "Location permission granted");
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, (LocationListener) this);
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        }
     }
 
     /**
@@ -357,29 +373,13 @@ public class MapFragment extends Fragment
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    ThreadUtils.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            new AlertDialog.Builder(getActivity())
-                                    .setTitle("Course Location")
-                                    .setMessage("Permission Granted")
-                                    .setPositiveButton(android.R.string.ok, null)
-                                    .show();
-                        }
-                    });
-                    Log.d("PERMISSION RESULT","Course Location Permission is Granted");
+                    Log.d(TAG, "Course location permission granted");
+                    setLastLocation();
+                    setLastPosition();
+                    moveCameraFocus(mLastLocation, INITIAL_ZOOM);
                 } else {
-                    ThreadUtils.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            new AlertDialog.Builder(getActivity())
-                                    .setTitle("Course Location")
-                                    .setMessage("Permission Denied")
-                                    .setPositiveButton(android.R.string.ok, null)
-                                    .show();
-                        }
-                    });
-                    Log.d("PERMISSION RESULT","Course Location Permission is Granted");
+                 //   Toast.makeText(getActivity(), "Please turn on location permissions in App Settings for additional functionality.", Toast.LENGTH_LONG).show();
+                    Log.d(TAG, "Course Location Permission not granted");
                 }
                 return;
             // other 'case' lines to check for other
