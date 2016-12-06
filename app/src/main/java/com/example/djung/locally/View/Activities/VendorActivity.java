@@ -86,7 +86,6 @@ public class VendorActivity extends AppCompatActivity
         initializeBaseViews();
 
         initialize();
-        Log.e(TAG, "OnCreate");
     }
 
     @Override
@@ -242,6 +241,9 @@ public class VendorActivity extends AppCompatActivity
         exit();
     }
 
+    /**
+     * Shows dialog box asking user if they want to Sign out or Cancel
+     */
     @Override
     public void showSignOutDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -263,6 +265,9 @@ public class VendorActivity extends AppCompatActivity
         dialog.show();
     }
 
+    /**
+     * Shows dialog box asking if user wants to Discard changes or Keep editing
+     */
     public void showDiscardChangesDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         // Add the buttons

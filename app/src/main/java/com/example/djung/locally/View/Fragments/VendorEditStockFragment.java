@@ -74,9 +74,9 @@ public class VendorEditStockFragment extends Fragment implements
         Bundle bundle = this.getArguments();
 
         if(bundle != null) {
-            mVendorItemSet = bundle.getStringArrayList("vendor_items");
             mVendorName = bundle.getString("vendor_name");
             mMarketName = bundle.getString("market_name");
+            fetchItemData();
             initializeSearch(view);
             initializeAdapter(view);
         }
@@ -124,6 +124,16 @@ public class VendorEditStockFragment extends Fragment implements
             Log.e(TAG,e.getMessage());
         }
         mListChanged = false;
+    }
+
+    private void fetchItemData(){
+        try {
+            VendorPresenter vendorPresenter = new VendorPresenter(getActivity());
+            mVendorItemSet = new ArrayList<>(vendorPresenter.fetchVendorProducts(mMarketName, mVendorName));
+        } catch (final ExecutionException | InterruptedException e) {
+            showDialogMessage("Load Error", "Failed to load item list");
+            Log.e(TAG, e.getMessage());
+        }
     }
 
     private void initializeSearch(View view) {
@@ -234,5 +244,9 @@ public class VendorEditStockFragment extends Fragment implements
     @Override
     public boolean needSave(){
         return mListChanged;
+    }
+
+    public void listChanged() {
+        mListChanged = true;
     }
 }

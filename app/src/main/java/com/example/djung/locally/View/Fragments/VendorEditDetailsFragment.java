@@ -37,6 +37,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.example.djung.locally.AWS.AppHelper;
 import com.example.djung.locally.AWS.AwsConfiguration;
 import com.example.djung.locally.AsyncTasks.UploadImageTask;
+import com.example.djung.locally.Model.Vendor;
 import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.FileUtils;
@@ -89,6 +90,13 @@ public class VendorEditDetailsFragment extends Fragment implements View.OnClickL
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.edit_vendor_details_fragment, container, false);
 
+        initializeBaseViews(view);
+        populateBaseViews();
+
+        return view;
+    }
+
+    private void initializeBaseViews(View view){
         mEditTextDescription = (TextInputEditText) view.findViewById(R.id.edit_text_vendor_description);
         mEditTextEmail = (TextInputEditText) view.findViewById(R.id.edit_text_edit_email);
         mEditTextPhoneNumber = (TextInputEditText) view.findViewById(R.id.edit_text_edit_phone);
@@ -156,55 +164,64 @@ public class VendorEditDetailsFragment extends Fragment implements View.OnClickL
                 }
             }
         });
+    }
 
-        mEditTextDescription.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mDescriptionChanged = true;
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
-
+    public void populateBaseViews() {
         mVendorName = getArguments().getString("vendor_name");
         mMarketName = getArguments().getString("market_name");
 
-        String vendorDescription = getArguments().getString("vendor_description");
-        String vendorPhoneNumber = getArguments().getString("vendor_phone_number");
-        String vendorEmail = getArguments().getString("vendor_email");
-        String vendorPhotoUrl = getArguments().getString("vendor_photo_url");
+        VendorPresenter vendorPresenter = new VendorPresenter(getContext());
+        try{
+            Vendor vendor = vendorPresenter.fetchVendor(mMarketName, mVendorName);
 
-        if(vendorDescription != null && !vendorDescription.isEmpty()) {
-            mEditTextDescription.setText(vendorDescription);
+            String vendorDescription = vendor.getDescription();
+            String vendorPhoneNumber = vendor.getPhoneNumber();
+            String vendorEmail = vendor.getEmail();
+            String vendorPhotoUrl = vendor.getPhotoUrl();
+
+            if(vendorDescription != null && !vendorDescription.isEmpty()) {
+                mEditTextDescription.setText(vendorDescription);
+                mEditTextDescription.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        mDescriptionChanged = true;
+                    }
+                });
+            }
+
+            if(vendorPhoneNumber != null && !vendorPhoneNumber.isEmpty()) {
+                mEditTextPhoneNumber.setText(vendorPhoneNumber);
+            }
+
+            if(vendorEmail != null && !vendorPhoneNumber.isEmpty()) {
+                mEditTextEmail.setText(vendorEmail);
+            }
+
+            if(vendorPhotoUrl != null && !vendorPhotoUrl.equals("PLACEHOLDER")) {
+                vendorPhotoUrl = VendorUtils.getS3Url(mMarketName,mVendorName);
+            }
+
+            // Load the image
+            Picasso.with(getContext()).setIndicatorsEnabled(true);
+            Picasso.with(getContext()).setLoggingEnabled(true);
+            Picasso.with(getContext()).load(vendorPhotoUrl)
+                    .networkPolicy(NetworkPolicy.NO_CACHE)
+                    .error(R.drawable.ic_broken_image)
+                    .into(mImageViewVendor);
+
+        } catch (final ExecutionException | InterruptedException | NullPointerException e) {
+            showDialogMessage("Load Error", "Failed to load vendor details");
+            Log.e(TAG, e.getMessage());
         }
-
-        if(vendorPhoneNumber != null && !vendorPhoneNumber.isEmpty()) {
-            mEditTextPhoneNumber.setText(vendorPhoneNumber);
-        }
-
-        if(vendorEmail != null && !vendorPhoneNumber.isEmpty()) {
-            mEditTextEmail.setText(vendorEmail);
-        }
-
-        if(vendorPhotoUrl != null && !vendorPhotoUrl.equals("PLACEHOLDER")) {
-            vendorPhotoUrl = VendorUtils.getS3Url(mMarketName,mVendorName);
-        }
-
-        // Load the image
-        Picasso.with(getContext()).setIndicatorsEnabled(true);
-        Picasso.with(getContext()).setLoggingEnabled(true);
-        Picasso.with(getContext()).load(vendorPhotoUrl)
-                .networkPolicy(NetworkPolicy.NO_CACHE)
-                .error(R.drawable.ic_broken_image)
-                .into(mImageViewVendor);
-        return view;
     }
 
     @Override
@@ -238,10 +255,6 @@ public class VendorEditDetailsFragment extends Fragment implements View.OnClickL
         }
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
 
     @Override
     public void onClick(View view) {
@@ -263,8 +276,10 @@ public class VendorEditDetailsFragment extends Fragment implements View.OnClickL
         VendorPresenter vendorPresenter = new VendorPresenter(getContext());
         try {
             boolean successfullyAdded = vendorPresenter.updateVendorDetails(mMarketName,mVendorName,description,phoneNumber,email, mImageUrl);
-            if(successfullyAdded)
-                Toast.makeText(getContext(),"Updated Information",Toast.LENGTH_SHORT).show();
+            if(successfullyAdded) {
+                Log.e(TAG, "Successfully added");
+                Toast.makeText(getContext(), "Updated Information", Toast.LENGTH_SHORT).show();
+            }
         } catch (ExecutionException | InterruptedException e) {
             //TODO: Figure out what's causing this exception
             showDialogMessage("Error", AppHelper.formatException(e));
@@ -321,14 +336,14 @@ public class VendorEditDetailsFragment extends Fragment implements View.OnClickL
 
             final int takeFlags = data.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION  | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
-            getActivity().getContentResolver().takePersistableUriPermission(mImageUri, takeFlags);
+            getActivity().getContentResolver().takePersistableUriPermission(mImageUri, (Intent.FLAG_GRANT_READ_URI_PERMISSION  | Intent.FLAG_GRANT_WRITE_URI_PERMISSION));
         }
 
 
         try {
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), mImageUri);
             mImageViewVendor.setImageBitmap(bitmap);
-        }catch (IOException e) {
+        }catch (final IOException | NullPointerException e) {
             showDialogMessage("Error", "Error uploading image");
             Log.e(TAG, "Error Uploading " + e.getMessage());
         }
@@ -421,6 +436,9 @@ public class VendorEditDetailsFragment extends Fragment implements View.OnClickL
             showDialogMessage("Error",message);
         } else if(code == UploadImageTask.UploadCodes.SUCCESS) {
             showDialogMessage("Success","Image Updated");
+            Log.e(TAG, "Image updated");
+            // clear the cache for this photo since it's been changed
+            Picasso.with(getContext()).invalidate(mImageUrl);
         }
     }
 

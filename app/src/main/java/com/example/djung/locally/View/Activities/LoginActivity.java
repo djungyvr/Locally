@@ -171,7 +171,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void done(LoginTask.LOGIN_CODES loginCodes, String message) {
         closeWaitDialog();
         if(loginCodes == LoginTask.LOGIN_CODES.SUCCESS) {
-            showDialogMessage("Sign-in successful!", message);
             launchVendor();
         } else if(loginCodes == LoginTask.LOGIN_CODES.FAIL) {
             showDialogMessage("Sign-in failed", message);
