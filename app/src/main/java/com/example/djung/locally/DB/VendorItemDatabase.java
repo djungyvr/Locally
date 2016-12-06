@@ -51,6 +51,13 @@ public class VendorItemDatabase {
     }
 
     /**
+     * Initializes the database the first time the app is started
+     */
+    public void initializeDb() {
+        mVendorItemOpenHelper.getReadableDatabase();
+    }
+
+    /**
      * Builds a map for all columns that may be requested, which will be given to the
      * SQLiteQueryBuilder.
      */
