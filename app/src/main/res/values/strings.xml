@@ -37,6 +37,7 @@
     <string name="title_fragment_calendar">Market Calendar</string>
     <string name="title_fragment_market_description">Market Description</string>
     <string name="title_fragment_grocery_list">Your Grocery List</string>
+    <string name="title_fragment_in_season">Produce In Season</string>
     <string name="title_fragment_vendors_search_results_list">Search Results</string>
     <string name="title_fragment_settings">Settings</string>
 

@@ -35,6 +35,7 @@ public class VendorItemsProvider extends ContentProvider{
     private static final int GET_ITEM = 1;
     private static final int SEARCH_SUGGEST = 2;
     private static final int REFRESH_SHORTCUT = 3;
+    private static final int SEARCH_SEASONS = 4;
     private static final UriMatcher sURIMatcher = buildUriMatcher();
 
     /**
@@ -91,6 +92,12 @@ public class VendorItemsProvider extends ContentProvider{
                             "selectionArgs must be provided for the Uri: " + uri);
                 }
                 return search(selectionArgs[0]);
+            case SEARCH_SEASONS:
+                if (selectionArgs == null) {
+                    throw new IllegalArgumentException(
+                            "selectionArgs must be provided for the Uri: " + uri);
+                }
+                return getSeasons(selectionArgs[0]);
             case GET_ITEM:
                 return getItem(uri);
             case REFRESH_SHORTCUT:
@@ -109,6 +116,16 @@ public class VendorItemsProvider extends ContentProvider{
                 SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID};
 
         return mVendorItemDatabase.getWordMatches(query, columns);
+    }
+
+    private Cursor getSeasons(String query) {
+        query = query.toLowerCase();
+        String[] columns = new String[] {
+                BaseColumns._ID,
+                VendorItemDatabase.KEY_VENDOR_ITEM_NAME,
+                VendorItemDatabase.KEY_VENDOR_ITEM_INFO,};
+
+        return mVendorItemDatabase.getSeasonMatches(query, columns);
     }
 
     private Cursor search(String query) {
@@ -138,6 +155,8 @@ public class VendorItemsProvider extends ContentProvider{
     public String getType(Uri uri) {
         switch (sURIMatcher.match(uri)) {
             case SEARCH_ITEM:
+                return WORDS_MIME_TYPE;
+            case SEARCH_SEASONS:
                 return WORDS_MIME_TYPE;
             case GET_ITEM:
                 return DEFINITION_MIME_TYPE;

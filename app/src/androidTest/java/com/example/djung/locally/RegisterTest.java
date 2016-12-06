@@ -153,4 +153,26 @@ public class RegisterTest {
         // Check if message displays
         onView(withText(containsString("Sign up failed"))).check(matches(withText(containsString("failed"))));
     }
+
+    @Test
+    public void failedRegistrationExistingVendorName() {
+        // Type text and then press the button.
+        onView(withId(R.id.edit_text_reg_username)).perform(typeText("repeatVendorName2"),
+                closeSoftKeyboard());
+        // Type text and then press the button.
+        onView(withId(R.id.edit_text_reg_password)).perform(typeText("Test1234!"),
+                closeSoftKeyboard());
+        // Type text and then press the button.
+        onView(withId(R.id.edit_text_reg_vendor_name)).perform(typeText("Vendor Name"),
+                closeSoftKeyboard());
+        // Type text and then press the button.
+        onView(withId(R.id.edit_text_reg_email)).perform(typeText("test@test.com"),
+                closeSoftKeyboard());
+        // Type text and then press the button.
+        onView(withId(R.id.edit_text_reg_phone)).perform(typeText("1111111111"),
+                closeSoftKeyboard());
+        onView(withId(R.id.button_reg_signup)).perform(betterScrollTo(),click());
+        // Check if message displays
+        onView(withText(containsString("Sign up failed"))).check(matches(withText(containsString("failed"))));
+    }
 }

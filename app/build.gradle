@@ -67,4 +67,5 @@ dependencies {
 
     // Fix multidex
     compile 'com.android.support:multidex:1.0.1'
+    compile 'com.google.android.gms:play-services-appindexing:9.6.1'
 }
