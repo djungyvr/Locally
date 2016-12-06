@@ -30,7 +30,7 @@ public class VendorDashboardFragment extends Fragment implements VendorSaveView 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.vendor_dashboard, container, false);
         initializeGreeting(view);
-        initializePhoto(view);
+        loadPhoto(view);
         initializeCardButtons(view);
         return view;
     }
@@ -43,15 +43,15 @@ public class VendorDashboardFragment extends Fragment implements VendorSaveView 
     }
 
     private void initializeGreeting(View view) {
-        String username =  getArguments().getString("vendor_username");
+        String name =  getArguments().getString("vendor_name");
         String greeting = DateUtils.getTimeGreeting();
-        greeting = greeting + ", " + username;
+        greeting = greeting + ", " + name;
 
         TextView tv = (TextView) view.findViewById(R.id.vendor_dashboard_greeting);
         tv.setText(greeting);
     }
 
-    private void initializePhoto(View view) {
+    private void loadPhoto(View view) {
         String vendorName = getArguments().getString("vendor_name");
         String marketName = getArguments().getString("market_name");
         String vendorPhotoUrl = getArguments().getString("vendor_photo_url");

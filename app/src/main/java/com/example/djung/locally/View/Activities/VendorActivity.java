@@ -186,7 +186,6 @@ public class VendorActivity extends AppCompatActivity
     public void launchVendorDashboardFragment() {
         mContentVendor = new VendorDashboardFragment();
         Bundle bundle = new Bundle();
-        bundle.putString("vendor_username", mUsername);
         bundle.putString("vendor_name", mCurrentVendor.getName());
         bundle.putString("market_name", mCurrentVendor.getMarketName());
         bundle.putString("vendor_photo_url", mCurrentVendor.getPhotoUrl());
@@ -203,7 +202,6 @@ public class VendorActivity extends AppCompatActivity
         Bundle bundle = new Bundle();
         bundle.putString("vendor_name", mCurrentVendor.getName());
         bundle.putString("market_name", mCurrentVendor.getMarketName());
-        bundle.putStringArrayList("vendor_items", new ArrayList<>(mCurrentVendor.getItemSet()));
         mContentVendor.setArguments(bundle);
 
         if (mFragmentManager == null)
@@ -218,10 +216,6 @@ public class VendorActivity extends AppCompatActivity
         Bundle bundle = new Bundle();
         bundle.putString("vendor_name", mCurrentVendor.getName());
         bundle.putString("market_name", mCurrentVendor.getMarketName());
-        bundle.putString("vendor_description", mCurrentVendor.getDescription());
-        bundle.putString("vendor_phone_number", mCurrentVendor.getPhoneNumber());
-        bundle.putString("vendor_email", mCurrentVendor.getEmail());
-        bundle.putString("vendor_photo_url", mCurrentVendor.getPhotoUrl());
         mContentVendor.setArguments(bundle);
 
         if (mFragmentManager == null)

@@ -1,5 +1,7 @@
 package com.example.djung.locally.Utils;
 
+import android.util.Log;
+
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.ParseException;
@@ -122,7 +124,7 @@ public class DateUtils {
         if(time >= 0 && time < 12) {        // Morning from midnight to noon
             return "Good morning";
         }
-        if(time >= 12 && time < 5) {        // Afternoon from noon to 5pm
+        if(time >= 12 && time < 17) {        // Afternoon from noon to 5pm
             return "Good afternoon";
         }
         return "Good evening";              // Evening past then
