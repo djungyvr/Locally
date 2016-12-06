@@ -12,6 +12,8 @@ import android.provider.BaseColumns;
 import android.util.Log;
 
 import com.amazonaws.auth.policy.Resource;
+import com.example.djung.locally.Utils.DateUtils;
+import com.example.djung.locally.View.Fragments.InSeasonListFragment;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -34,7 +36,7 @@ public class VendorItemDatabase {
     // Database Info
     private static final String DATABASE_NAME = "vendor_items";
     private static final String FTS_VIRTUAL_TABLE = "FTS_vendor_items";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 6;
 
     // Columns
     public static final String KEY_VENDOR_ITEM_NAME = SearchManager.SUGGEST_COLUMN_TEXT_1;
@@ -46,6 +48,13 @@ public class VendorItemDatabase {
 
     public VendorItemDatabase(Context context) {
         this.mVendorItemOpenHelper = new VendorItemOpenHelper(context);
+    }
+
+    /**
+     * Initializes the database the first time the app is started
+     */
+    public void initializeDb() {
+        mVendorItemOpenHelper.getReadableDatabase();
     }
 
     /**
@@ -100,6 +109,36 @@ public class VendorItemDatabase {
          *     SELECT <columns> FROM <table> WHERE <KEY_WORD> MATCH 'query*'
          */
     }
+
+    /**
+     * Returns a Cursor over all vendor items that match the given query
+     *
+     * @param query The string to search for
+     * @param columns The columns to include, if null then all are included
+     * @return Cursor over all words that match, or null if none found.
+     */
+    public Cursor getSeasonMatches(String query, String[] columns) {
+        String selection = KEY_VENDOR_ITEM_INFO + " LIKE ?";
+        String[] selectionArgs = new String[] {"%"+query+"%"};
+
+        return query(selection, selectionArgs, columns);
+
+        /* This builds a query that looks like:
+         *     SELECT <columns> FROM <table> WHERE <KEY_WORD> LIKE 'query*'
+         */
+    }
+
+    // Gets the number of items specifically to a season
+    public int getInSeasonCount() {
+        String query = DateUtils.seasons[DateUtils.getCurrentSeason()];
+        String[] columns = new String[] {
+                BaseColumns._ID,
+                KEY_VENDOR_ITEM_NAME,
+                KEY_VENDOR_ITEM_INFO
+        };
+        return getSeasonMatches(query, columns).getCount();
+    }
+
 
     /**
      * Performs a database query.
@@ -194,7 +233,11 @@ public class VendorItemDatabase {
                 String line;
                 while((line=buffer.readLine()) != null) {
                     String[] vendorItem = line.trim().split(",");
-                    long id = addVendorItem(vendorItem[0],vendorItem[1]);
+                    String season = "";
+                    for(int i = 1; i < vendorItem.length; i++) {
+                        season += vendorItem[i];
+                    }
+                    long id = addVendorItem(vendorItem[0],season);
                     if(id < 0) {
                         Log.e(TAG,"Error adding item: " + line.trim());
                     }

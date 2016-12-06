@@ -50,6 +50,7 @@ November 26, 2016 - 3 Hours - Refactor MarketListFragment and VendorListFragment
 November 27, 2016 - 3 Hours - Refactor VendorDetailsFragment to follow MVP design pattern and add email feature for users to email vendors
 November 29, 2016 - 3 Hours - Implement settings page with About Us page
 December 1, 2016  - 3 Hours - Add vendor photo display to VendorDetails and redesign VendorDetails page
+December 3, 2016  - 2 Hours - Add add to calendar feature and restructure view package
 
 Alena
 October 3-9, 2016 - 4 hours - Learning Andriod Studio through setting up mini-project  
@@ -72,3 +73,5 @@ November 10-21, 2016 -20 hours - Redesign main ui + grocery list fragment, add m
 November 22-23, 2016 - 3 hours - Fix map immediately drop maker and zoom to current location, add focus on current location button, marker links to market page
 November 27-28, 2016 - 6 hours - Extract ContentMain fragment from MainActivity - refactor to follow MVP design pattern
 November    29, 2016 - 3 hours - Redesign home page's markets sections
+December  3   , 2016 - 3 hours - Writing Espresso tests for Main Activity
+December  4- 6, 2016 - 8 hours - Redesigning Vendor interface screens

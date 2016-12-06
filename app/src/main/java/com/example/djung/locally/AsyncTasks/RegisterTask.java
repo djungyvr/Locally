@@ -1,12 +1,19 @@
 package com.example.djung.locally.AsyncTasks;
 
+import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserAttributes;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserCodeDeliveryDetails;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.SignUpHandler;
 import com.example.djung.locally.AWS.AppHelper;
+import com.example.djung.locally.Model.Vendor;
+import com.example.djung.locally.Presenter.VendorPresenter;
+
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by David Jung on 25/11/16.
@@ -38,12 +45,15 @@ public class RegisterTask extends AsyncTask<String,Void, RegisterTask.REGISTER_C
     // User attributes
     private CognitoUserAttributes mUserAttributes;
 
-    public RegisterTask(RegisterTaskCallback callback, CognitoUserAttributes userAttributes) {
+    private Context mContext;
+
+    public RegisterTask(RegisterTaskCallback callback, CognitoUserAttributes userAttributes, Context context) {
         mSyncObject = new Object();
         mCallback = callback;
         mResult = REGISTER_CODES.PENDING;
         mMessage = "";
         mUserAttributes = userAttributes;
+        mContext = context;
     }
 
     @Override
@@ -51,14 +61,18 @@ public class RegisterTask extends AsyncTask<String,Void, RegisterTask.REGISTER_C
         String username = params[0];
         String password = params[1];
 
-        AppHelper.getCognitoUserPool().signUpInBackground(username, password, mUserAttributes, null, mSignupHandler);
+        boolean isUnique = isVendorNameUnique(mUserAttributes.getAttributes().get("custom:market_name"),mUserAttributes.getAttributes().get("custom:vendor_name"));
 
-        synchronized (mSyncObject) {
-            try {
-                mSyncObject.wait();
-            } catch (InterruptedException e) {
-                mMessage = "Thread interrupted!";
-                mResult = RegisterTask.REGISTER_CODES.FAIL;
+        if(isUnique) {
+            AppHelper.getCognitoUserPool().signUpInBackground(username, password, mUserAttributes, null, mSignupHandler);
+
+            synchronized (mSyncObject) {
+                try {
+                    mSyncObject.wait();
+                } catch (InterruptedException e) {
+                    mMessage = "Thread interrupted!";
+                    mResult = RegisterTask.REGISTER_CODES.FAIL;
+                }
             }
         }
 
@@ -101,4 +115,29 @@ public class RegisterTask extends AsyncTask<String,Void, RegisterTask.REGISTER_C
             }
         }
     };
+
+    /**
+     * @param marketName name of market chosen
+     * @param vendorName name of vendor
+     * @return true if vendorName is unique within the market, false otherwise
+     */
+    private boolean isVendorNameUnique(String marketName, String vendorName) {
+        String vendorLowerCase = vendorName.toLowerCase();
+        try {
+            List<Vendor> vendorList = new VendorPresenter(mContext).fetchVendors(marketName);
+            for(Vendor v : vendorList) {
+                if(v.getName().toLowerCase().equals(vendorLowerCase)) {
+                    mMessage = "Vendor not unique to market";
+                    mResult = REGISTER_CODES.FAIL;
+                    return false;
+                }
+            }
+        } catch (ExecutionException | InterruptedException e) {
+            Log.e(TAG, AppHelper.formatException(e));
+        }
+
+        mMessage = "";
+        mResult = REGISTER_CODES.SUCCESS;
+        return true;
+    }
 }

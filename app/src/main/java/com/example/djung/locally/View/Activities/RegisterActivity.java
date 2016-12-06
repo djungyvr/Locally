@@ -1,9 +1,15 @@
 package com.example.djung.locally.View.Activities;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appindexing.Thing;
+import com.google.android.gms.common.api.GoogleApiClient;
+
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
@@ -11,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.text.Editable;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -20,9 +27,15 @@ import android.widget.TextView;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserAttributes;
 import com.example.djung.locally.AWS.AppHelper;
 import com.example.djung.locally.AsyncTasks.RegisterTask;
+import com.example.djung.locally.Model.Vendor;
+import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
 
-public class RegisterActivity extends AppCompatActivity implements View.OnClickListener, RegisterTask.RegisterTaskCallback{
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+public class RegisterActivity extends AppCompatActivity implements View.OnClickListener, RegisterTask.RegisterTaskCallback {
+    private static final String TAG = "RegisterActivity";
     private TextInputEditText mEditTextUserName;
     private TextInputEditText mEditTextPassword;
     private TextInputEditText mEditTextVendorName;
@@ -50,6 +63,12 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             "Main St Station Farmers Market"
     };
 
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +91,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
         // Initialize app helper
         AppHelper.initialize(getApplicationContext());
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     private void initializeFieldsAndViews() {
@@ -212,9 +234,29 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         finish();
     }
 
+    /**
+     * @param marketName name of market chosen
+     * @param vendorName name of vendor
+     * @return true if vendorName is unique within the market, false otherwise
+     */
+    private boolean isVendorNameUnique(String marketName, String vendorName) {
+        String vendorLowerCase = vendorName.toLowerCase();
+        try {
+            List<Vendor> vendorList = new VendorPresenter(this).fetchVendors(marketName);
+            for(Vendor v : vendorList) {
+                if(v.getName().toLowerCase().equals(vendorLowerCase))
+                    return false;
+            }
+        } catch (ExecutionException | InterruptedException e) {
+            Log.e(TAG, AppHelper.formatException(e));
+        }
+
+        return true;
+    }
+
     @Override
     public void onClick(View view) {
-        switch(view.getId()) {
+        switch (view.getId()) {
             case R.id.button_reg_signup:
                 // Read user data and register
                 CognitoUserAttributes userAttributes = new CognitoUserAttributes();
@@ -242,7 +284,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                         userAttributes.addAttribute(AppHelper.getSignUpFieldsC2O().get("Market Name").toString(), userInput);
                     }
                 }
-
                 userInput = mEditTextVendorName.getText().toString();
                 if (userInput == null || userInput.isEmpty()) {
                     TextView message = (TextView) findViewById(R.id.text_view_reg_vendor_name_message);
@@ -276,24 +317,60 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 showWaitDialog("Signing up...");
 
 
-                new RegisterTask(this, userAttributes).execute(usernameInput,userPassword);
+                new RegisterTask(this, userAttributes, this).execute(usernameInput, userPassword);
                 break;
         }
     }
 
     @Override
     public void done(RegisterTask.REGISTER_CODES code, String message) {
-        if(code == RegisterTask.REGISTER_CODES.SUCCESS) {
+        if (code == RegisterTask.REGISTER_CODES.SUCCESS) {
             // Check signUpConfirmationState to see if the user is already confirmed
             closeWaitDialog();
 
             showDialogMessage("Sign up successful!", usernameInput + " has been added. You will be able to sign in once we confirm you as a vendor.", true);
-        } else if(code == RegisterTask.REGISTER_CODES.FAIL){
+        } else if (code == RegisterTask.REGISTER_CODES.FAIL) {
             closeWaitDialog();
             TextView label = (TextView) findViewById(R.id.text_view_reg_username_message);
             label.setText("Sign up failed");
             //username.setBackground(getDrawable(R.drawable.text_border_error));
             showDialogMessage("Sign up failed", message, false);
         }
+    }
+
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    public Action getIndexApiAction() {
+        Thing object = new Thing.Builder()
+                .setName("Register Page") // TODO: Define a title for the content shown.
+                // TODO: Make sure this auto-generated URL is correct.
+                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
+                .build();
+        return new Action.Builder(Action.TYPE_VIEW)
+                .setObject(object)
+                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
+                .build();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        AppIndex.AppIndexApi.start(client, getIndexApiAction());
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        AppIndex.AppIndexApi.end(client, getIndexApiAction());
+        client.disconnect();
     }
 }

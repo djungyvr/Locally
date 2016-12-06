@@ -31,6 +31,7 @@ import com.example.djung.locally.Presenter.VendorListPresenter;
 import com.example.djung.locally.R;
 import com.example.djung.locally.View.Fragments.ContentMainFragment;
 import com.example.djung.locally.View.Fragments.GroceryListFragment;
+import com.example.djung.locally.View.Fragments.InSeasonListFragment;
 import com.example.djung.locally.View.Interfaces.MainActivityView;
 import com.example.djung.locally.View.Fragments.MapFragment;
 import com.example.djung.locally.View.Fragments.MarketListFragment;
@@ -67,6 +68,9 @@ public class MainActivity extends AppCompatActivity
     // Fragment for display vendor item search result
     private Fragment mVendorSearchItemFragment;
 
+    // Fragment for displaying the seasonal produce list
+    private Fragment mInSeasonFragment;
+
     private NavigationView mNavigationView;
     private AppBarLayout mAppBarLayout;
     private DrawerLayout mDrawerLayout;
@@ -74,7 +78,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.AppTheme_NoActionBar);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -283,6 +286,21 @@ public class MainActivity extends AppCompatActivity
         ft.commit();
     }
 
+    /**
+     * Launches the In Season Fragment
+     */
+
+    public void launchInSeasonFragment() {
+        if (mInSeasonFragment == null)
+            mInSeasonFragment = new InSeasonListFragment();
+
+        // Replace the container with the fragment
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.main_layout, mInSeasonFragment);
+        ft.addToBackStack(getString(R.string.title_fragment_in_season));
+        ft.commit();
+    }
+
     @Override
     public void onMarketListItemClick(Market market) {
         launchVendorListFragment(market);
@@ -471,28 +489,35 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case Permissions.REQUEST_COURSE_PERMISSION:
-
-                //Permission is granted to use location data
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        return;
-                    }
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-                    currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                    Log.e(TAG, "Location permissions passed, successfully got user location");
-
-                }
-
-                //Permission is denied to use location data and we explain to the user that distance to markets will not be shown
-                else {
-                    currentLocation = null;
-                    Toast.makeText(this, "Please turn on location permissions in App Settings for additional functionality.", Toast.LENGTH_LONG).show();
-                }
-                return;
+        if(requestCode == Permissions.REQUEST_COURSE_PERMISSION && mGoogleMapsFragment != null) {
+            mGoogleMapsFragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+        else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+//        switch (requestCode) {
+//            case Permissions.REQUEST_COURSE_PERMISSION:
+//
+//                //Permission is granted to use location data
+//                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+//                            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                        return;
+//                    }
+//                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+//                    currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+//                    Log.e(TAG, "Location permissions passed, successfully got user location");
+//
+//                }
+//
+//                //Permission is denied to use location data and we explain to the user that distance to markets will not be shown
+//                else {
+//                    currentLocation = null;
+//                    Toast.makeText(this, "Please turn on location permissions in App Settings for additional functionality.", Toast.LENGTH_LONG).show();
+//                }
+//                return;
+//        }
     }
 
 
