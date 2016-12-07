@@ -37,6 +37,8 @@ public class VendorActivityPresenter {
     public void onNavigationItemSelected(int id) {
         switch (id) {
             case R.id.nav_vendor_home:
+                mView.clearFragmentBackStack();
+                mView.launchVendorDashboardFragment();
                 if(mView.getCurrentContentFragment() instanceof VendorDashboardFragment)
                     break;
                 if(((VendorSaveView)mView.getCurrentContentFragment()).needSave()) {

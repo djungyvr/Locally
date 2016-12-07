@@ -260,6 +260,14 @@ public class VendorActivity extends AppCompatActivity
     }
 
     /**
+     * Clears the fragment back stack
+     */
+    @Override
+    public void clearFragmentBackStack() {
+        getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+    }
+
+    /**
      * Shows dialog box asking if user wants to Discard changes or Keep editing
      */
     public void showDiscardChangesDialog() {

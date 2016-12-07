@@ -16,4 +16,6 @@ public interface VendorActivityView {
     void launchVendorDashboardFragment();
     void launchEditGoodsFragment();
     void launchEditDetailsFragment();
+    void clearFragmentBackStack();
+    void setNavigationDrawerCheckedItem(int resId);
 }
