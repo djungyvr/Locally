@@ -42,6 +42,7 @@ import com.example.djung.locally.Presenter.VendorPresenter;
 import com.example.djung.locally.R;
 import com.example.djung.locally.Utils.FileUtils;
 import com.example.djung.locally.Utils.VendorUtils;
+import com.example.djung.locally.View.Activities.MainActivity;
 import com.example.djung.locally.View.Activities.VendorActivity;
 import com.example.djung.locally.View.Interfaces.VendorSaveView;
 import com.google.firebase.FirebaseApiNotAvailableException;
@@ -89,6 +90,8 @@ public class VendorEditDetailsFragment extends Fragment implements View.OnClickL
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.edit_vendor_details_fragment, container, false);
+
+        ((VendorActivity) getActivity()).setNavigationDrawerCheckedItem(R.id.nav_edit_details);
 
         initializeBaseViews(view);
         populateBaseViews();

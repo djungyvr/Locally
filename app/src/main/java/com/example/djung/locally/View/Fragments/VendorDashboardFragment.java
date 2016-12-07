@@ -32,6 +32,8 @@ public class VendorDashboardFragment extends Fragment implements VendorSaveView 
         initializeGreeting(view);
         loadPhoto(view);
         initializeCardButtons(view);
+
+        ((VendorActivity) getActivity()).setNavigationDrawerCheckedItem(R.id.nav_vendor_home);
         return view;
     }
 

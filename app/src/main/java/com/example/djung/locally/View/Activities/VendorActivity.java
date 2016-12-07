@@ -75,6 +75,7 @@ public class VendorActivity extends AppCompatActivity
     private AppBarLayout mAppBarLayout;
     private DrawerLayout mDrawerLayout;
     private VendorActivityPresenter mPresenter;
+    private NavigationView mNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,10 +105,10 @@ public class VendorActivity extends AppCompatActivity
         mDrawerLayout.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.vendor_nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        mNavigationView = (NavigationView) findViewById(R.id.vendor_nav_view);
+        mNavigationView.setNavigationItemSelectedListener(this);
 
-        View headerView = navigationView.getHeaderView(0);
+        View headerView = mNavigationView.getHeaderView(0);
         mTextViewVendorName = (TextView) headerView.findViewById(R.id.text_view_nav_vendor_name);
 
     }
@@ -265,6 +266,15 @@ public class VendorActivity extends AppCompatActivity
     @Override
     public void clearFragmentBackStack() {
         getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+    }
+
+    /**
+     * Highlights the menu item with given id in the navigation drawer
+     * @param resId
+     */
+    @Override
+    public void setNavigationDrawerCheckedItem(int resId) {
+        mNavigationView.setCheckedItem(resId);
     }
 
     /**

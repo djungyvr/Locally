@@ -80,6 +80,8 @@ public class VendorEditStockFragment extends Fragment implements
             initializeSearch(view);
             initializeAdapter(view);
         }
+
+        ((VendorActivity) getActivity()).setNavigationDrawerCheckedItem(R.id.nav_edit_goods_list);
         return view;
     }
 
