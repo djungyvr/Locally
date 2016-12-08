@@ -20,6 +20,15 @@ David
 25.11.16 - 3 hours - Move processes to AsyncTasks, write more tests
 28.11.16 - 4 hours - Add vendor photo uploads
 29.11.16 - 3 hours - Refactor vendor related code
+01.12.16 - 3 hours - Bug fixes
+02.12.16 - 2 hours - Create first alpha release
+03.12.16 - 1 hour  - Write navigation tests
+03.12.16 - 4 hours - Launch WestFirstStudios.com website
+04.12.16 - 2 hours - Complete in season use case
+07.12.16 - 2 hours - Integreate vendor side UI changes
+
+
+
 Anna
 Week of October 3, 2016 - 4 hours - Product vision, project planning and use case analysis documentation
 Week of October 10, 2016 - 7 hours - UI prototypes for Calendar, project design planning, Android Studio Lessons
