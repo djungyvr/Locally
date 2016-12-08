@@ -6,7 +6,7 @@
 Obtain AwsConfiguration.java from the developers and place it inside the AWS Package, this contains the necessary information for using AWS. More specifically Cognito and DynamoDB.
 
 ### API Keys
-Obtain api_keys.xml from the developers and place it inside the res/values/ directory
+Message the developers to be included in the alpha release group.
 
 ### Working With Project (Currently Targets API 23 and Developed on Android Studio 2.2)
 1. Either fork or clone  the repo into a desired directory or on Android Studio use new project from Git.
