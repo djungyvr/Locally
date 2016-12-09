@@ -89,11 +89,11 @@ public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.Vi
     public void toggleSupportText(MarketListAdapter.ViewHolder view){
         if (view.marketListItemSupportText.getVisibility() == View.VISIBLE){
             view.marketListItemSupportText.setVisibility(View.GONE);
-            view.marketListItemSupportTextButton.setText("More");
+            view.marketListItemSupportTextButton.setText("More Details");
         }
         else {
             view. marketListItemSupportText.setVisibility(View.VISIBLE);
-            view.marketListItemSupportTextButton.setText("Less");
+            view.marketListItemSupportTextButton.setText("Less Details");
         }
     }
 
