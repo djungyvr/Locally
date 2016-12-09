@@ -80,7 +80,7 @@ public class VendorDetailsPresenter {
         else if(imageResource.isEmpty() || imageResource.equals("PLACEHOLDER")) {
             vendorDetailsView.getVendorImageView().setImageResource(R.drawable.ubc);
         } else {
-            Picasso.with(activity).setIndicatorsEnabled(true);
+            Picasso.with(activity).setIndicatorsEnabled(false);
             Picasso.with(activity).load(imageResource).into(vendorDetailsView.getVendorImageView());
         }
     }

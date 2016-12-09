@@ -170,7 +170,7 @@ public class MarketListPresenter {
         if(imageResource.isEmpty()) {
             imageView.setImageResource(R.drawable.ubc);
         } else {
-            Picasso.with(activity).setIndicatorsEnabled(true);
+            Picasso.with(activity).setIndicatorsEnabled(false);
             Picasso.with(activity).load(imageResource).into(imageView);
         }
     }

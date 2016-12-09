@@ -214,7 +214,7 @@ public class VendorEditDetailsFragment extends Fragment implements View.OnClickL
             }
 
             // Load the image
-            Picasso.with(getContext()).setIndicatorsEnabled(true);
+            Picasso.with(getContext()).setIndicatorsEnabled(false);
             Picasso.with(getContext()).setLoggingEnabled(true);
             Picasso.with(getContext()).load(vendorPhotoUrl)
                     .networkPolicy(NetworkPolicy.NO_CACHE)

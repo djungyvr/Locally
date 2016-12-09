@@ -63,7 +63,7 @@ public class VendorDashboardFragment extends Fragment implements VendorSaveView 
         }
 
         ImageView iv = (ImageView) view.findViewById(R.id.vendor_dashboard_photo);
-        Picasso.with(getContext()).setIndicatorsEnabled(true);
+        Picasso.with(getContext()).setIndicatorsEnabled(false);
         Picasso.with(getContext()).setLoggingEnabled(true);
         Picasso.with(getContext()).load(vendorPhotoUrl)
                 .networkPolicy(NetworkPolicy.NO_CACHE)
