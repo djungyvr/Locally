@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.support.v4.app.ActivityCompat;
@@ -179,6 +180,9 @@ public class MarketListPresenter {
         Market market = marketList.get(position);
         Log.e(TAG, "Adding market " + market.getName() + " to calendar");
 
+        Calendar currentTime = Calendar.getInstance();
+
+        //Start date and end date to pass to the Calendar Intent
         Calendar startTime = Calendar.getInstance();
         Calendar endTime = Calendar.getInstance();
 
@@ -230,19 +234,66 @@ public class MarketListPresenter {
         endTime.set(Calendar.HOUR_OF_DAY, Integer.parseInt(endHours[0]));
         endTime.set(Calendar.MINUTE, Integer.parseInt(endHours[1]));
 
-        Intent calendarIntent = new Intent(Intent.ACTION_INSERT)
-                .setData(CalendarContract.Events.CONTENT_URI)
-                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, startTime.getTimeInMillis())
-                .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endTime.getTimeInMillis())
-                .putExtra(CalendarContract.Events.TITLE, market.getName() + " Opening")
-                .putExtra(CalendarContract.Events.DESCRIPTION, market.getName() + " is opening now! Do not miss it! -Locally")
-                .putExtra(CalendarContract.Events.EVENT_LOCATION, market.getAddress())
-                .putExtra(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_BUSY);
+        //If the current day is when the market is open, we need to check the current time versus the opening time
+        if (currentTime.get(Calendar.YEAR) == endTime.get(Calendar.YEAR)
+                && currentTime.get(Calendar.DAY_OF_YEAR) == endTime.get(Calendar.DAY_OF_YEAR)){
+            if (!currentTime.before(endTime)){
+                startTime.add(Calendar.DAY_OF_YEAR, 7);
+                endTime.add(Calendar.DAY_OF_YEAR, 7);
+            }
+        }
 
-        try {
-            activity.startActivity(calendarIntent);
-        } catch (android.content.ActivityNotFoundException ex) {
-            Toast.makeText(activity, "There is no calendar application installed.", Toast.LENGTH_SHORT).show();
+
+        //Check to see if the market has already closed for the year.
+        Calendar lastDay = Calendar.getInstance();
+        Calendar firstDay = Calendar.getInstance();
+
+        String datesOpen = market.getYearOpen();
+        String[] startAndEndDates = datesOpen.split("-");
+
+        String[] startDate = startAndEndDates[0].split("/");
+        String[] endDate = startAndEndDates[1].split("/");
+
+        int startDateMonth = Integer.parseInt(startDate[1]);
+        int startDateDay = Integer.parseInt(startDate[0]);
+
+        int endDateMonth = Integer.parseInt(endDate[1]);
+        int endDateDay = Integer.parseInt(endDate[0]);
+
+        firstDay.set(Calendar.MONTH, startDateMonth);
+        firstDay.set(Calendar.DAY_OF_MONTH, startDateDay);
+
+        lastDay.set(Calendar.MONTH, endDateMonth);
+        lastDay.set(Calendar.DAY_OF_MONTH, endDateDay);
+
+
+        //Check if the end date wraps around to the next year
+        if (endDateMonth < startDateMonth){
+            lastDay.set(Calendar.YEAR, firstDay.get(Calendar.YEAR) + 1);
+        }
+
+
+        if (!startTime.before(lastDay)){
+            Toast.makeText(activity, "This market has closed for the year, check back for new updates next year!", Toast.LENGTH_SHORT).show();
+        }
+        else if (!startTime.after(firstDay)){
+            Toast.makeText(activity, "This market is not open for the year yet, check back for new updates in the future!", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            Intent calendarIntent = new Intent(Intent.ACTION_INSERT)
+                    .setData(CalendarContract.Events.CONTENT_URI)
+                    .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, startTime.getTimeInMillis())
+                    .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endTime.getTimeInMillis())
+                    .putExtra(CalendarContract.Events.TITLE, market.getName() + " Opening")
+                    .putExtra(CalendarContract.Events.DESCRIPTION, market.getName() + " is opening now! Do not miss it! -Locally")
+                    .putExtra(CalendarContract.Events.EVENT_LOCATION, market.getAddress())
+                    .putExtra(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_BUSY);
+
+            try {
+                activity.startActivity(calendarIntent);
+            } catch (android.content.ActivityNotFoundException ex) {
+                Toast.makeText(activity, "There is no calendar application installed.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

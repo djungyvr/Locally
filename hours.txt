@@ -60,6 +60,7 @@ November 27, 2016 - 3 Hours - Refactor VendorDetailsFragment to follow MVP desig
 November 29, 2016 - 3 Hours - Implement settings page with About Us page
 December 1, 2016  - 3 Hours - Add vendor photo display to VendorDetails and redesign VendorDetails page
 December 3, 2016  - 2 Hours - Add add to calendar feature and restructure view package
+December 11, 2016 - 2 Hours - Fix bug in Add to Calendar feature
 
 Alena
 October 3-9, 2016 - 4 hours - Learning Andriod Studio through setting up mini-project  
